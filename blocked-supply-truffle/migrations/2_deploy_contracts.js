@@ -1,5 +1,5 @@
-const ShipmentManager = artifacts.require("ShipmentManager");
+const ShipmentManagement = artifacts.require("ShipmentManagement");
 
 module.exports = function (deployer) {
-    deployer.deploy(ShipmentManager);
+    deployer.deploy(ShipmentManagement);
 };
