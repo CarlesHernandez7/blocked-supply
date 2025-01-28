@@ -10,23 +10,23 @@ contract("ShipmentManagement", (accounts) => {
         contract = await ShipmentManagement.new();
 
         // Register users with roles
-        await contract.registerUser("Manager User", ["Manager"], "manager@example.com", { from: manager });
-        await contract.registerUser("Operator User", ["Operator"], "operator@example.com", { from: operator });
-        await contract.registerUser("Viewer User", ["Viewer"], "viewer@example.com", { from: viewer });
+        await contract.registerUser("Manager User", ["MANAGER"], "manager@example.com", { from: manager });
+        await contract.registerUser("Operator User", ["OPERATOR"], "operator@example.com", { from: operator });
+        await contract.registerUser("Viewer User", ["VIEWER"], "viewer@example.com", { from: viewer });
     });
 
     it("should register users correctly", async () => {
         const managerDetails = await contract.getUser(manager, { from: manager });
-        assert.equal(managerDetails.name, "Manager User", "Manager name mismatch");
-        assert.equal(managerDetails.roles[0], "Manager", "Manager role mismatch");
+        assert.equal(managerDetails.username, "Manager User", "Manager name mismatch");
+        assert.equal(managerDetails.roles[0], "MANAGER", "Manager role mismatch");
 
         const operatorDetails = await contract.getUser(operator, { from: operator });
-        assert.equal(operatorDetails.name, "Operator User", "Operator name mismatch");
-        assert.equal(operatorDetails.roles[0], "Operator", "Operator role mismatch");
+        assert.equal(operatorDetails.username, "Operator User", "Operator name mismatch");
+        assert.equal(operatorDetails.roles[0], "OPERATOR", "Operator role mismatch");
 
         const viewerDetails = await contract.getUser(viewer, { from: viewer });
-        assert.equal(viewerDetails.name, "Viewer User", "Viewer name mismatch");
-        assert.equal(viewerDetails.roles[0], "Viewer", "Viewer role mismatch");
+        assert.equal(viewerDetails.username, "Viewer User", "Viewer name mismatch");
+        assert.equal(viewerDetails.roles[0], "VIEWER", "Viewer role mismatch");
     });
 
     it("should allow manager to create shipments", async () => {
