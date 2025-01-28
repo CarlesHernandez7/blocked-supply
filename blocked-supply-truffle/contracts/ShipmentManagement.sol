@@ -3,12 +3,12 @@ pragma solidity ^0.8.0;
 
 contract ShipmentManagement {
 
-    enum ShipmentState { Created, InTransit, Stored, Delivered }
-    enum UserRoles { Manager, Operator, Viewer }
+    enum ShipmentState { CREATED, IN_TRANSIT, STORED, DELIVERED }
+    enum UserRoles { ADMIN, MANAGER, OPERATOR, VIEWER }
 
     struct Shipment {
         uint256 id;
-        string productName;
+        string name;
         string description;
         string origin;
         string destination;
@@ -29,7 +29,7 @@ contract ShipmentManagement {
 
     struct User {
         address userAddress;
-        string name;
+        string username;
         string[] roles;
         string email;
     }
@@ -82,16 +82,17 @@ contract ShipmentManagement {
         // Validate roles
         for (uint256 i = 0; i < roles.length; i++) {
             require(
-                keccak256(abi.encodePacked(roles[i])) == keccak256("Manager") ||
-                keccak256(abi.encodePacked(roles[i])) == keccak256("Operator") ||
-                keccak256(abi.encodePacked(roles[i])) == keccak256("Viewer"),
+                keccak256(abi.encodePacked(roles[i])) == keccak256("ADMIN") ||
+                keccak256(abi.encodePacked(roles[i])) == keccak256("MANAGER") ||
+                keccak256(abi.encodePacked(roles[i])) == keccak256("OPERATOR") ||
+                keccak256(abi.encodePacked(roles[i])) == keccak256("VIEWER"),
                 "Invalid role provided."
             );
         }
 
         users[msg.sender] = User({
             userAddress: msg.sender,
-            name: name,
+            username: name,
             roles: roles,
             email: email
         });
@@ -107,17 +108,17 @@ contract ShipmentManagement {
         string memory destination,
         uint256 units,
         uint256 weight
-    ) public onlyAuthorized("Manager") {
+    ) public onlyAuthorized("MANAGER") {
         uint256 shipmentId = nextShipmentId++;
         shipments[shipmentId] = Shipment({
             id: shipmentId,
-            productName: productName,
+            name: productName,
             description: description,
             origin: origin,
             destination: destination,
             units: units,
             weight: weight,
-            currentState: ShipmentState.Created,
+            currentState: ShipmentState.CREATED,
             currentOwner: msg.sender,
             transferHistory: new uint256[](0)
         });
@@ -160,7 +161,7 @@ contract ShipmentManagement {
         Shipment memory shipment = shipments[shipmentId];
         return (
             shipment.id,
-            shipment.productName,
+            shipment.name,
             shipment.description,
             shipment.origin,
             shipment.destination,
