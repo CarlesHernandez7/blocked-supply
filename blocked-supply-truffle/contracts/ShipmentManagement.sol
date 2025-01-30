@@ -43,7 +43,7 @@ contract ShipmentManagement {
 
     event ShipmentCreated(uint256 shipmentId, string productName, address indexed owner);
     event ShipmentTransfer(uint256 shipmentId, address indexed previousOwner, address indexed newShipmentOwner, ShipmentState newState);
-    event UserRegistered(address indexed userAddress, string name, string[] roles);
+    event UserRegistered(address indexed userAddress, string name, string email, string[] roles);
 
     // Modifiers
 
@@ -97,7 +97,7 @@ contract ShipmentManagement {
             email: email
         });
 
-        emit UserRegistered(msg.sender, name, roles);
+        emit UserRegistered(msg.sender, name, email, roles);
     }
 
     // Create a new shipment
