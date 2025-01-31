@@ -19,7 +19,6 @@ public class BlockchainEventListener {
     public BlockchainEventListener(UserRepository userRepository, ShipmentManagement shipmentContract) {
         this.userRepository = userRepository;
         this.shipmentContract = shipmentContract;
-        listenToEvents();
     }
 
     @PostConstruct
@@ -31,6 +30,7 @@ public class BlockchainEventListener {
                     String email = event.email;
                     List<String> roles = Collections.singletonList(event.roles.toString());
 
+                    // Save the user in the database when the event is detected
                     User user = new User(userAddress, username, email, roles);
                     userRepository.save(user);
                 });
