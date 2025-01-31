@@ -13,12 +13,10 @@ public class UserService {
 
     private final ShipmentManagement shipmentContract;
     private final UserRepository userRepository;
-    private final BlockchainEventListener blockchainEventListener;
 
-    public UserService(ShipmentManagement shipmentContract, UserRepository userRepository, BlockchainEventListener blockchainEventListener) {
+    public UserService(ShipmentManagement shipmentContract, UserRepository userRepository) {
         this.shipmentContract = shipmentContract;
         this.userRepository = userRepository;
-        this.blockchainEventListener = blockchainEventListener;
     }
 
     public void registerUser(UserRegisterDTO user) {
