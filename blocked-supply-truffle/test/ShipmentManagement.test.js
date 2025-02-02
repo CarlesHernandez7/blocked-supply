@@ -1,98 +1,99 @@
 const ShipmentManagement = artifacts.require("ShipmentManagement");
-const { expectRevert } = require('@openzeppelin/test-helpers');
 
 contract("ShipmentManagement", (accounts) => {
-    const [manager, operator, viewer] = accounts;
-
     let contract;
+    const [admin, customer, transporter, warehouse] = accounts;
 
     beforeEach(async () => {
         contract = await ShipmentManagement.new();
-
-        // Register users with roles
-        await contract.registerUser("Manager User", ["MANAGER"], "manager@example.com", { from: manager });
-        await contract.registerUser("Operator User", ["OPERATOR"], "operator@example.com", { from: operator });
-        await contract.registerUser("Viewer User", ["VIEWER"], "viewer@example.com", { from: viewer });
     });
 
-    it("should register users correctly", async () => {
-        const managerDetails = await contract.getUser(manager, { from: manager });
-        assert.equal(managerDetails.username, "Manager User", "Manager name mismatch");
-        assert.equal(managerDetails.roles[0], "MANAGER", "Manager role mismatch");
+    it("should register a user with valid roles", async () => {
+        const tx = await contract.registerUser("AdminUser", ["ADMIN"], "admin@example.com", { from: admin });
 
-        const operatorDetails = await contract.getUser(operator, { from: operator });
-        assert.equal(operatorDetails.username, "Operator User", "Operator name mismatch");
-        assert.equal(operatorDetails.roles[0], "OPERATOR", "Operator role mismatch");
-
-        const viewerDetails = await contract.getUser(viewer, { from: viewer });
-        assert.equal(viewerDetails.username, "Viewer User", "Viewer name mismatch");
-        assert.equal(viewerDetails.roles[0], "VIEWER", "Viewer role mismatch");
+        assert.equal(tx.logs[0].event, "UserRegistered", "UserRegistered event should be emitted");
+        assert.equal(tx.logs[0].args.userAddress, admin, "User address should match");
+        assert.equal(tx.logs[0].args.name, "AdminUser", "User name should match");
     });
 
-    it("should allow manager to create shipments", async () => {
-        const tx = await contract.createShipment("Product A", "Description A", "Factory", "Warehouse", 100, 200, { from: manager });
+    it("should not allow duplicate user registration", async () => {
+        await contract.registerUser("AdminUser", ["ADMIN"], "admin@example.com", { from: admin });
 
-        const shipmentId = tx.logs[0].args.shipmentId.toNumber();
-
-        const shipment = await contract.getShipment(shipmentId, { from: manager });
-        assert.equal(shipment.productName, "Product A", "Shipment product name mismatch");
-        assert.equal(shipment.origin, "Factory", "Shipment origin mismatch");
-        assert.equal(shipment.destination, "Warehouse", "Shipment destination mismatch");
-        assert.equal(shipment.units, 100, "Shipment units mismatch");
-        assert.equal(shipment.weight, 200, "Shipment weight mismatch");
-        assert.equal(shipment.currentState.toString(), "0", "Shipment state mismatch"); // Created = 0
+        try {
+            await contract.registerUser("AdminUser", ["ADMIN"], "admin@example.com", { from: admin });
+            assert.fail("Duplicate registration should not be allowed");
+        } catch (error) {
+            assert.include(error.message, "User already registered.", "Expected revert message not found");
+        }
     });
 
-    it("should not allow non-manager to create shipments", async () => {
-        // Non-manager tries to create a shipment
-        await expectRevert(
-            contract.createShipment("ProductA", "Description", "Origin", "Destination", 10, 100, { from: operator }),
-            "Not authorized for this role."
-        );
+    it("should allow an admin to create a shipment", async () => {
+        await contract.registerUser("AdminUser", ["ADMIN"], "admin@example.com", { from: admin });
+
+        const tx = await contract.createShipment("Product1", "Desc1", "Origin1", "Destination1", 10, 100, { from: admin });
+
+        assert.equal(tx.logs[0].event, "ShipmentCreated", "ShipmentCreated event should be emitted");
+        assert.equal(tx.logs[0].args.productName, "Product1", "Product name should match");
     });
 
-    it("should allow the shipment owner to transfer shipment", async () => {
-        // Create shipment by manager
-        const tx = await contract.createShipment("Product A", "Description A", "Factory", "Warehouse", 100, 200, { from: manager });
+    it("should not allow a non-admin to create a shipment", async () => {
+        await contract.registerUser("CustomerUser", ["CUSTOMER"], "customer@example.com", { from: customer });
 
-        const shipmentId = tx.logs[0].args.shipmentId.toNumber();
-
-        // Transfer shipment to operator
-        await contract.shipmentTransfer(shipmentId, operator, 1, "Transferred to operator", { from: manager });
-
-        const shipment = await contract.getShipment(shipmentId, { from: operator });
-        assert.equal(shipment.currentOwner, operator, "Shipment owner mismatch after transfer");
-        assert.equal(shipment.currentState.toString(), "1", "Shipment state mismatch after transfer"); // InTransit = 1
+        try {
+            await contract.createShipment("Product1", "Desc1", "Origin1", "Destination1", 10, 100, { from: customer });
+            assert.fail("Non-admin user should not be able to create a shipment");
+        } catch (error) {
+            assert.include(error.message, "Not authorized for this role.", "Expected revert message not found");
+        }
     });
 
-    it("should not allow non-owner to transfer shipment", async () => {
-        // Create shipment by manager
-        const tx = await contract.createShipment("Product A", "Description A", "Factory", "Warehouse", 100, 200, { from: manager });
+    it("should transfer shipment ownership correctly", async () => {
+        await contract.registerUser("AdminUser", ["ADMIN"], "admin@example.com", { from: admin });
+        await contract.registerUser("TransporterUser", ["TRANSPORTER"], "transporter@example.com", { from: transporter });
 
-        const shipmentId = tx.logs[0].args.shipmentId.toNumber();
+        await contract.createShipment("Product1", "Desc1", "Origin1", "Destination1", 10, 100, { from: admin });
 
-        // Attempt transfer by non-owner
-        await expectRevert(
-            contract.shipmentTransfer(shipmentId, viewer, 2, "Unauthorized transfer", { from: operator }),
-            "Only the current owner can perform this action."
-        );
+        const tx = await contract.shipmentTransfer(0, transporter, "IN_TRANSIT", "Moving shipment", { from: admin });
+
+        assert.equal(tx.logs[0].event, "ShipmentTransfer", "ShipmentTransfer event should be emitted");
+        assert.equal(tx.logs[0].args.newShipmentOwner, transporter, "New owner should match transporter");
     });
 
-    it("should return correct transfer history", async () => {
-        // Create shipment by manager
-        const tx = await contract.createShipment("Product A", "Description A", "Factory", "Warehouse", 100, 200, { from: manager });
+    it("should not allow an invalid shipment state transition", async () => {
+        await contract.registerUser("AdminUser", ["ADMIN"], "admin@example.com", { from: admin });
 
-        const shipmentId = tx.logs[0].args.shipmentId.toNumber();
+        await contract.createShipment("Product1", "Desc1", "Origin1", "Destination1", 10, 100, { from: admin });
 
-        // Transfer shipment to operator
-        await contract.shipmentTransfer(shipmentId, operator, 1, "First transfer", { from: manager });
+        try {
+            await contract.shipmentTransfer(0, transporter, "INVALID_STATE", "Invalid move", { from: admin });
+            assert.fail("Invalid state should not be accepted");
+        } catch (error) {
+            assert.include(error.message, "Invalid shipment state.", "Expected revert message not found");
+        }
+    });
 
-        // Transfer shipment to viewer
-        await contract.shipmentTransfer(shipmentId, viewer, 2, "Second transfer", { from: operator });
+    it("should fetch shipment details", async () => {
+        await contract.registerUser("AdminUser", ["ADMIN"], "admin@example.com", { from: admin });
 
-        const history = await contract.getTransferHistory(shipmentId, { from: viewer });
-        assert.equal(history.length, 2, "Transfer history length mismatch");
-        assert.equal(history[0].newShipmentOwner, operator, "First transfer owner mismatch");
-        assert.equal(history[1].newShipmentOwner, viewer, "Second transfer owner mismatch");
+        await contract.createShipment("Product1", "Desc1", "Origin1", "Destination1", 10, 100, { from: admin });
+
+        const shipment = await contract.getShipment(0, { from: admin });
+
+        assert.equal(shipment.name, "Product1", "Product name should match");
+        assert.equal(shipment.units, 10, "Units should match");
+    });
+
+    it("should fetch transfer history correctly", async () => {
+        await contract.registerUser("AdminUser", ["ADMIN"], "admin@example.com", { from: admin });
+        await contract.registerUser("CustomerUser", ["CUSTOMER"], "customer@example.com", { from: customer });
+
+        await contract.createShipment("Product1", "Desc1", "Origin1", "Destination1", 10, 100, { from: admin });
+
+        await contract.shipmentTransfer(0, customer, "IN_TRANSIT", "Moving shipment", { from: admin });
+
+        const transferHistory = await contract.getTransferHistory(0, { from: customer });
+
+        assert.equal(transferHistory.length, 1, "Should have one transfer record");
+        assert.equal(transferHistory[0].newShipmentOwner, customer, "Transfer ownership should be correct");
     });
 });

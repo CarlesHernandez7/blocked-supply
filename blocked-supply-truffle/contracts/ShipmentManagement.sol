@@ -3,8 +3,8 @@ pragma solidity ^0.8.0;
 
 contract ShipmentManagement {
 
-    enum ShipmentState { CREATED, IN_TRANSIT, STORED, DELIVERED }
-    enum UserRoles { ADMIN, MANAGER, OPERATOR, VIEWER }
+    string[] shipmentStates = ["CREATED", "IN_TRANSIT", "STORED", "DELIVERED"];
+    string[] userRoles = ["ADMIN", "CUSTOMER", "TRANSPORTER", "WAREHOUSE"];
 
     struct Shipment {
         uint256 id;
@@ -14,7 +14,7 @@ contract ShipmentManagement {
         string destination;
         uint256 units;
         uint256 weight;
-        ShipmentState currentState;
+        string currentState;
         address currentOwner;
         uint256[] transferHistory;
     }
@@ -41,16 +41,11 @@ contract ShipmentManagement {
     mapping(uint256 => Transfer[]) private transfersByShipment;
     mapping(address => User) private users;
 
-    event ShipmentCreated(uint256 shipmentId, string productName, address indexed owner);
-    event ShipmentTransfer(uint256 shipmentId, address indexed previousOwner, address indexed newShipmentOwner, ShipmentState newState);
+    event ShipmentCreated(uint256 shipmentId, string productName, string description, string origin, string destination, uint256 units, uint256 weight, address indexed owner);
+    event ShipmentTransfer(uint256 shipmentId, uint256 timestamp, address indexed previousOwner, address indexed newShipmentOwner, string newState, string transferNotes);
     event UserRegistered(address indexed userAddress, string name, string email, string[] roles);
 
     // Modifiers
-
-    modifier onlyRegistered() {
-        require(users[msg.sender].userAddress != address(0), "User not registered.");
-        _;
-    }
 
     modifier onlyOwner(uint256 shipmentId) {
         require(shipments[shipmentId].currentOwner == msg.sender, "Only the current owner can perform this action.");
@@ -58,37 +53,37 @@ contract ShipmentManagement {
     }
 
     modifier onlyAuthorized(string memory requiredRole) {
-        User memory user = users[msg.sender];
+        User storage user = users[msg.sender];
         require(user.userAddress != address(0), "User not registered.");
-        
+
         bool hasRole = false;
         for (uint256 i = 0; i < user.roles.length; i++) {
-            if (keccak256(abi.encodePacked(user.roles[i])) == keccak256(abi.encodePacked(requiredRole))) {
+            if (keccak256(abi.encodePacked(user.roles[i])) == keccak256(abi.encodePacked(requiredRole)) || keccak256(abi.encodePacked(user.roles[i])) == keccak256(abi.encodePacked("ADMIN"))) {
                 hasRole = true;
                 break;
-            }
+            } 
         }
+        
         require(hasRole, "Not authorized for this role.");
         _;
     }
-
-
+    
     // Functions
 
     function registerUser(string memory name, string[] memory roles, string memory email) public {
         require(users[msg.sender].userAddress == address(0), "User already registered.");
         require(roles.length > 0, "User must have at least one role.");
 
-        // Validate roles
+        bool validRole = false;
         for (uint256 i = 0; i < roles.length; i++) {
-            require(
-                keccak256(abi.encodePacked(roles[i])) == keccak256("ADMIN") ||
-                keccak256(abi.encodePacked(roles[i])) == keccak256("MANAGER") ||
-                keccak256(abi.encodePacked(roles[i])) == keccak256("OPERATOR") ||
-                keccak256(abi.encodePacked(roles[i])) == keccak256("VIEWER"),
-                "Invalid role provided."
-            );
+            for (uint256 j = 0; j < userRoles.length; j++) {
+                if (keccak256(abi.encodePacked(roles[i])) == keccak256(abi.encodePacked(userRoles[j]))) {
+                    validRole = true;
+                    break;
+                }
+            }
         }
+        require(validRole, "Invalid role provided.");
 
         users[msg.sender] = User({
             userAddress: msg.sender,
@@ -108,7 +103,7 @@ contract ShipmentManagement {
         string memory destination,
         uint256 units,
         uint256 weight
-    ) public onlyAuthorized("MANAGER") {
+    ) public onlyAuthorized("ADMIN") {
         uint256 shipmentId = nextShipmentId++;
         shipments[shipmentId] = Shipment({
             id: shipmentId,
@@ -118,15 +113,25 @@ contract ShipmentManagement {
             destination: destination,
             units: units,
             weight: weight,
-            currentState: ShipmentState.CREATED,
+            currentState: "CREATED",
             currentOwner: msg.sender,
-            transferHistory: new uint256[](0)
+            transferHistory: new uint256[](0) 
         });
-        emit ShipmentCreated(shipmentId, productName, msg.sender);
+    
+        emit ShipmentCreated(shipmentId, productName, description, origin, destination, units, weight, msg.sender);
     }
 
     // Transfer ownership of a shipment
-    function shipmentTransfer(uint256 shipmentId, address newShipmentOwner, ShipmentState newState, string memory transferNotes) public onlyOwner(shipmentId) {
+    function shipmentTransfer(uint256 shipmentId, address newShipmentOwner, string memory newState, string memory transferNotes) public onlyOwner(shipmentId) {
+        bool validState = false;
+        for (uint256 i = 0; i < shipmentStates.length; i++) {
+            if (keccak256(abi.encodePacked(newState)) == keccak256(abi.encodePacked(shipmentStates[i]))) {
+                validState = true;
+                break;
+            }
+        }
+        require(validState, "Invalid shipment state.");
+        
         Shipment storage shipment = shipments[shipmentId];
         
         shipment.currentOwner = newShipmentOwner;
@@ -142,44 +147,21 @@ contract ShipmentManagement {
         }));
         shipment.transferHistory.push(transferId);
 
-        emit ShipmentTransfer(shipmentId, msg.sender, newShipmentOwner, newState);
+        emit ShipmentTransfer(shipmentId, block.timestamp, msg.sender, newShipmentOwner, newState, transferNotes);
     }
 
     // Get shipment details
-    function getShipment(uint256 shipmentId) public onlyRegistered() view returns (
-        uint256 id,
-        string memory productName,
-        string memory description,
-        string memory origin,
-        string memory destination,
-        uint256 units,
-        uint256 weight,
-        ShipmentState currentState,
-        address currentOwner,
-        uint256[] memory transferHistory
-    ) {
-        Shipment memory shipment = shipments[shipmentId];
-        return (
-            shipment.id,
-            shipment.name,
-            shipment.description,
-            shipment.origin,
-            shipment.destination,
-            shipment.units,
-            shipment.weight,
-            shipment.currentState,
-            shipment.currentOwner,
-            shipment.transferHistory
-        );
+    function getShipment(uint256 shipmentId) public view onlyAuthorized("ADMIN") returns (Shipment memory) {
+        return shipments[shipmentId];
     }
 
     // Get transfer history for a shipment
-    function getTransferHistory(uint256 shipmentId) public onlyRegistered() view returns (Transfer[] memory) {
+    function getTransferHistory(uint256 shipmentId) public onlyAuthorized("CUSTOMER") view returns (Transfer[] memory) {
         return transfersByShipment[shipmentId];
     }
 
     // Get user details
-    function getUser(address userAddress) public onlyRegistered() view returns (User memory) {
+    function getUser(address userAddress) public onlyAuthorized("ADMIN") view returns (User memory) {
         return users[userAddress];
     }
 }
