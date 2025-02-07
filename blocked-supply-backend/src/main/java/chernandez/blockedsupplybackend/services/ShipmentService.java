@@ -1,12 +1,11 @@
 package chernandez.blockedsupplybackend.services;
 
 import chernandez.blockedsupplybackend.config.exceptions.BlockchainException;
-import chernandez.blockedsupplybackend.config.exceptions.ShipmentNotFoundException;
-import chernandez.blockedsupplybackend.domain.Shipment;
-import chernandez.blockedsupplybackend.dto.ShipmentDTO;
+import chernandez.blockedsupplybackend.domain.ShipmentDTO;
+import chernandez.blockedsupplybackend.domain.ShipmentOutput;
 import org.springframework.stereotype.Service;
+import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
-import org.web3j.tuples.generated.Tuple9;
 import smartContracts.web3.ShipmentManagement;
 
 import java.math.BigInteger;
@@ -20,7 +19,7 @@ public class ShipmentService {
         this.shipmentContract = shipmentContract;
     }
 
-    public TransactionReceipt createShipment(ShipmentDTO shipmentDTO) throws Exception {
+    public TransactionReceipt createShipment(ShipmentDTO shipmentDTO) {
         try {
             BigInteger units = BigInteger.valueOf(shipmentDTO.getUnits());
             BigInteger weight = BigInteger.valueOf(shipmentDTO.getWeight());
@@ -42,31 +41,30 @@ public class ShipmentService {
         }
     }
 
-    public Shipment getShipment(BigInteger shipmentId) {
-        try {
-            Tuple9<BigInteger, String, String, String, String, BigInteger, BigInteger, BigInteger, String> shipmentTuple =
-                    shipmentContract.getShipment(shipmentId).send();
+    public ShipmentOutput getShipment(int shipmentId) throws Exception {
 
-            if (shipmentTuple == null || shipmentTuple.component1().equals(BigInteger.ZERO)) {
-                throw new ShipmentNotFoundException("Shipment not found with ID: " + shipmentId);
-            }
+        BigInteger id = BigInteger.valueOf(shipmentId);
 
-            return new Shipment(
-                    shipmentTuple.component1().intValue(),  // id
-                    shipmentTuple.component2(),  // name
-                    shipmentTuple.component3(),  // description
-                    shipmentTuple.component4(),  // origin
-                    shipmentTuple.component5(),  // destination
-                    shipmentTuple.component6().intValue(),  // units
-                    shipmentTuple.component7().intValue(),  // weight
-                    Shipment.State.fromInt(shipmentTuple.component8().intValue()), // Convert int to Enum
-                    shipmentTuple.component9()   // currentOwner
-            );
-        } catch (ShipmentNotFoundException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new BlockchainException("Error retrieving shipment", e);
-        }
+        shipmentContract.fetchShipment(id).send();
+
+        ShipmentOutput shipment = new ShipmentOutput();
+
+        shipmentContract.shipmentRetrievedEventFlowable(DefaultBlockParameterName.LATEST, DefaultBlockParameterName.LATEST)
+                .subscribe(event -> {
+                    shipment.setId(event.id.intValue());
+                    shipment.setName(event.name);
+                    shipment.setDescription(event.description);
+                    shipment.setOrigin(event.origin);
+                    shipment.setDestination(event.destination);
+                    shipment.setUnits(event.units.intValue());
+                    shipment.setWeight(event.weight.intValue());
+                });
+
+        return shipment;
+    }
+
+    public BigInteger getNextShipmentId() throws Exception {
+        return shipmentContract.getNextShipmentId().send();
     }
 
 }

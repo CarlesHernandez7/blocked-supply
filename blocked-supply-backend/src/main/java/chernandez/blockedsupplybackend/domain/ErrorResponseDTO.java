@@ -1,4 +1,4 @@
-package chernandez.blockedsupplybackend.dto;
+package chernandez.blockedsupplybackend.domain;
 
 import lombok.Data;
 

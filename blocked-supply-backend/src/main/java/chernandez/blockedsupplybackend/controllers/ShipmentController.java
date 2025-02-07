@@ -1,7 +1,7 @@
 package chernandez.blockedsupplybackend.controllers;
 
-import chernandez.blockedsupplybackend.domain.Shipment;
-import chernandez.blockedsupplybackend.dto.ShipmentDTO;
+import chernandez.blockedsupplybackend.domain.ShipmentDTO;
+import chernandez.blockedsupplybackend.domain.ShipmentOutput;
 import chernandez.blockedsupplybackend.services.ShipmentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +26,12 @@ public class ShipmentController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Shipment> getShipment(@PathVariable BigInteger id) {
+    public ResponseEntity<ShipmentOutput> getShipment(@PathVariable int id) throws Exception {
         return ResponseEntity.ok(shipmentService.getShipment(id));
+    }
+
+    @GetMapping("/nextId")
+    public ResponseEntity<BigInteger> getNextShipmentId() throws Exception {
+        return ResponseEntity.ok(shipmentService.getNextShipmentId());
     }
 }

@@ -1,7 +1,7 @@
 package chernandez.blockedsupplybackend.services;
 
 import chernandez.blockedsupplybackend.domain.User;
-import chernandez.blockedsupplybackend.dto.UserRegisterDTO;
+import chernandez.blockedsupplybackend.domain.UserRegisterDTO;
 import chernandez.blockedsupplybackend.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 

@@ -16,6 +16,18 @@ contract ShipmentManagement {
         address currentOwner;
     }
 
+    event ShipmentRetrieved(
+        uint256 indexed id,
+        string name,
+        string description,
+        string origin,
+        string destination,
+        uint256 units,
+        uint256 weight,
+        uint256 currentState,
+        address currentOwner
+    );
+
     struct Transfer {
         uint256 id;
         uint256 shipmentId;
@@ -87,7 +99,7 @@ contract ShipmentManagement {
     ) public onlyOwner(shipmentId) validStateChange(shipments[shipmentId].currentState, newState) {
         Shipment storage shipment = shipments[shipmentId];
 
-        address previousOwner = shipment.currentOwner;
+        //address previousOwner = shipment.currentOwner;
         shipment.currentOwner = newShipmentOwner;
         shipment.currentState = newState;
 
@@ -103,22 +115,10 @@ contract ShipmentManagement {
         //emit ShipmentTransfer(shipmentId, block.timestamp, previousOwner, newShipmentOwner, newState, transferNotes);
     }
 
-    function getShipment(uint256 shipmentId) public view returns (
-        uint256 id,
-        string memory name,
-        string memory description,
-        string memory origin,
-        string memory destination,
-        uint256 units,
-        uint256 weight,
-        State currentState,
-        address currentOwner
-    ) 
-    {
-        require(shipments[shipmentId].id != 0, "Shipment does not exist"); // Ensure shipment exists
+    function fetchShipment(uint256 shipmentId) public {
+        Shipment storage shipment = shipments[shipmentId];
 
-        Shipment memory shipment = shipments[shipmentId];
-        return (
+        emit ShipmentRetrieved(
             shipment.id,
             shipment.name,
             shipment.description,
@@ -126,12 +126,20 @@ contract ShipmentManagement {
             shipment.destination,
             shipment.units,
             shipment.weight,
-            shipment.currentState,
+            uint256(shipment.currentState),
             shipment.currentOwner
         );
     }
 
     function getTransferHistory(uint256 shipmentId) public view returns (Transfer[] memory) {
         return transfersByShipment[shipmentId];
+    }
+
+    function getNextShipmentId() public view returns (uint256) {
+        return nextShipmentId;
+    }
+
+    function getNextTransferId() public view returns (uint256) {
+        return nextTransferId;
     }
 }
