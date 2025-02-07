@@ -5,6 +5,14 @@ import lombok.Data;
 @Data
 public class Shipment {
 
+    public enum State {
+        CREATED, IN_TRANSIT, STORED, DELIVERED;
+
+        public static State fromInt(int value) {
+            return values()[value];
+        }
+    }
+
     private int id;
     private String name;
     private String description;
@@ -12,11 +20,10 @@ public class Shipment {
     private String destination;
     private int units;
     private int weight;
-    private String currentState;
+    private State currentState;
     private String currentOwner;
-    private int[] transferHistory;
 
-    public Shipment(int id, String name, String description, String origin, String destination, int units, int weight, String currentState, String currentOwner, int[] transferHistory) {
+    public Shipment(int id, String name, String description, String origin, String destination, int units, int weight, State currentState, String currentOwner) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -26,6 +33,5 @@ public class Shipment {
         this.weight = weight;
         this.currentState = currentState;
         this.currentOwner = currentOwner;
-        this.transferHistory = transferHistory;
     }
 }

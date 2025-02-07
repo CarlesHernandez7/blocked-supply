@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 contract ShipmentManagement {
-    enum State { Created, InTransit, Stored, Delivered }
+    enum State { CREATED, IN_TRANSIT, STORED, DELIVERED }
 
     struct Shipment {
         uint256 id;
@@ -30,8 +30,8 @@ contract ShipmentManagement {
     mapping(uint256 => Shipment) private shipments;
     mapping(uint256 => Transfer[]) private transfersByShipment;
 
-    event ShipmentCreated(uint256 shipmentId, string name, address owner);
-    event ShipmentTransfer(uint256 shipmentId, uint256 timestamp, address indexed previousOwner, address indexed newShipmentOwner, State newState, string transferNotes);
+    //event ShipmentCreated(uint256 shipmentId, string name, address owner);
+    //event ShipmentTransfer(uint256 shipmentId, uint256 timestamp, address indexed previousOwner, address indexed newShipmentOwner, State newState, string transferNotes);
 
     // Modifiers
 
@@ -42,9 +42,9 @@ contract ShipmentManagement {
     
     modifier validStateChange(State oldState, State newState) {
         require(
-            (oldState == State.Created && newState == State.InTransit) ||
-            (oldState == State.InTransit && newState == State.Stored) ||
-            (oldState == State.Stored && newState == State.Delivered),
+            (oldState == State.CREATED && newState == State.IN_TRANSIT) ||
+            (oldState == State.IN_TRANSIT && newState == State.STORED) ||
+            (oldState == State.STORED && newState == State.DELIVERED),
             "Invalid state transition"
         );
         _;
@@ -72,7 +72,7 @@ contract ShipmentManagement {
             destination: destination,
             units: units,
             weight: weight,
-            currentState: State.Created,
+            currentState: State.CREATED,
             currentOwner: msg.sender
         });
 
@@ -100,11 +100,35 @@ contract ShipmentManagement {
             transferNotes: transferNotes
         }));
 
-        emit ShipmentTransfer(shipmentId, block.timestamp, previousOwner, newShipmentOwner, newState, transferNotes);
+        //emit ShipmentTransfer(shipmentId, block.timestamp, previousOwner, newShipmentOwner, newState, transferNotes);
     }
 
-    function getShipment(uint256 shipmentId) public view returns (Shipment memory) {
-        return shipments[shipmentId];
+    function getShipment(uint256 shipmentId) public view returns (
+        uint256 id,
+        string memory name,
+        string memory description,
+        string memory origin,
+        string memory destination,
+        uint256 units,
+        uint256 weight,
+        State currentState,
+        address currentOwner
+    ) 
+    {
+        require(shipments[shipmentId].id != 0, "Shipment does not exist"); // Ensure shipment exists
+
+        Shipment memory shipment = shipments[shipmentId];
+        return (
+            shipment.id,
+            shipment.name,
+            shipment.description,
+            shipment.origin,
+            shipment.destination,
+            shipment.units,
+            shipment.weight,
+            shipment.currentState,
+            shipment.currentOwner
+        );
     }
 
     function getTransferHistory(uint256 shipmentId) public view returns (Transfer[] memory) {

@@ -15,9 +15,6 @@ public class Web3jConfiguration {
     @Value("${web3j.client-address}")
     private String web3ClientUrl;
 
-    @Value("${contract.address}")
-    private String contractAddress;
-
     @Value("${contract.private-key}")
     private String privateKey;
 
@@ -27,12 +24,22 @@ public class Web3jConfiguration {
     }
 
     @Bean
-    public ShipmentManagement shipmentManagement(Web3j web3j) {
-        return ShipmentManagement.load(
-                contractAddress,
+    public ShipmentManagement shipmentManagement(Web3j web3j) throws Exception {
+        if (privateKey == null || privateKey.isEmpty()) {
+            throw new RuntimeException("Private key is required but not set.");
+        }
+
+        Credentials credentials = Credentials.create(privateKey);
+        System.out.println("Deploying contract with private key: " + privateKey);
+
+        ShipmentManagement shipmentManagement = ShipmentManagement.deploy(
                 web3j,
-                Credentials.create(privateKey),
+                credentials,
                 new DefaultGasProvider()
-        );
+        ).send();
+
+        String contractAddress = shipmentManagement.getContractAddress();
+        System.out.println("Contract deployed at address: " + contractAddress);
+        return ShipmentManagement.load(contractAddress, web3j, credentials, new DefaultGasProvider());
     }
 }
