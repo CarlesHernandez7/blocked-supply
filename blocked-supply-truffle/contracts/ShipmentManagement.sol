@@ -16,6 +16,14 @@ contract ShipmentManagement {
         address currentOwner;
     }
 
+    struct Transfer {
+        uint256 id;
+        uint256 shipmentId;
+        uint256 timestamp;
+        address newShipmentOwner;
+        string transferNotes;
+    }
+
     event ShipmentRetrieved(
         uint256 indexed id,
         string name,
@@ -28,22 +36,11 @@ contract ShipmentManagement {
         address currentOwner
     );
 
-    struct Transfer {
-        uint256 id;
-        uint256 shipmentId;
-        uint256 timestamp;
-        address newShipmentOwner;
-        string transferNotes;
-    }
-
     uint256 private nextShipmentId = 1;
     uint256 private nextTransferId = 1;
 
     mapping(uint256 => Shipment) private shipments;
     mapping(uint256 => Transfer[]) private transfersByShipment;
-
-    //event ShipmentCreated(uint256 shipmentId, string name, address owner);
-    //event ShipmentTransfer(uint256 shipmentId, uint256 timestamp, address indexed previousOwner, address indexed newShipmentOwner, State newState, string transferNotes);
 
     // Modifiers
 
@@ -87,8 +84,6 @@ contract ShipmentManagement {
             currentState: State.CREATED,
             currentOwner: msg.sender
         });
-
-        //emit ShipmentCreated(shipmentId, productName, msg.sender);
     }
 
     function shipmentTransfer(
@@ -99,7 +94,6 @@ contract ShipmentManagement {
     ) public onlyOwner(shipmentId) validStateChange(shipments[shipmentId].currentState, newState) {
         Shipment storage shipment = shipments[shipmentId];
 
-        //address previousOwner = shipment.currentOwner;
         shipment.currentOwner = newShipmentOwner;
         shipment.currentState = newState;
 
@@ -111,11 +105,9 @@ contract ShipmentManagement {
             newShipmentOwner: newShipmentOwner,
             transferNotes: transferNotes
         }));
-
-        //emit ShipmentTransfer(shipmentId, block.timestamp, previousOwner, newShipmentOwner, newState, transferNotes);
     }
 
-    function fetchShipment(uint256 shipmentId) public {
+    function getShipment(uint256 shipmentId) public {
         Shipment storage shipment = shipments[shipmentId];
 
         emit ShipmentRetrieved(

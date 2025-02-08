@@ -1,7 +1,7 @@
 package chernandez.blockedsupplybackend.services;
 
 import chernandez.blockedsupplybackend.config.exceptions.BlockchainException;
-import chernandez.blockedsupplybackend.domain.ShipmentDTO;
+import chernandez.blockedsupplybackend.domain.ShipmentInput;
 import chernandez.blockedsupplybackend.domain.ShipmentOutput;
 import org.springframework.stereotype.Service;
 import org.web3j.protocol.core.DefaultBlockParameterName;
@@ -19,20 +19,20 @@ public class ShipmentService {
         this.shipmentContract = shipmentContract;
     }
 
-    public TransactionReceipt createShipment(ShipmentDTO shipmentDTO) {
+    public TransactionReceipt createShipment(ShipmentInput shipmentInput) {
         try {
-            BigInteger units = BigInteger.valueOf(shipmentDTO.getUnits());
-            BigInteger weight = BigInteger.valueOf(shipmentDTO.getWeight());
+            BigInteger units = BigInteger.valueOf(shipmentInput.getUnits());
+            BigInteger weight = BigInteger.valueOf(shipmentInput.getWeight());
 
             if (units.signum() < 0 || weight.signum() < 0) {
                 throw new IllegalArgumentException("Units and weight must be non-negative.");
             }
 
             return shipmentContract.createShipment(
-                    shipmentDTO.getName(),
-                    shipmentDTO.getDescription(),
-                    shipmentDTO.getOrigin(),
-                    shipmentDTO.getDestination(),
+                    shipmentInput.getName(),
+                    shipmentInput.getDescription(),
+                    shipmentInput.getOrigin(),
+                    shipmentInput.getDestination(),
                     units,
                     weight
             ).send();
@@ -45,7 +45,7 @@ public class ShipmentService {
 
         BigInteger id = BigInteger.valueOf(shipmentId);
 
-        shipmentContract.fetchShipment(id).send();
+        shipmentContract.getShipment(id).send();
 
         ShipmentOutput shipment = new ShipmentOutput();
 
@@ -58,6 +58,8 @@ public class ShipmentService {
                     shipment.setDestination(event.destination);
                     shipment.setUnits(event.units.intValue());
                     shipment.setWeight(event.weight.intValue());
+                    shipment.setCurrentState(ShipmentOutput.State.fromInt(event.currentState));
+                    shipment.setCurrentOwner(event.currentOwner);
                 });
 
         return shipment;

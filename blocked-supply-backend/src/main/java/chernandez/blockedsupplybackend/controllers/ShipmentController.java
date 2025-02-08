@@ -1,6 +1,6 @@
 package chernandez.blockedsupplybackend.controllers;
 
-import chernandez.blockedsupplybackend.domain.ShipmentDTO;
+import chernandez.blockedsupplybackend.domain.ShipmentInput;
 import chernandez.blockedsupplybackend.domain.ShipmentOutput;
 import chernandez.blockedsupplybackend.services.ShipmentService;
 import org.springframework.http.ResponseEntity;
@@ -20,8 +20,8 @@ public class ShipmentController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<TransactionReceipt> createShipment(@RequestBody ShipmentDTO shipmentDTO) throws Exception {
-        TransactionReceipt receipt = shipmentService.createShipment(shipmentDTO);
+    public ResponseEntity<TransactionReceipt> createShipment(@RequestBody ShipmentInput shipmentInput) {
+        TransactionReceipt receipt = shipmentService.createShipment(shipmentInput);
         return ResponseEntity.status(201).body(receipt);
     }
 

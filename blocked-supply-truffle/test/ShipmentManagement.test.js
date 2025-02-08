@@ -1,49 +1,72 @@
 const ShipmentManagement = artifacts.require("ShipmentManagement");
-const { expectRevert, time } = require("@openzeppelin/test-helpers");
-const { assert } = require("chai");
 
 contract("ShipmentManagement", (accounts) => {
-  let shipmentContract;
-  const [owner, user1, user2] = accounts;
+    let shipmentInstance;
+    
+    // Test accounts
+    const owner = accounts[0];
+    const newOwner = accounts[1];
 
-  before(async () => {
-    shipmentContract = await ShipmentManagement.new();
-  });
+    before(async () => {
+        shipmentInstance = await ShipmentManagement.deployed();
+    });
 
-  it("should create a shipment", async () => {
-    const tx = await shipmentContract.createShipment(
-      "Laptop",
-      "High-end gaming laptop",
-      "New York",
-      "Los Angeles",
-      10,
-      50,
-      { from: owner }
-    );
+    it("should deploy the contract", async () => {
+        assert(shipmentInstance.address !== "", "Contract was not deployed");
+    });
 
-    const shipment = await shipmentContract.getShipment(1);
-    assert.equal(shipment.name, "Laptop", "Shipment name should match");
-    assert.equal(shipment.units, 10, "Units should match");
-    assert.equal(shipment.currentOwner, owner, "Owner should be correct");
-  });
+    it("should create a shipment", async () => {
+        let result = await shipmentInstance.createShipment(
+            "Laptop",
+            "Dell XPS 13",
+            "Warehouse A",
+            "Retail Store B",
+            50,
+            10,
+            { from: owner }
+        );
 
-  it("should transfer a shipment and update state", async () => {
-    await shipmentContract.shipmentTransfer(1, user1, 1, "Shipped to warehouse", { from: owner });
-    const shipment = await shipmentContract.getShipment(1);
-    assert.equal(shipment.currentOwner, user1, "New owner should be user1");
-    assert.equal(shipment.currentState, 1, "State should be InTransit");
-  });
+        let nextShipmentId = await shipmentInstance.getNextShipmentId();
+        assert.equal(nextShipmentId.toNumber(), 2, "Shipment ID should be 2 after creation");
+    });
 
-  it("should prevent unauthorized transfers", async () => {
-    await expectRevert(
-      shipmentContract.shipmentTransfer(1, user2, 2, "Stored at facility", { from: user2 }),
-      "Only the current owner can perform this action."
-    );
-  });
+    it("should retrieve the shipment details", async () => {
+        let shipment = await shipmentInstance.getShipment(1);
+        assert(shipment, "Shipment should exist");
 
-  it("should correctly track transfer history", async () => {
-    await shipmentContract.shipmentTransfer(1, user2, 2, "Stored at facility", { from: user1 });
-    const transfers = await shipmentContract.getTransferHistory(1);
-    assert.equal(transfers.length, 2, "There should be two transfers");
-  });
+        // Additional checks for emitted event (Optional)
+        let event = shipment.logs.find(log => log.event === "ShipmentRetrieved");
+        assert(event, "ShipmentRetrieved event should have been emitted");
+        assert.equal(event.args.id.toNumber(), 1, "Shipment ID should be 1");
+        assert.equal(event.args.name, "Laptop", "Shipment name should match");
+    });
+
+    it("should transfer the shipment ownership", async () => {
+        await shipmentInstance.shipmentTransfer(
+            1,                // shipmentId
+            newOwner,         // newShipmentOwner
+            1,                // newState (IN_TRANSIT)
+            "Shipment sent to new owner",
+            { from: owner }
+        );
+
+        let transfers = await shipmentInstance.getTransferHistory(1);
+        assert.equal(transfers.length, 1, "Transfer should be recorded");
+        assert.equal(transfers[0].newShipmentOwner, newOwner, "New owner should be correct");
+    });
+
+    it("should fail transfer if sender is not owner", async () => {
+        try {
+            await shipmentInstance.shipmentTransfer(
+                1,                 // shipmentId
+                accounts[2],       // newShipmentOwner
+                2,                 // newState (STORED)
+                "Attempting unauthorized transfer",
+                { from: accounts[2] }
+            );
+            assert.fail("Expected revert but did not get one");
+        } catch (error) {
+            assert(error.message.includes("Only the current owner can perform this action."), "Incorrect error message");
+        }
+    });
 });

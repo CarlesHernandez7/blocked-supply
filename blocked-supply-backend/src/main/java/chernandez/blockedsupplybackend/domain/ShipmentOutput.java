@@ -2,6 +2,8 @@ package chernandez.blockedsupplybackend.domain;
 
 import lombok.Data;
 
+import java.math.BigInteger;
+
 @Data
 public class ShipmentOutput {
     private int id;
@@ -32,8 +34,14 @@ public class ShipmentOutput {
     public enum State {
         CREATED, IN_TRANSIT, STORED, DELIVERED;
 
-        public static State fromInt(int value) {
-            return values()[value];
+        public static State fromInt(BigInteger value) {
+            return switch (value.intValue()) {
+                case 0 -> CREATED;
+                case 1 -> IN_TRANSIT;
+                case 2 -> STORED;
+                case 3 -> DELIVERED;
+                default -> throw new IllegalArgumentException("Invalid state value: " + value);
+            };
         }
     }
 }

@@ -3,19 +3,20 @@ package chernandez.blockedsupplybackend.domain;
 import lombok.Data;
 
 @Data
-public class Transfer {
+public class TransferInput {
 
-    private int id;
     private int shipmentId;
-    private int timestamp;
     private String newShipmentOwner;
+    private int newState;
     private String transferNotes;
 
-    public Transfer(int id, int shipmentId, int timestamp, String newShipmentOwner, String transferNotes) {
-        this.id = id;
+    public TransferInput() {
+    }
+
+    public TransferInput(int shipmentId, String newShipmentOwner, int newState, String transferNotes) {
         this.shipmentId = shipmentId;
-        this.timestamp = timestamp;
         this.newShipmentOwner = newShipmentOwner;
+        this.newState = newState;
         this.transferNotes = transferNotes;
     }
 }
