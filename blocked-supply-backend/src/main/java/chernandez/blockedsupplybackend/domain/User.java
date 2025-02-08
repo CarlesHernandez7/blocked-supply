@@ -29,8 +29,7 @@ public class User {
     public User() {
     }
 
-    public User(String userAddress, String name, String email, List<String> roles) {
-        this.userAddress = userAddress;
+    public User(String name, String email, List<String> roles) {
         this.name = name;
         this.email = email;
         this.roles = roles;
