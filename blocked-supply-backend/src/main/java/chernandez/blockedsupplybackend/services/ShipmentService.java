@@ -3,6 +3,7 @@ package chernandez.blockedsupplybackend.services;
 import chernandez.blockedsupplybackend.config.exceptions.BlockchainException;
 import chernandez.blockedsupplybackend.domain.dto.ShipmentInput;
 import chernandez.blockedsupplybackend.domain.dto.ShipmentOutput;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
@@ -19,7 +20,8 @@ public class ShipmentService {
         this.shipmentContract = shipmentContract;
     }
 
-    public TransactionReceipt createShipment(ShipmentInput shipmentInput) {
+    public ResponseEntity<TransactionReceipt> createShipment(ShipmentInput shipmentInput) {
+        TransactionReceipt receipt;
         try {
             BigInteger units = BigInteger.valueOf(shipmentInput.getUnits());
             BigInteger weight = BigInteger.valueOf(shipmentInput.getWeight());
@@ -28,7 +30,7 @@ public class ShipmentService {
                 throw new IllegalArgumentException("Units and weight must be non-negative.");
             }
 
-            return shipmentContract.createShipment(
+            receipt = shipmentContract.createShipment(
                     shipmentInput.getName(),
                     shipmentInput.getDescription(),
                     shipmentInput.getOrigin(),
@@ -39,9 +41,10 @@ public class ShipmentService {
         } catch (Exception e) {
             throw new BlockchainException("Failed to create shipment", e);
         }
+        return new ResponseEntity<>(receipt, org.springframework.http.HttpStatus.CREATED);
     }
 
-    public ShipmentOutput getShipment(int shipmentId) throws Exception {
+    public ResponseEntity<ShipmentOutput> getShipment(int shipmentId) throws Exception {
 
         BigInteger id = BigInteger.valueOf(shipmentId);
 
@@ -62,11 +65,11 @@ public class ShipmentService {
                     shipment.setCurrentOwner(event.currentOwner);
                 });
 
-        return shipment;
+        return new ResponseEntity<>(shipment, org.springframework.http.HttpStatus.OK);
     }
 
-    public BigInteger getNextShipmentId() throws Exception {
-        return shipmentContract.getNextShipmentId().send();
+    public ResponseEntity<BigInteger> getNextShipmentId() throws Exception {
+        return new ResponseEntity<>(shipmentContract.getNextShipmentId().send(), org.springframework.http.HttpStatus.OK);
     }
 
 }

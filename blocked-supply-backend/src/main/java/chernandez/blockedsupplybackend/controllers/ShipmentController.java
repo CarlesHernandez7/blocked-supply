@@ -21,17 +21,16 @@ public class ShipmentController {
 
     @PostMapping("/create")
     public ResponseEntity<TransactionReceipt> createShipment(@RequestBody ShipmentInput shipmentInput) {
-        TransactionReceipt receipt = shipmentService.createShipment(shipmentInput);
-        return ResponseEntity.status(201).body(receipt);
+        return shipmentService.createShipment(shipmentInput);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ShipmentOutput> getShipment(@PathVariable int id) throws Exception {
-        return ResponseEntity.ok(shipmentService.getShipment(id));
+        return shipmentService.getShipment(id);
     }
 
     @GetMapping("/nextId")
     public ResponseEntity<BigInteger> getNextShipmentId() throws Exception {
-        return ResponseEntity.ok(shipmentService.getNextShipmentId());
+        return shipmentService.getNextShipmentId();
     }
 }

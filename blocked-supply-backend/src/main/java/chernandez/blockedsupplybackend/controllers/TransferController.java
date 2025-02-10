@@ -20,13 +20,12 @@ public class TransferController {
 
     @PostMapping("/create")
     public ResponseEntity<TransactionReceipt> transferShipment(@RequestBody TransferInput request) {
-        TransactionReceipt receipt = shipmentService.transferShipment(request);
-        return ResponseEntity.status(201).body(receipt);
+        return shipmentService.transferShipment(request);
     }
 
     @GetMapping("/nextId")
     public ResponseEntity<BigInteger> getNextTransferId() throws Exception {
-        return ResponseEntity.ok(shipmentService.getNextTransfertId());
+        return shipmentService.getNextTransfertId();
     }
 
 
