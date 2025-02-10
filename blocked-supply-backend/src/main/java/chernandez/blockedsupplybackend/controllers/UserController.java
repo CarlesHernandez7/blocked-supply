@@ -1,7 +1,7 @@
 package chernandez.blockedsupplybackend.controllers;
 
 import chernandez.blockedsupplybackend.domain.User;
-import chernandez.blockedsupplybackend.domain.UserRegisterDTO;
+import chernandez.blockedsupplybackend.domain.dto.UserRegisterDTO;
 import chernandez.blockedsupplybackend.services.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

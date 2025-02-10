@@ -1,5 +1,6 @@
-package chernandez.blockedsupplybackend.domain;
+package chernandez.blockedsupplybackend.domain.dto;
 
+import chernandez.blockedsupplybackend.domain.User;
 import lombok.Data;
 
 import java.util.List;

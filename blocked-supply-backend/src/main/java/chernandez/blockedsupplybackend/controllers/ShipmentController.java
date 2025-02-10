@@ -1,7 +1,7 @@
 package chernandez.blockedsupplybackend.controllers;
 
-import chernandez.blockedsupplybackend.domain.ShipmentInput;
-import chernandez.blockedsupplybackend.domain.ShipmentOutput;
+import chernandez.blockedsupplybackend.domain.dto.ShipmentInput;
+import chernandez.blockedsupplybackend.domain.dto.ShipmentOutput;
 import chernandez.blockedsupplybackend.services.ShipmentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

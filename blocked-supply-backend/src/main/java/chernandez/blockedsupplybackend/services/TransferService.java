@@ -1,7 +1,7 @@
 package chernandez.blockedsupplybackend.services;
 
 import chernandez.blockedsupplybackend.config.exceptions.BlockchainException;
-import chernandez.blockedsupplybackend.domain.TransferInput;
+import chernandez.blockedsupplybackend.domain.dto.TransferInput;
 import org.springframework.stereotype.Service;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import smartContracts.web3.ShipmentManagement;

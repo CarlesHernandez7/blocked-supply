@@ -1,6 +1,6 @@
 package chernandez.blockedsupplybackend.config.exceptions;
 
-import chernandez.blockedsupplybackend.domain.ErrorResponseDTO;
+import chernandez.blockedsupplybackend.domain.dto.ErrorResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
