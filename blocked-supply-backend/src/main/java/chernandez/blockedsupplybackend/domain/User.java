@@ -14,14 +14,10 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(nullable = false, unique = true)
     private String userAddress;
-
-    @Column(nullable = false)
     private String name;
-
-    @Column(nullable = false)
     private String email;
+    private String password;
 
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> roles;
@@ -29,9 +25,10 @@ public class User {
     public User() {
     }
 
-    public User(String name, String email, List<String> roles) {
+    public User(String name, String email, String password, List<String> roles) {
         this.name = name;
         this.email = email;
+        this.password = password;
         this.roles = roles;
     }
 
