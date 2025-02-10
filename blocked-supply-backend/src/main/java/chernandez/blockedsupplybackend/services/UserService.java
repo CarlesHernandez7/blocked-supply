@@ -4,6 +4,7 @@ import chernandez.blockedsupplybackend.domain.Roles;
 import chernandez.blockedsupplybackend.domain.User;
 import chernandez.blockedsupplybackend.domain.dto.UserRegisterDTO;
 import chernandez.blockedsupplybackend.repositories.UserRepository;
+import jakarta.transaction.Transactional;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -57,6 +58,7 @@ public class UserService {
         }
     }
 
+    @Transactional
     public ResponseEntity<User> createUser(UserRegisterDTO user) {
         checkParams(user);
         String hashedPassword = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt(12));
@@ -78,6 +80,7 @@ public class UserService {
         return new ResponseEntity<>(user, org.springframework.http.HttpStatus.OK);
     }
 
+    @Transactional
     public ResponseEntity<String> deleteUser(Long id) {
         User user = validateAndGetUserById(id);
         if (user == null) {
@@ -85,6 +88,17 @@ public class UserService {
         }
         userRepository.deleteById(id);
         return new ResponseEntity<>("User deleted", org.springframework.http.HttpStatus.OK);
+    }
+
+    @Transactional
+    public ResponseEntity<User> setUserAddress(Long id, String address) {
+        User user = validateAndGetUserById(id);
+        if (user == null) {
+            return new ResponseEntity<>(null, org.springframework.http.HttpStatus.NOT_FOUND);
+        }
+        user.setUserAddress(address);
+        userRepository.save(user);
+        return new ResponseEntity<>(user, org.springframework.http.HttpStatus.OK);
     }
 
     private User validateAndGetUserById(Long id) {

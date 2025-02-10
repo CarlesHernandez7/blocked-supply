@@ -2,6 +2,7 @@ package chernandez.blockedsupplybackend.services;
 
 import chernandez.blockedsupplybackend.config.exceptions.BlockchainException;
 import chernandez.blockedsupplybackend.domain.dto.TransferInput;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import smartContracts.web3.ShipmentManagement;
@@ -17,11 +18,12 @@ public class TransferService {
         this.shipmentContract = shipmentContract;
     }
 
-    public TransactionReceipt transferShipment(TransferInput request) {
+    public ResponseEntity<TransactionReceipt> transferShipment(TransferInput request) {
         BigInteger id = BigInteger.valueOf(request.getShipmentId());
 
+        TransactionReceipt receipt;
         try {
-            return shipmentContract
+            receipt = shipmentContract
                     .shipmentTransfer(
                             id,
                             request.getNewShipmentOwner(),
@@ -32,9 +34,10 @@ public class TransferService {
         } catch (Exception e) {
             throw new BlockchainException("Error processing shipment transfer", e);
         }
+        return new ResponseEntity<>(receipt, org.springframework.http.HttpStatus.CREATED);
     }
 
-    public BigInteger getNextTransfertId() throws Exception {
-        return shipmentContract.getNextTransferId().send();
+    public ResponseEntity<BigInteger> getNextTransfertId() throws Exception {
+        return new ResponseEntity<>(shipmentContract.getNextTransferId().send(), org.springframework.http.HttpStatus.OK);
     }
 }
