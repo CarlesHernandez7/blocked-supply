@@ -4,6 +4,7 @@ import chernandez.blockedsupplybackend.domain.Roles;
 import chernandez.blockedsupplybackend.domain.User;
 import chernandez.blockedsupplybackend.domain.UserRegisterDTO;
 import chernandez.blockedsupplybackend.repositories.UserRepository;
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -18,9 +19,10 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public ResponseEntity<User> registerUser(UserRegisterDTO user) {
+    public ResponseEntity<User> createUser(UserRegisterDTO user) {
         checkParams(user);
-        User newUser = new User(user.getName(), user.getEmail(), user.getPassword(), user.getRoles());
+        String hashedPassword = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt(12));
+        User newUser = new User(user.getName(), user.getEmail(), hashedPassword, user.getRoles());
         userRepository.save(newUser);
         return new ResponseEntity<>(newUser, org.springframework.http.HttpStatus.CREATED);
     }
@@ -31,19 +33,30 @@ public class UserService {
     }
 
     public ResponseEntity<User> getUserById(Long id) {
-        User user;
+        User user = validateAndGetUserById(id);
+        if (user == null) {
+            return new ResponseEntity<>(null, org.springframework.http.HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(user, org.springframework.http.HttpStatus.OK);
+    }
+
+    public ResponseEntity<String> deleteUser(Long id) {
+        User user = validateAndGetUserById(id);
+        if (user == null) {
+            return new ResponseEntity<>(null, org.springframework.http.HttpStatus.NOT_FOUND);
+        }
+        userRepository.deleteById(id);
+        return new ResponseEntity<>("User deleted", org.springframework.http.HttpStatus.OK);
+    }
+
+    private User validateAndGetUserById(Long id) {
         if (id == null) {
             throw new IllegalArgumentException("Id cannot be null");
         } else if (id < 0) {
             throw new IllegalArgumentException("Id cannot be negative");
         } else {
-            user = userRepository.findById(id).orElse(null);
+            return userRepository.findById(id).orElse(null);
         }
-
-        if (user == null) {
-            return new ResponseEntity<>(null, org.springframework.http.HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(user, org.springframework.http.HttpStatus.OK);
     }
 
     private static void checkParams(UserRegisterDTO user) {

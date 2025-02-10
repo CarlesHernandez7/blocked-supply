@@ -20,16 +20,21 @@ public class UserController {
 
     @PostMapping("/create")
     public ResponseEntity<User> createUser(@RequestBody UserRegisterDTO userRegisterDTO) {
-        return this.userService.registerUser(userRegisterDTO);
+        return this.userService.createUser(userRegisterDTO);
     }
 
     @GetMapping()
-    public ResponseEntity<List<User>> getUsers() {
+    public ResponseEntity<List<User>> getAllUsers() {
         return this.userService.getAllUsers();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
         return this.userService.getUserById(id);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteUser(@PathVariable Long id) {
+        return this.userService.deleteUser(id);
     }
 }

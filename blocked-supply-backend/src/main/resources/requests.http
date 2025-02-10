@@ -1,0 +1,21 @@
+//USERS
+
+###
+POST http://localhost:8080/api/users/create
+Content-Type: application/json
+
+{
+  "name": "Test",
+  "email": "111@",
+  "password": "AAAAAaaa11",
+  "roles": ["ADMIN", "CUSTOMER"]
+}
+
+###
+GET http://localhost:8080/api/users/1
+
+###
+GET http://localhost:8080/api/users
+
+###
+DELETE http://localhost:8080/api/users/3
