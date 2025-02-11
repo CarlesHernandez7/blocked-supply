@@ -2,12 +2,14 @@ package chernandez.blockedsupplybackend.services;
 
 import chernandez.blockedsupplybackend.config.exceptions.BlockchainException;
 import chernandez.blockedsupplybackend.domain.dto.TransferInput;
+import chernandez.blockedsupplybackend.domain.dto.TransferOutput;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import smartContracts.web3.ShipmentManagement;
 
 import java.math.BigInteger;
+import java.util.List;
 
 @Service
 public class TransferService {
@@ -35,6 +37,10 @@ public class TransferService {
             throw new BlockchainException("Error processing shipment transfer", e);
         }
         return new ResponseEntity<>(receipt, org.springframework.http.HttpStatus.CREATED);
+    }
+
+    public ResponseEntity<List<TransferOutput>> getTransferHistory(int shipmentId) {
+        return null;
     }
 
     public ResponseEntity<BigInteger> getNextTransfertId() throws Exception {
