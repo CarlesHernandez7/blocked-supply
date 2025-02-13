@@ -5,7 +5,7 @@ import java.math.BigInteger;
 public enum State {
     CREATED, IN_TRANSIT, STORED, DELIVERED;
 
-    public static State fromInt(BigInteger value) {
+    public static State fromBigInt(BigInteger value) {
         return switch (value.intValue()) {
             case 0 -> CREATED;
             case 1 -> IN_TRANSIT;

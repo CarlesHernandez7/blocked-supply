@@ -5,22 +5,22 @@ import lombok.Data;
 
 @Data
 public class TransferOutput {
-    int transferId;
-    int shipmentId;
-    String timestamp;
-    State newState;
-    String newShipmentOwner;
-    String transferNotes;
+    private int id;
+    private int shipmentId;
+    private int timestamp;
+    private State newState;
+    private String newOwner;
+    private String transferNotes;
 
     public TransferOutput() {
     }
 
-    public TransferOutput(int transferId, int shipmentId, String timestamp, State newState, String newShipmentOwner, String transferNotes) {
-        this.transferId = transferId;
+    public TransferOutput(int id, int shipmentId, int timestamp, State newState, String newOwner, String transferNotes) {
+        this.id = id;
         this.shipmentId = shipmentId;
         this.timestamp = timestamp;
         this.newState = newState;
-        this.newShipmentOwner = newShipmentOwner;
+        this.newOwner = newOwner;
         this.transferNotes = transferNotes;
     }
 }

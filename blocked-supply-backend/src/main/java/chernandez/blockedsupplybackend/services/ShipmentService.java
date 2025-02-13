@@ -62,7 +62,7 @@ public class ShipmentService {
                     shipment.setDestination(event.destination);
                     shipment.setUnits(event.units.intValue());
                     shipment.setWeight(event.weight.intValue());
-                    shipment.setCurrentState(State.fromInt(event.currentState));
+                    shipment.setCurrentState(State.fromBigInt(event.currentState));
                     shipment.setCurrentOwner(event.currentOwner);
                 });
 
