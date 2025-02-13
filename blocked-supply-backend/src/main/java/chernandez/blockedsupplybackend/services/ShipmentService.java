@@ -1,6 +1,7 @@
 package chernandez.blockedsupplybackend.services;
 
 import chernandez.blockedsupplybackend.config.exceptions.BlockchainException;
+import chernandez.blockedsupplybackend.domain.State;
 import chernandez.blockedsupplybackend.domain.dto.ShipmentInput;
 import chernandez.blockedsupplybackend.domain.dto.ShipmentOutput;
 import org.springframework.http.ResponseEntity;
@@ -61,7 +62,7 @@ public class ShipmentService {
                     shipment.setDestination(event.destination);
                     shipment.setUnits(event.units.intValue());
                     shipment.setWeight(event.weight.intValue());
-                    shipment.setCurrentState(ShipmentOutput.State.fromInt(event.currentState));
+                    shipment.setCurrentState(State.fromBigInt(event.currentState));
                     shipment.setCurrentOwner(event.currentOwner);
                 });
 
