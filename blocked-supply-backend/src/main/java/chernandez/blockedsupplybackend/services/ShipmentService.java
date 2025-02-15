@@ -6,8 +6,11 @@ import chernandez.blockedsupplybackend.domain.dto.ShipmentInput;
 import chernandez.blockedsupplybackend.domain.dto.ShipmentOutput;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.web3j.crypto.Credentials;
+import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.web3j.tx.gas.DefaultGasProvider;
 import smartContracts.web3.ShipmentManagement;
 
 import java.math.BigInteger;
@@ -15,10 +18,17 @@ import java.math.BigInteger;
 @Service
 public class ShipmentService {
 
-    private final ShipmentManagement shipmentContract;
+    private ShipmentManagement shipmentContract;
+    private final Web3j web3j;
+    private final Credentials credentials;
 
-    public ShipmentService(ShipmentManagement shipmentContract) {
-        this.shipmentContract = shipmentContract;
+    public ShipmentService(Web3j web3j, Credentials credentials) {
+        this.web3j = web3j;
+        this.credentials = credentials;
+    }
+
+    public void setContractAddress(String contractAddress) {
+        this.shipmentContract = ShipmentManagement.load(contractAddress, web3j, credentials, new DefaultGasProvider());
     }
 
     public ResponseEntity<TransactionReceipt> createShipment(ShipmentInput shipmentInput) {

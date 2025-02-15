@@ -7,8 +7,11 @@ import chernandez.blockedsupplybackend.domain.dto.TransferOutput;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.web3j.crypto.Credentials;
+import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.web3j.tx.gas.DefaultGasProvider;
 import smartContracts.web3.ShipmentManagement;
 
 import java.math.BigInteger;
@@ -18,10 +21,17 @@ import java.util.List;
 @Service
 public class TransferService {
 
-    private final ShipmentManagement shipmentContract;
+    private ShipmentManagement shipmentContract;
+    private final Web3j web3j;
+    private final Credentials credentials;
 
-    public TransferService(ShipmentManagement shipmentContract) {
-        this.shipmentContract = shipmentContract;
+    public TransferService(Web3j web3j, Credentials credentials) {
+        this.web3j = web3j;
+        this.credentials = credentials;
+    }
+
+    public void setContractAddress(String contractAddress) {
+        this.shipmentContract = ShipmentManagement.load(contractAddress, web3j, credentials, new DefaultGasProvider());
     }
 
     public ResponseEntity<TransactionReceipt> transferShipment(TransferInput request) {
@@ -40,7 +50,7 @@ public class TransferService {
         } catch (Exception e) {
             throw new BlockchainException("Error processing shipment transfer", e);
         }
-        return new ResponseEntity<>(receipt, org.springframework.http.HttpStatus.CREATED);
+        return new ResponseEntity<>(receipt, HttpStatus.CREATED);
     }
 
     public ResponseEntity<List<TransferOutput>> getTransferHistory(int shipmentId) throws Exception {
@@ -72,6 +82,6 @@ public class TransferService {
     }
 
     public ResponseEntity<BigInteger> getNextTransfertId() throws Exception {
-        return new ResponseEntity<>(shipmentContract.getNextTransferId().send(), org.springframework.http.HttpStatus.OK);
+        return new ResponseEntity<>(shipmentContract.getNextTransferId().send(), HttpStatus.OK);
     }
 }
