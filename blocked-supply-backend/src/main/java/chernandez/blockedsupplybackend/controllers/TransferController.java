@@ -5,7 +5,6 @@ import chernandez.blockedsupplybackend.domain.dto.TransferOutput;
 import chernandez.blockedsupplybackend.services.TransferService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -21,7 +20,7 @@ public class TransferController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<TransactionReceipt> transferShipment(@RequestBody TransferInput request) {
+    public ResponseEntity<?> transferShipment(@RequestBody TransferInput request) {
         return shipmentService.transferShipment(request);
     }
 

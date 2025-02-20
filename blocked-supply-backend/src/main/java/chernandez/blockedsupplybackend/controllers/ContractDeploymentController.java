@@ -15,12 +15,11 @@ import smartContracts.web3.ShipmentManagement;
 @RequestMapping("/api/deploy")
 public class ContractDeploymentController {
 
-    @Value("${contract.private-key}")
-    private String privateKey;
-
     private final Web3j web3j;
     private final ShipmentService shipmentService;
     private final TransferService transferService;
+    @Value("${contract.private-key}")
+    private String privateKey;
 
     public ContractDeploymentController(Web3j web3j, ShipmentService shipmentService, TransferService transferService) {
         this.web3j = web3j;

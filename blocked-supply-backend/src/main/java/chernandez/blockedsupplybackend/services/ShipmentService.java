@@ -1,9 +1,11 @@
 package chernandez.blockedsupplybackend.services;
 
-import chernandez.blockedsupplybackend.config.exceptions.BlockchainException;
 import chernandez.blockedsupplybackend.domain.State;
+import chernandez.blockedsupplybackend.domain.dto.ErrorResponseDTO;
 import chernandez.blockedsupplybackend.domain.dto.ShipmentInput;
 import chernandez.blockedsupplybackend.domain.dto.ShipmentOutput;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.web3j.crypto.Credentials;
@@ -18,9 +20,9 @@ import java.math.BigInteger;
 @Service
 public class ShipmentService {
 
-    private ShipmentManagement shipmentContract;
     private final Web3j web3j;
     private final Credentials credentials;
+    private ShipmentManagement shipmentContract;
 
     public ShipmentService(Web3j web3j, Credentials credentials) {
         this.web3j = web3j;
@@ -31,16 +33,16 @@ public class ShipmentService {
         this.shipmentContract = ShipmentManagement.load(contractAddress, web3j, credentials, new DefaultGasProvider());
     }
 
-    public ResponseEntity<TransactionReceipt> createShipment(ShipmentInput shipmentInput) {
+    public ResponseEntity<?> createShipment(@NotNull ShipmentInput shipmentInput) {
         TransactionReceipt receipt;
+        BigInteger units = BigInteger.valueOf(shipmentInput.getUnits());
+        BigInteger weight = BigInteger.valueOf(shipmentInput.getWeight());
+
+        if (units.signum() < 0 || weight.signum() < 0) {
+            return new ResponseEntity<>("Units and weight must be non-negative.", HttpStatus.BAD_REQUEST);
+        }
+
         try {
-            BigInteger units = BigInteger.valueOf(shipmentInput.getUnits());
-            BigInteger weight = BigInteger.valueOf(shipmentInput.getWeight());
-
-            if (units.signum() < 0 || weight.signum() < 0) {
-                throw new IllegalArgumentException("Units and weight must be non-negative.");
-            }
-
             receipt = shipmentContract.createShipment(
                     shipmentInput.getName(),
                     shipmentInput.getDescription(),
@@ -50,9 +52,10 @@ public class ShipmentService {
                     weight
             ).send();
         } catch (Exception e) {
-            throw new BlockchainException("Failed to create shipment", e);
+            ErrorResponseDTO errorResponse = new ErrorResponseDTO("Blockchain Error", "Failed to create shipment: " + e.getMessage());
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(receipt, org.springframework.http.HttpStatus.CREATED);
+        return new ResponseEntity<>(receipt, HttpStatus.CREATED);
     }
 
     public ResponseEntity<ShipmentOutput> getShipment(int shipmentId) throws Exception {
