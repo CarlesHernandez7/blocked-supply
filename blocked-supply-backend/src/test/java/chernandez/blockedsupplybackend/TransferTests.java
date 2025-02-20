@@ -1,17 +1,19 @@
 package chernandez.blockedsupplybackend;
 
-import chernandez.blockedsupplybackend.domain.State;
 import chernandez.blockedsupplybackend.domain.dto.ShipmentInput;
-import chernandez.blockedsupplybackend.domain.dto.ShipmentOutput;
+import chernandez.blockedsupplybackend.domain.dto.TransferInput;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+
+import java.util.List;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -21,10 +23,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
 @SpringBootTest
 @AutoConfigureMockMvc
-class ShipmentTests {
+public class TransferTests {
 
     @Autowired
     private MockMvc mockMvc;
@@ -33,24 +34,17 @@ class ShipmentTests {
     private ObjectMapper objectMapper;
 
     @BeforeAll
-    public static void deployContract(@NotNull @Autowired MockMvc mockMvc) throws Exception {
+    public static void deployContract(@NotNull @Autowired MockMvc mockMvc, @NotNull @Autowired ObjectMapper objectMapper) throws Exception {
         mockMvc.perform(post("/api/deploy"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("0x")))
                 .andReturn();
-    }
 
-    @Test
-    void contextLoads() {
-    }
-
-    @Test
-    public void testCreateShipment() throws Exception {
         ShipmentInput shipmentInput = new ShipmentInput("Test Name", "Test Description", "Test Origin", "Test Destination", 10, 5);
         String shipmentInputJson = objectMapper.writeValueAsString(shipmentInput);
 
-        this.mockMvc.perform(post("/api/shipment/create")
+        mockMvc.perform(post("/api/shipment/create")
                         .contentType("application/json")
                         .content(shipmentInputJson))
                 .andDo(print())
@@ -59,52 +53,57 @@ class ShipmentTests {
     }
 
     @Test
-    public void testCreateShipment_NegativeUnits() throws Exception {
-        ShipmentInput shipmentInput = new ShipmentInput("Test Name", "Test Description", "Test Origin", "Test Destination", -10, 5);
-        String shipmentInputJson = objectMapper.writeValueAsString(shipmentInput);
+    void contextLoads() {
+    }
 
-        this.mockMvc.perform(post("/api/shipment/create")
+    @Test
+    @Order(1)
+    public void testTransferShipment() throws Exception {
+        TransferInput transferInput = new TransferInput(1, "0xNewOwnerAddress", 1, "Transferred to new owner");
+        String transferInputJson = objectMapper.writeValueAsString(transferInput);
+
+        this.mockMvc.perform(post("/api/transfer/create")
                         .contentType("application/json")
-                        .content(shipmentInputJson))
+                        .content(transferInputJson))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(content().string(containsString("Units and weight must be non-negative.")))
+                .andExpect(status().isCreated())
                 .andReturn();
     }
 
     @Test
-    public void testCreateShipment_NegativeWeight() throws Exception {
-        ShipmentInput shipmentInput = new ShipmentInput("Test Name", "Test Description", "Test Origin", "Test Destination", 10, -5);
-        String shipmentInputJson = objectMapper.writeValueAsString(shipmentInput);
+    public void testTransferShipment_InvalidShipmentId() throws Exception {
+        TransferInput transferInput = new TransferInput(-1, "0xNewOwnerAddress", 2, "Invalid shipment ID");
+        String transferInputJson = objectMapper.writeValueAsString(transferInput);
 
-        this.mockMvc.perform(post("/api/shipment/create")
+        this.mockMvc.perform(post("/api/transfer/create")
                         .contentType("application/json")
-                        .content(shipmentInputJson))
+                        .content(transferInputJson))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string(containsString("Units and weight must be non-negative.")))
+                .andExpect(content().string(containsString("Invalid shipment ID")))
                 .andReturn();
     }
 
     @Test
-    public void testGetShipment() throws Exception {
-        MvcResult result = this.mockMvc.perform(get("/api/shipment/1"))
+    public void testGetTransferHistory() throws Exception {
+        TransferInput transferInput = new TransferInput(1, "0xNewOwnerAddress", 2, "Transferred to new owner");
+        String transferInputJson = objectMapper.writeValueAsString(transferInput);
+
+        this.mockMvc.perform(post("/api/transfer/create")
+                        .contentType("application/json")
+                        .content(transferInputJson))
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        MvcResult result = this.mockMvc.perform(get("/api/transfer/1"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
 
         String responseContent = result.getResponse().getContentAsString();
-        ShipmentOutput shipmentOutput = objectMapper.readValue(responseContent, ShipmentOutput.class);
+        List<?> transferHistory = objectMapper.readValue(responseContent, List.class);
 
-        assertEquals(1, shipmentOutput.getId());
-        assertEquals("Test Name", shipmentOutput.getName());
-        assertEquals("Test Description", shipmentOutput.getDescription());
-        assertEquals("Test Origin", shipmentOutput.getOrigin());
-        assertEquals("Test Destination", shipmentOutput.getDestination());
-        assertEquals(10, shipmentOutput.getUnits());
-        assertEquals(5, shipmentOutput.getWeight());
-        assertEquals(State.CREATED, shipmentOutput.getCurrentState());
+        assertEquals(1, transferHistory.size());
     }
-
-
 }

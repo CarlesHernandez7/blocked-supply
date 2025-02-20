@@ -4,6 +4,7 @@ import chernandez.blockedsupplybackend.domain.State;
 import chernandez.blockedsupplybackend.domain.dto.ErrorResponseDTO;
 import chernandez.blockedsupplybackend.domain.dto.ShipmentInput;
 import chernandez.blockedsupplybackend.domain.dto.ShipmentOutput;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -32,7 +33,7 @@ public class ShipmentService {
         this.shipmentContract = ShipmentManagement.load(contractAddress, web3j, credentials, new DefaultGasProvider());
     }
 
-    public ResponseEntity<?> createShipment(ShipmentInput shipmentInput) {
+    public ResponseEntity<?> createShipment(@NotNull ShipmentInput shipmentInput) {
         TransactionReceipt receipt;
         BigInteger units = BigInteger.valueOf(shipmentInput.getUnits());
         BigInteger weight = BigInteger.valueOf(shipmentInput.getWeight());

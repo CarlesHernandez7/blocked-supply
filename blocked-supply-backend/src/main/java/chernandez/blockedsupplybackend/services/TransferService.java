@@ -4,6 +4,7 @@ import chernandez.blockedsupplybackend.domain.State;
 import chernandez.blockedsupplybackend.domain.dto.ErrorResponseDTO;
 import chernandez.blockedsupplybackend.domain.dto.TransferInput;
 import chernandez.blockedsupplybackend.domain.dto.TransferOutput;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -34,7 +35,7 @@ public class TransferService {
         this.shipmentContract = ShipmentManagement.load(contractAddress, web3j, credentials, new DefaultGasProvider());
     }
 
-    public ResponseEntity<?> transferShipment(TransferInput request) {
+    public ResponseEntity<?> transferShipment(@NotNull TransferInput request) {
         TransactionReceipt receipt;
         BigInteger id = BigInteger.valueOf(request.getShipmentId());
 

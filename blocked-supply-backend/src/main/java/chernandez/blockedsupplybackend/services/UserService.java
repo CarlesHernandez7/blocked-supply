@@ -5,6 +5,7 @@ import chernandez.blockedsupplybackend.domain.User;
 import chernandez.blockedsupplybackend.domain.dto.UserRegisterDTO;
 import chernandez.blockedsupplybackend.repositories.UserRepository;
 import jakarta.transaction.Transactional;
+import org.jetbrains.annotations.NotNull;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,7 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    private static void checkParams(UserRegisterDTO user) {
+    private static void checkParams(@NotNull UserRegisterDTO user) {
         if (user.getName() == null || user.getName().isEmpty()) {
             throw new IllegalArgumentException("Name cannot be empty");
         }
