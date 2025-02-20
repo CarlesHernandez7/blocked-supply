@@ -1,7 +1,7 @@
 package chernandez.blockedsupplybackend.services;
 
-import chernandez.blockedsupplybackend.config.exceptions.BlockchainException;
 import chernandez.blockedsupplybackend.domain.State;
+import chernandez.blockedsupplybackend.domain.dto.ErrorResponseDTO;
 import chernandez.blockedsupplybackend.domain.dto.TransferInput;
 import chernandez.blockedsupplybackend.domain.dto.TransferOutput;
 import org.springframework.http.HttpStatus;
@@ -21,9 +21,9 @@ import java.util.List;
 @Service
 public class TransferService {
 
-    private ShipmentManagement shipmentContract;
     private final Web3j web3j;
     private final Credentials credentials;
+    private ShipmentManagement shipmentContract;
 
     public TransferService(Web3j web3j, Credentials credentials) {
         this.web3j = web3j;
@@ -34,10 +34,10 @@ public class TransferService {
         this.shipmentContract = ShipmentManagement.load(contractAddress, web3j, credentials, new DefaultGasProvider());
     }
 
-    public ResponseEntity<TransactionReceipt> transferShipment(TransferInput request) {
+    public ResponseEntity<?> transferShipment(TransferInput request) {
+        TransactionReceipt receipt;
         BigInteger id = BigInteger.valueOf(request.getShipmentId());
 
-        TransactionReceipt receipt;
         try {
             receipt = shipmentContract
                     .shipmentTransfer(
@@ -48,7 +48,8 @@ public class TransferService {
                     )
                     .send();
         } catch (Exception e) {
-            throw new BlockchainException("Error processing shipment transfer", e);
+            ErrorResponseDTO errorResponse = new ErrorResponseDTO("Blockchain Error", "Failed to create transfer for the shipment: " + e.getMessage());
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<>(receipt, HttpStatus.CREATED);
     }

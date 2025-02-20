@@ -5,7 +5,6 @@ import chernandez.blockedsupplybackend.domain.dto.ShipmentOutput;
 import chernandez.blockedsupplybackend.services.ShipmentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
 import java.math.BigInteger;
 
@@ -20,7 +19,7 @@ public class ShipmentController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<TransactionReceipt> createShipment(@RequestBody ShipmentInput shipmentInput) {
+    public ResponseEntity<?> createShipment(@RequestBody ShipmentInput shipmentInput) {
         return shipmentService.createShipment(shipmentInput);
     }
 
