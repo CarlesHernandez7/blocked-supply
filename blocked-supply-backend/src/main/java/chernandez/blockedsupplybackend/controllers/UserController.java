@@ -1,7 +1,8 @@
 package chernandez.blockedsupplybackend.controllers;
 
 import chernandez.blockedsupplybackend.domain.User;
-import chernandez.blockedsupplybackend.domain.UserRegisterDTO;
+import chernandez.blockedsupplybackend.domain.dto.UserAddressInput;
+import chernandez.blockedsupplybackend.domain.dto.UserRegisterDTO;
 import chernandez.blockedsupplybackend.services.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/user")
 public class UserController {
 
     private final UserService userService;
@@ -19,13 +20,27 @@ public class UserController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<String> createUser(@RequestBody UserRegisterDTO userRegisterDTO) {
-        this.userService.registerUser(userRegisterDTO);
-        return new ResponseEntity<>("User created", org.springframework.http.HttpStatus.CREATED);
+    public ResponseEntity<User> createUser(@RequestBody UserRegisterDTO userRegisterDTO) {
+        return this.userService.createUser(userRegisterDTO);
     }
 
     @GetMapping()
-    public ResponseEntity<List<User>> getUsers() {
-        return new ResponseEntity<>(this.userService.getAllUsers(), org.springframework.http.HttpStatus.OK);
+    public ResponseEntity<List<User>> getAllUsers() {
+        return this.userService.getAllUsers();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+        return this.userService.getUserById(id);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteUser(@PathVariable Long id) {
+        return this.userService.deleteUser(id);
+    }
+
+    @PutMapping("/address/{id}")
+    public ResponseEntity<User> setUserAddress(@PathVariable Long id, @RequestBody UserAddressInput userAddress) {
+        return this.userService.setUserAddress(id, userAddress.address());
     }
 }

@@ -20,6 +20,7 @@ contract ShipmentManagement {
         uint256 id;
         uint256 shipmentId;
         uint256 timestamp;
+        State newState;
         address newShipmentOwner;
         string transferNotes;
     }
@@ -36,30 +37,25 @@ contract ShipmentManagement {
         address currentOwner
     );
 
+    event TransferRetrieved(
+        uint256 indexed id,
+        uint256 shipmentId,
+        uint256 timestamp,
+        uint256 newState,
+        address newShipmentOwner,
+        string transferNotes
+    );
+
     uint256 private nextShipmentId = 1;
     uint256 private nextTransferId = 1;
 
     mapping(uint256 => Shipment) private shipments;
     mapping(uint256 => Transfer[]) private transfersByShipment;
 
-    // Modifiers
-
     modifier onlyOwner(uint256 shipmentId) {
         require(shipments[shipmentId].currentOwner == msg.sender, "Only the current owner can perform this action.");
         _;
     }
-    
-    modifier validStateChange(State oldState, State newState) {
-        require(
-            (oldState == State.CREATED && newState == State.IN_TRANSIT) ||
-            (oldState == State.IN_TRANSIT && newState == State.STORED) ||
-            (oldState == State.STORED && newState == State.DELIVERED),
-            "Invalid state transition"
-        );
-        _;
-    }
-    
-    // Functions
 
     function createShipment(
         string memory productName,
@@ -91,7 +87,7 @@ contract ShipmentManagement {
         address newShipmentOwner,
         State newState,
         string memory transferNotes
-    ) public onlyOwner(shipmentId) validStateChange(shipments[shipmentId].currentState, newState) {
+    ) public onlyOwner(shipmentId) {
         Shipment storage shipment = shipments[shipmentId];
 
         shipment.currentOwner = newShipmentOwner;
@@ -103,11 +99,13 @@ contract ShipmentManagement {
             shipmentId: shipmentId,
             timestamp: block.timestamp,
             newShipmentOwner: newShipmentOwner,
-            transferNotes: transferNotes
+            transferNotes: transferNotes,
+            newState: newState
         }));
     }
 
-    function getShipment(uint256 shipmentId) public {
+    function getShipment(uint256 shipmentId) public {    
+        
         Shipment storage shipment = shipments[shipmentId];
 
         emit ShipmentRetrieved(
@@ -123,8 +121,23 @@ contract ShipmentManagement {
         );
     }
 
-    function getTransferHistory(uint256 shipmentId) public view returns (Transfer[] memory) {
-        return transfersByShipment[shipmentId];
+    function getTransferByIndex(uint256 shipmentId, uint256 index) public {
+        require(index < transfersByShipment[shipmentId].length, "Index out of bounds");
+
+        Transfer storage transfer = transfersByShipment[shipmentId][index];
+
+        emit TransferRetrieved(
+            transfer.id,
+            transfer.shipmentId,
+            transfer.timestamp,
+            uint256(transfer.newState),
+            transfer.newShipmentOwner,
+            transfer.transferNotes
+        );
+    }
+
+    function getTransferCount(uint256 shipmentId) public view returns (uint256) {
+        return transfersByShipment[shipmentId].length;
     }
 
     function getNextShipmentId() public view returns (uint256) {

@@ -1,11 +1,10 @@
 package chernandez.blockedsupplybackend.controllers;
 
-import chernandez.blockedsupplybackend.domain.ShipmentInput;
-import chernandez.blockedsupplybackend.domain.ShipmentOutput;
+import chernandez.blockedsupplybackend.domain.dto.ShipmentInput;
+import chernandez.blockedsupplybackend.domain.dto.ShipmentOutput;
 import chernandez.blockedsupplybackend.services.ShipmentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
 import java.math.BigInteger;
 
@@ -20,18 +19,17 @@ public class ShipmentController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<TransactionReceipt> createShipment(@RequestBody ShipmentInput shipmentInput) {
-        TransactionReceipt receipt = shipmentService.createShipment(shipmentInput);
-        return ResponseEntity.status(201).body(receipt);
+    public ResponseEntity<?> createShipment(@RequestBody ShipmentInput shipmentInput) {
+        return shipmentService.createShipment(shipmentInput);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ShipmentOutput> getShipment(@PathVariable int id) throws Exception {
-        return ResponseEntity.ok(shipmentService.getShipment(id));
+        return shipmentService.getShipment(id);
     }
 
     @GetMapping("/nextId")
     public ResponseEntity<BigInteger> getNextShipmentId() throws Exception {
-        return ResponseEntity.ok(shipmentService.getNextShipmentId());
+        return shipmentService.getNextShipmentId();
     }
 }

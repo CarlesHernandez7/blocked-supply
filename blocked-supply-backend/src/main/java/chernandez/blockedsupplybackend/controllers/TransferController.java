@@ -1,12 +1,13 @@
 package chernandez.blockedsupplybackend.controllers;
 
-import chernandez.blockedsupplybackend.domain.TransferInput;
+import chernandez.blockedsupplybackend.domain.dto.TransferInput;
+import chernandez.blockedsupplybackend.domain.dto.TransferOutput;
 import chernandez.blockedsupplybackend.services.TransferService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
 import java.math.BigInteger;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/transfer")
@@ -19,14 +20,18 @@ public class TransferController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<TransactionReceipt> transferShipment(@RequestBody TransferInput request) {
-        TransactionReceipt receipt = shipmentService.transferShipment(request);
-        return ResponseEntity.status(201).body(receipt);
+    public ResponseEntity<?> transferShipment(@RequestBody TransferInput request) {
+        return shipmentService.transferShipment(request);
+    }
+
+    @GetMapping("/{shipmentId}")
+    public ResponseEntity<List<TransferOutput>> getTransferHistory(@PathVariable int shipmentId) throws Exception {
+        return shipmentService.getTransferHistory(shipmentId);
     }
 
     @GetMapping("/nextId")
     public ResponseEntity<BigInteger> getNextTransferId() throws Exception {
-        return ResponseEntity.ok(shipmentService.getNextTransfertId());
+        return shipmentService.getNextTransfertId();
     }
 
 

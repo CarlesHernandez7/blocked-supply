@@ -1,0 +1,73 @@
+###
+POST http://localhost:8080/api/contract
+
+//USERS
+
+###
+POST http://localhost:8080/api/user/create
+Content-Type: application/json
+
+{
+  "name": "Test",
+  "email": "111@",
+  "password": "AAAAAaaa11",
+  "roles": ["ADMIN", "CUSTOMER"]
+}
+
+###
+GET http://localhost:8080/api/user/1
+
+###
+GET http://localhost:8080/api/user
+
+###
+PUT http://localhost:8080/api/user/address/2
+Content-Type: application/json
+
+{
+  "address": "0x0"
+}
+
+###
+DELETE http://localhost:8080/api/user/1
+
+
+//SHIPMENTS
+
+###
+POST http://localhost:8080/api/shipment/create
+Content-Type: application/json
+
+{
+  "name": "Vaccine",
+  "description": "pfizer",
+  "origin": "Sant Pol de Mar",
+  "destination": "Brazil",
+  "units": 2,
+  "weight": 2
+}
+
+###
+GET http://localhost:8080/api/shipment/1
+
+###
+GET http://localhost:8080/api/shipment/nextId
+
+//TRANSFERS
+
+###
+POST http://localhost:8080/api/transfer/create
+Content-Type: application/json
+
+{
+  "shipmentId": 1,
+  "newShipmentOwner": "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1",
+  "newState": 2,
+  "transferNotes": "Transferred to new warehouse"
+}
+
+###
+GET http://localhost:8080/api/transfer/1
+
+###
+GET http://localhost:8080/api/transfer/nextId
