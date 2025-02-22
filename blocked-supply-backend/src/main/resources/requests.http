@@ -1,5 +1,5 @@
 ###
-POST http://localhost:8080/api/contract
+POST http://localhost:8080/api/blockchain
 
 //USERS
 
@@ -8,7 +8,7 @@ POST http://localhost:8080/api/user/create
 Content-Type: application/json
 
 {
-  "name": "Test",
+  "name": "Test4",
   "email": "111@",
   "password": "AAAAAaaa11",
   "roles": ["ADMIN", "CUSTOMER"]

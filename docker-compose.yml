@@ -6,18 +6,9 @@ services:
       - "8545:8545"
     networks:
       - supply-chain-network
-  truffle:
-    build: 
-      context: ./blocked-supply-truffle
-      dockerfile: Dockerfile
-    depends_on:
-      - ganache
-    networks:
-      - supply-chain-network
-    volumes:
-      - ./blocked-supply-truffle:/app
+
   mysql:
-    image: mysql:8.4
+    image: mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: shipment_db
@@ -28,25 +19,30 @@ services:
       - mysql-data:/var/lib/mysql
     networks:
       - supply-chain-network
+
   backend:
+    image: backend-image:latest
     build:
       context: ./blocked-supply-backend
       dockerfile: Dockerfile
+    volumes:
+      - ./src:/app/src
+      - ./target:/app/target
     depends_on:
       - mysql
       - ganache
-    volumes:
-      - ./target:/app/target
-      - ./src:/app/src
     ports:
       - "8080:8080"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/shipment_db
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=root
+      - SPRING_APPLICATION_JSON={"web3j.client-address":"http://ganache:8545"}
       - WEB3_PROVIDER=http://ganache:8545
+      - SPRING_DEVTOOLS_RESTART_ENABLED=true
     networks:
       - supply-chain-network
+      
 networks:
   supply-chain-network:
 volumes:
