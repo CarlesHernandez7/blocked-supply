@@ -7,7 +7,9 @@ services:
     networks:
       - supply-chain-network
   truffle:
-    build: ./blocked-supply-truffle
+    build: 
+      context: ./blocked-supply-truffle
+      dockerfile: Dockerfile
     depends_on:
       - ganache
     networks:
