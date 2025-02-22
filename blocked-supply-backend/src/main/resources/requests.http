@@ -1,6 +1,12 @@
 ###
 POST http://localhost:8080/api/blockchain
 
+###
+GET http://localhost:8080/api/blockchain/test
+
+###
+GET http://localhost:8080/api/blockchain/blockNumber
+
 //USERS
 
 ###

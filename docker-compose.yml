@@ -1,6 +1,6 @@
 services:
   ganache:
-    image: trufflesuite/ganache-cli
+    image: trufflesuite/ganache-cli:latest
     command: ["--host", "0.0.0.0", "--port", "8545", "--deterministic", "--gasLimit", "12000000"]
     ports:
       - "8545:8545"
@@ -25,9 +25,6 @@ services:
     build:
       context: ./blocked-supply-backend
       dockerfile: Dockerfile
-    volumes:
-      - ./src:/app/src
-      - ./target:/app/target
     depends_on:
       - mysql
       - ganache
