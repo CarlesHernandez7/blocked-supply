@@ -30,7 +30,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+    public ResponseEntity<?> getUserById(@PathVariable Long id) {
         return this.userService.getUserById(id);
     }
 
@@ -40,7 +40,7 @@ public class UserController {
     }
 
     @PutMapping("/address/{id}")
-    public ResponseEntity<User> setUserAddress(@PathVariable Long id, @RequestBody UserAddressInput userAddress) {
+    public ResponseEntity<?> setUserAddress(@PathVariable Long id, @RequestBody UserAddressInput userAddress) {
         return this.userService.setUserAddress(id, userAddress.address());
     }
 

@@ -7,6 +7,7 @@ import chernandez.blockedsupplybackend.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import org.jetbrains.annotations.NotNull;
 import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -65,20 +66,20 @@ public class UserService {
         String hashedPassword = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt(12));
         User newUser = new User(user.getName(), user.getEmail(), hashedPassword, user.getRoles());
         userRepository.save(newUser);
-        return new ResponseEntity<>(newUser, org.springframework.http.HttpStatus.CREATED);
+        return new ResponseEntity<>(newUser, HttpStatus.CREATED);
     }
 
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = userRepository.findAll();
-        return new ResponseEntity<>(users, org.springframework.http.HttpStatus.OK);
+        return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
-    public ResponseEntity<User> getUserById(Long id) {
+    public ResponseEntity<?> getUserById(Long id) {
         User user = validateAndGetUserById(id);
         if (user == null) {
-            return new ResponseEntity<>(null, org.springframework.http.HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(user, org.springframework.http.HttpStatus.OK);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @Transactional
@@ -88,18 +89,18 @@ public class UserService {
             return new ResponseEntity<>(null, org.springframework.http.HttpStatus.NOT_FOUND);
         }
         userRepository.deleteById(id);
-        return new ResponseEntity<>("User deleted", org.springframework.http.HttpStatus.OK);
+        return new ResponseEntity<>("User deleted", HttpStatus.OK);
     }
 
     @Transactional
-    public ResponseEntity<User> setUserAddress(Long id, String address) {
+    public ResponseEntity<?> setUserAddress(Long id, String address) {
         User user = validateAndGetUserById(id);
         if (user == null) {
-            return new ResponseEntity<>(null, org.springframework.http.HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
         }
         user.setUserAddress(address);
         userRepository.save(user);
-        return new ResponseEntity<>(user, org.springframework.http.HttpStatus.OK);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     private User validateAndGetUserById(Long id) {
