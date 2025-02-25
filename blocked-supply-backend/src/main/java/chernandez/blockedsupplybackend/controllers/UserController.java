@@ -43,9 +43,4 @@ public class UserController {
     public ResponseEntity<?> setUserAddress(@PathVariable Long id, @RequestBody UserAddressInput userAddress) {
         return this.userService.setUserAddress(id, userAddress.address());
     }
-
-    @GetMapping("/test")
-    public String testEndpoint() {
-        return "User test 2.0 successful!";
-    }
 }

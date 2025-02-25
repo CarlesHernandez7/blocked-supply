@@ -1,6 +1,7 @@
 package chernandez.blockedsupplybackend.services;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
@@ -26,7 +27,7 @@ public class BlockchainService {
         this.transferService = transferService;
     }
 
-    public String deployContract() throws Exception {
+    public ResponseEntity<String> deployContract() throws Exception {
         ShipmentManagement shipmentManagement = ShipmentManagement.deploy(
                 web3j,
                 credentials,
@@ -44,11 +45,11 @@ public class BlockchainService {
         shipmentService.setContractAddress(contractAddress);
         transferService.setContractAddress(contractAddress);
 
-        return contractAddress;
+        return new ResponseEntity<>(contractAddress, HttpStatus.CREATED);
     }
 
-    public long getLatestBlockNumber() throws IOException {
+    public ResponseEntity<Long> getLatestBlockNumber() throws IOException {
         EthBlockNumber blockNumber = web3j.ethBlockNumber().send();
-        return blockNumber.getBlockNumber().longValue();
+        return new ResponseEntity<>(blockNumber.getBlockNumber().longValue(), HttpStatus.OK);
     }
 }

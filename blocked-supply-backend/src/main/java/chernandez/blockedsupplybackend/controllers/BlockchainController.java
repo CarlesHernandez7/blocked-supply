@@ -20,18 +20,12 @@ public class BlockchainController {
     }
 
     @PostMapping()
-    public ResponseEntity<String> deployContract() {
+    public ResponseEntity<String> deployContract() throws Exception {
         return blockchainService.deployContract();
     }
 
     @GetMapping("/blockNumber")
-    public ResponseEntity<String> getBlockNumber() throws IOException {
+    public ResponseEntity<Long> getBlockNumber() throws IOException {
         return blockchainService.getLatestBlockNumber();
     }
-
-    @GetMapping("/test")
-    public String testEndpoint() {
-        return "Blockchain Test successful!";
-    }
-
 }

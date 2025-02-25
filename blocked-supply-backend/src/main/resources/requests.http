@@ -2,9 +2,6 @@
 POST http://localhost:8080/api/blockchain
 
 ###
-GET http://localhost:8080/api/blockchain/test
-
-###
 GET http://localhost:8080/api/blockchain/blockNumber
 
 //USERS
@@ -68,7 +65,7 @@ Content-Type: application/json
 {
   "shipmentId": 1,
   "newShipmentOwner": "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1",
-  "newState": 2,
+  "newState": 1,
   "transferNotes": "Transferred to new warehouse"
 }
 
