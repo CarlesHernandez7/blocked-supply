@@ -1,5 +1,8 @@
 ###
-POST http://localhost:8080/api/contract
+POST http://localhost:8080/api/blockchain
+
+###
+GET http://localhost:8080/api/blockchain/blockNumber
 
 //USERS
 
@@ -8,7 +11,7 @@ POST http://localhost:8080/api/user/create
 Content-Type: application/json
 
 {
-  "name": "Test",
+  "name": "Test4",
   "email": "111@",
   "password": "AAAAAaaa11",
   "roles": ["ADMIN", "CUSTOMER"]
@@ -62,7 +65,7 @@ Content-Type: application/json
 {
   "shipmentId": 1,
   "newShipmentOwner": "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1",
-  "newState": 2,
+  "newState": 1,
   "transferNotes": "Transferred to new warehouse"
 }
 

@@ -79,11 +79,11 @@ public class ShipmentService {
                     shipment.setCurrentOwner(event.currentOwner);
                 });
 
-        return new ResponseEntity<>(shipment, org.springframework.http.HttpStatus.OK);
+        return new ResponseEntity<>(shipment, HttpStatus.OK);
     }
 
     public ResponseEntity<BigInteger> getNextShipmentId() throws Exception {
-        return new ResponseEntity<>(shipmentContract.getNextShipmentId().send(), org.springframework.http.HttpStatus.OK);
+        return new ResponseEntity<>(shipmentContract.getNextShipmentId().send(), HttpStatus.OK);
     }
 
 }
