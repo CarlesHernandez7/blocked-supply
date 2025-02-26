@@ -1,9 +1,9 @@
-import { Search } from "lucide-react"
+import {Search} from "lucide-react"
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import {Button} from "@/components/ui/button"
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card"
+import {Input} from "@/components/ui/input"
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table"
 
 export default function Traceability() {
     return (
@@ -15,9 +15,9 @@ export default function Traceability() {
                 </CardHeader>
                 <CardContent>
                     <div className="flex space-x-2">
-                        <Input placeholder="Search by Product ID or SKU" />
+                        <Input placeholder="Search by Product ID or SKU"/>
                         <Button>
-                            <Search className="h-4 w-4 mr-2" />
+                            <Search className="h-4 w-4 mr-2"/>
                             Search
                         </Button>
                     </div>

@@ -14,7 +14,10 @@ Content-Type: application/json
   "name": "Test4",
   "email": "111@",
   "password": "AAAAAaaa11",
-  "roles": ["ADMIN", "CUSTOMER"]
+  "roles": [
+    "ADMIN",
+    "CUSTOMER"
+  ]
 }
 
 ###

@@ -1,23 +1,4 @@
 services:
-  ganache:
-    image: trufflesuite/ganache-cli:latest
-    command: ganache -h 0.0.0.0 -p 8545 -d
-    ports:
-      - "8545:8545"
-    networks:
-      - supply-chain-network
-
-  truffle:
-    build:
-      context: ./blocked-supply-truffle
-      dockerfile: Dockerfile
-    depends_on:
-      - ganache
-    environment:
-      - WEB3_PROVIDER=http://ganache:8545
-    networks:
-      - supply-chain-network
-
   mysql:
     image: mysql
     environment:
@@ -32,14 +13,11 @@ services:
       - supply-chain-network
 
   backend:
-    image: backend-image:latest
     build:
       context: ./blocked-supply-backend
       dockerfile: Dockerfile
     depends_on:
       - mysql
-      - ganache
-      - truffle
     ports:
       - "8080:8080"
     environment:
@@ -47,7 +25,19 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/shipment_db
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=root
-      - WEB3_PROVIDER=http://ganache:8545
+    networks:
+      - supply-chain-network
+
+  frontend:
+    build: 
+      context: ./blocked-supply-frontend
+      dockerfile: Dockerfile
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://backend:8080
     networks:
       - supply-chain-network
 
