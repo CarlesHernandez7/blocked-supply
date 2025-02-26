@@ -1,9 +1,9 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
+import {Button} from "@/components/ui/button"
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card"
+import {Input} from "@/components/ui/input"
+import {Label} from "@/components/ui/label"
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
+import {Textarea} from "@/components/ui/textarea"
 
 export default function Transferences() {
     return (
@@ -17,17 +17,17 @@ export default function Transferences() {
                     <form className="space-y-4">
                         <div className="grid gap-2">
                             <Label htmlFor="product-id">Product ID/SKU</Label>
-                            <Input id="product-id" placeholder="Enter Product ID or SKU" />
+                            <Input id="product-id" placeholder="Enter Product ID or SKU"/>
                         </div>
                         <div className="grid gap-2">
                             <Label htmlFor="current-status">Current Status</Label>
-                            <Input id="current-status" disabled value="In Warehouse A" />
+                            <Input id="current-status" disabled value="In Warehouse A"/>
                         </div>
                         <div className="grid gap-2">
                             <Label htmlFor="new-status">New Status</Label>
                             <Select>
                                 <SelectTrigger>
-                                    <SelectValue placeholder="Select new status" />
+                                    <SelectValue placeholder="Select new status"/>
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="in-transit">In Transit</SelectItem>
@@ -41,7 +41,7 @@ export default function Transferences() {
                             <Label htmlFor="new-location">New Location</Label>
                             <Select>
                                 <SelectTrigger>
-                                    <SelectValue placeholder="Select new location" />
+                                    <SelectValue placeholder="Select new location"/>
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="warehouse-a">Warehouse A</SelectItem>
@@ -53,7 +53,7 @@ export default function Transferences() {
                         </div>
                         <div className="grid gap-2">
                             <Label htmlFor="notes">Transfer Notes</Label>
-                            <Textarea id="notes" placeholder="Enter any additional notes about the transfer" />
+                            <Textarea id="notes" placeholder="Enter any additional notes about the transfer"/>
                         </div>
                         <Button className="w-full">Update Product Status</Button>
                     </form>
