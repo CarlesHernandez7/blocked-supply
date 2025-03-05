@@ -21,6 +21,7 @@ contract ShipmentManagement {
         uint256 shipmentId;
         uint256 timestamp;
         State newState;
+        string location;
         address newShipmentOwner;
         string transferNotes;
     }
@@ -42,6 +43,7 @@ contract ShipmentManagement {
         uint256 shipmentId,
         uint256 timestamp,
         uint256 newState,
+        string location,
         address newShipmentOwner,
         string transferNotes
     );
@@ -86,6 +88,7 @@ contract ShipmentManagement {
         uint256 shipmentId,
         address newShipmentOwner,
         State newState,
+        string memory location,
         string memory transferNotes
     ) public onlyOwner(shipmentId) {
         Shipment storage shipment = shipments[shipmentId];
@@ -98,9 +101,10 @@ contract ShipmentManagement {
             id: transferId,
             shipmentId: shipmentId,
             timestamp: block.timestamp,
+            newState: newState,
+            location: location,
             newShipmentOwner: newShipmentOwner,
-            transferNotes: transferNotes,
-            newState: newState
+            transferNotes: transferNotes
         }));
     }
 
@@ -131,6 +135,7 @@ contract ShipmentManagement {
             transfer.shipmentId,
             transfer.timestamp,
             uint256(transfer.newState),
+            transfer.location,
             transfer.newShipmentOwner,
             transfer.transferNotes
         );

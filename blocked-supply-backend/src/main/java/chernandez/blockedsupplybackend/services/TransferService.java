@@ -45,6 +45,7 @@ public class TransferService {
                             id,
                             request.getNewShipmentOwner(),
                             BigInteger.valueOf(request.getNewState()),
+                            request.getLocation(),
                             request.getTransferNotes()
                     )
                     .send();
@@ -73,6 +74,7 @@ public class TransferService {
                         transfer.setShipmentId(event.shipmentId.intValue());
                         transfer.setTimestamp(event.timestamp.intValue());
                         transfer.setNewState(State.fromBigInt(event.newState));
+                        transfer.setLocation(event.location);
                         transfer.setNewOwner(event.newShipmentOwner);
                         transfer.setTransferNotes(event.transferNotes);
                     });
