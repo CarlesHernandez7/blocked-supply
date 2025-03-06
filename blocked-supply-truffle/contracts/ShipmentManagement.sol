@@ -102,6 +102,10 @@ contract ShipmentManagement {
         string memory transferNotes
     ) public onlyOwner(shipmentId) {
         Shipment storage shipment = shipments[shipmentId];
+        address previousOwner = shipment.currentOwner;
+
+        removeShipmentFromOwner(previousOwner, shipmentId);
+        shipmentsByOwner[newShipmentOwner].push(shipmentId);
 
         shipment.currentOwner = newShipmentOwner;
         shipment.currentState = newState;
@@ -116,6 +120,18 @@ contract ShipmentManagement {
             newShipmentOwner: newShipmentOwner,
             transferNotes: transferNotes
         }));
+    }
+
+    function removeShipmentFromOwner(address owner, uint256 shipmentId) private {
+        uint256[] storage ids = shipmentsByOwner[owner];
+
+        for (uint256 i = 0; i < ids.length; i++) {
+            if (ids[i] == shipmentId) {
+                ids[i] = ids[ids.length - 1];
+                ids.pop();
+                break;
+            }
+        }
     }
 
     function getShipment(uint256 shipmentId) public exists(shipmentId){    
