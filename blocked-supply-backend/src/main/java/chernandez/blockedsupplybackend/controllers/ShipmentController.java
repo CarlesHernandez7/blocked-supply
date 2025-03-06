@@ -1,7 +1,6 @@
 package chernandez.blockedsupplybackend.controllers;
 
 import chernandez.blockedsupplybackend.domain.dto.ShipmentInput;
-import chernandez.blockedsupplybackend.domain.dto.ShipmentOutput;
 import chernandez.blockedsupplybackend.services.ShipmentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +25,11 @@ public class ShipmentController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getShipment(@PathVariable int id) {
         return shipmentService.getShipment(id);
+    }
+
+    @GetMapping("/{ownerAddress}/owner")
+    public ResponseEntity<?> getShipmentsByOwner(@PathVariable String ownerAddress) {
+        return shipmentService.getShipmentsByOwner(ownerAddress);
     }
 
     @GetMapping("/nextId")
