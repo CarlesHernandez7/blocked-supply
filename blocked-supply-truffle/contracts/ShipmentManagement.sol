@@ -54,10 +54,18 @@ contract ShipmentManagement {
     mapping(uint256 => Shipment) private shipments;
     mapping(uint256 => Transfer[]) private transfersByShipment;
 
+
     modifier onlyOwner(uint256 shipmentId) {
         require(shipments[shipmentId].currentOwner == msg.sender, "Only the current owner can perform this action.");
         _;
     }
+
+    modifier exists(uint256 shipmentId) {
+        require(shipmentId > 0, "Shipment ID must be greater than 0.");
+        require(shipmentId < nextShipmentId, "Shipment does not exist.");
+        _;
+    }
+
 
     function createShipment(
         string memory productName,
@@ -108,7 +116,7 @@ contract ShipmentManagement {
         }));
     }
 
-    function getShipment(uint256 shipmentId) public {    
+    function getShipment(uint256 shipmentId) public exists(shipmentId){    
         
         Shipment storage shipment = shipments[shipmentId];
 
@@ -126,8 +134,6 @@ contract ShipmentManagement {
     }
 
     function getTransferByIndex(uint256 shipmentId, uint256 index) public {
-        require(index < transfersByShipment[shipmentId].length, "Index out of bounds");
-
         Transfer storage transfer = transfersByShipment[shipmentId][index];
 
         emit TransferRetrieved(
@@ -141,9 +147,10 @@ contract ShipmentManagement {
         );
     }
 
-    function getTransferCount(uint256 shipmentId) public view returns (uint256) {
+    function getTransferCount(uint256 shipmentId) public exists(shipmentId) view returns (uint256) {
         return transfersByShipment[shipmentId].length;
     }
+
 
     function getNextShipmentId() public view returns (uint256) {
         return nextShipmentId;
