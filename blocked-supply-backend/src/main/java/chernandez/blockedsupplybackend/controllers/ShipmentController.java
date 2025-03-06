@@ -24,7 +24,7 @@ public class ShipmentController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ShipmentOutput> getShipment(@PathVariable int id) throws Exception {
+    public ResponseEntity<?> getShipment(@PathVariable int id) {
         return shipmentService.getShipment(id);
     }
 

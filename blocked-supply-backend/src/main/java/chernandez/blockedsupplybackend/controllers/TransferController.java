@@ -25,7 +25,7 @@ public class TransferController {
     }
 
     @GetMapping("/{shipmentId}")
-    public ResponseEntity<List<TransferOutput>> getTransferHistory(@PathVariable int shipmentId) throws Exception {
+    public ResponseEntity<?> getTransferHistory(@PathVariable int shipmentId) {
         return shipmentService.getTransferHistory(shipmentId);
     }
 

@@ -1,7 +1,6 @@
 package chernandez.blockedsupplybackend.services;
 
 import chernandez.blockedsupplybackend.domain.State;
-import chernandez.blockedsupplybackend.domain.dto.ErrorResponseDTO;
 import chernandez.blockedsupplybackend.domain.dto.TransferInput;
 import chernandez.blockedsupplybackend.domain.dto.TransferOutput;
 import org.jetbrains.annotations.NotNull;
@@ -50,36 +49,53 @@ public class TransferService {
                     )
                     .send();
         } catch (Exception e) {
-            ErrorResponseDTO errorResponse = new ErrorResponseDTO("Blockchain Error", "Failed to create transfer for the shipment: " + e.getMessage());
-            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+            if (e.getMessage().contains("Only the current owner can perform this action.")) {
+                return new ResponseEntity<>("Only the current owner can perform this action.", HttpStatus.FORBIDDEN);
+            }
+            else {
+                return new ResponseEntity<>("Failed to create transfer for the shipment: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         }
         return new ResponseEntity<>(receipt, HttpStatus.CREATED);
     }
 
-    public ResponseEntity<List<TransferOutput>> getTransferHistory(int shipmentId) throws Exception {
+    public ResponseEntity<?> getTransferHistory(int shipmentId) {
         BigInteger shipmentIdBigInt = BigInteger.valueOf(shipmentId);
 
-        BigInteger transferCount = shipmentContract.getTransferCount(shipmentIdBigInt).send();
+        List<TransferOutput> transfers;
 
-        List<TransferOutput> transfers = new ArrayList<>();
+        try {
 
-        for (BigInteger i = BigInteger.ZERO; i.compareTo(transferCount) < 0; i = i.add(BigInteger.ONE)) {
-            TransferOutput transfer = new TransferOutput();
+            BigInteger transferCount = shipmentContract.getTransferCount(shipmentIdBigInt).send();
 
-            shipmentContract.getTransferByIndex(shipmentIdBigInt, i).send();
+            transfers = new ArrayList<>();
 
-            shipmentContract.transferRetrievedEventFlowable(DefaultBlockParameterName.LATEST, DefaultBlockParameterName.LATEST)
-                    .subscribe(event -> {
-                        transfer.setId(event.id.intValue());
-                        transfer.setShipmentId(event.shipmentId.intValue());
-                        transfer.setTimestamp(event.timestamp.intValue());
-                        transfer.setNewState(State.fromBigInt(event.newState));
-                        transfer.setLocation(event.location);
-                        transfer.setNewOwner(event.newShipmentOwner);
-                        transfer.setTransferNotes(event.transferNotes);
-                    });
+            for (BigInteger i = BigInteger.ZERO; i.compareTo(transferCount) < 0; i = i.add(BigInteger.ONE)) {
+                TransferOutput transfer = new TransferOutput();
 
-            transfers.add(transfer);
+                shipmentContract.getTransferByIndex(shipmentIdBigInt, i).send();
+
+                shipmentContract.transferRetrievedEventFlowable(DefaultBlockParameterName.LATEST, DefaultBlockParameterName.LATEST)
+                        .subscribe(event -> {
+                            transfer.setId(event.id.intValue());
+                            transfer.setShipmentId(event.shipmentId.intValue());
+                            transfer.setTimestamp(event.timestamp.intValue());
+                            transfer.setNewState(State.fromBigInt(event.newState));
+                            transfer.setLocation(event.location);
+                            transfer.setNewOwner(event.newShipmentOwner);
+                            transfer.setTransferNotes(event.transferNotes);
+                        });
+
+                transfers.add(transfer);
+            }
+        } catch (Exception e) {
+            if (e.getMessage().contains("Shipment ID must be greater than 0")) {
+                return new ResponseEntity<>("Invalid Shipment ID: Must be greater than 0.", HttpStatus.BAD_REQUEST);
+            } else if (e.getMessage().contains("Shipment does not exist")) {
+                return new ResponseEntity<>("Shipment not found.", HttpStatus.NOT_FOUND);
+            } else {
+                return new ResponseEntity<>("An error occurred while retrieving the shipment.", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         }
 
         return new ResponseEntity<>(transfers, HttpStatus.OK);

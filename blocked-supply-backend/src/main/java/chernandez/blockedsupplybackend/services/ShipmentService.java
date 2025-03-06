@@ -1,7 +1,6 @@
 package chernandez.blockedsupplybackend.services;
 
 import chernandez.blockedsupplybackend.domain.State;
-import chernandez.blockedsupplybackend.domain.dto.ErrorResponseDTO;
 import chernandez.blockedsupplybackend.domain.dto.ShipmentInput;
 import chernandez.blockedsupplybackend.domain.dto.ShipmentOutput;
 import org.jetbrains.annotations.NotNull;
@@ -52,35 +51,45 @@ public class ShipmentService {
                     weight
             ).send();
         } catch (Exception e) {
-            ErrorResponseDTO errorResponse = new ErrorResponseDTO("Blockchain Error", "Failed to create shipment: " + e.getMessage());
-            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Failed to create shipment: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<>(receipt, HttpStatus.CREATED);
     }
 
-    public ResponseEntity<ShipmentOutput> getShipment(int shipmentId) throws Exception {
+    public ResponseEntity<?> getShipment(int shipmentId) {
+        try {
+            BigInteger id = BigInteger.valueOf(shipmentId);
 
-        BigInteger id = BigInteger.valueOf(shipmentId);
+            shipmentContract.getShipment(id).send();
 
-        shipmentContract.getShipment(id).send();
+            ShipmentOutput shipment = new ShipmentOutput();
 
-        ShipmentOutput shipment = new ShipmentOutput();
+            shipmentContract.shipmentRetrievedEventFlowable(DefaultBlockParameterName.LATEST, DefaultBlockParameterName.LATEST)
+                    .subscribe(event -> {
+                        shipment.setId(event.id.intValue());
+                        shipment.setName(event.name);
+                        shipment.setDescription(event.description);
+                        shipment.setOrigin(event.origin);
+                        shipment.setDestination(event.destination);
+                        shipment.setUnits(event.units.intValue());
+                        shipment.setWeight(event.weight.intValue());
+                        shipment.setCurrentState(State.fromBigInt(event.currentState));
+                        shipment.setCurrentOwner(event.currentOwner);
+                    });
 
-        shipmentContract.shipmentRetrievedEventFlowable(DefaultBlockParameterName.LATEST, DefaultBlockParameterName.LATEST)
-                .subscribe(event -> {
-                    shipment.setId(event.id.intValue());
-                    shipment.setName(event.name);
-                    shipment.setDescription(event.description);
-                    shipment.setOrigin(event.origin);
-                    shipment.setDestination(event.destination);
-                    shipment.setUnits(event.units.intValue());
-                    shipment.setWeight(event.weight.intValue());
-                    shipment.setCurrentState(State.fromBigInt(event.currentState));
-                    shipment.setCurrentOwner(event.currentOwner);
-                });
+            return new ResponseEntity<>(shipment, HttpStatus.OK);
 
-        return new ResponseEntity<>(shipment, HttpStatus.OK);
+        } catch (Exception e) {
+            if (e.getMessage().contains("Shipment ID must be greater than 0")) {
+                return new ResponseEntity<>("Invalid Shipment ID: Must be greater than 0.", HttpStatus.BAD_REQUEST);
+            } else if (e.getMessage().contains("Shipment does not exist")) {
+                return new ResponseEntity<>("Shipment not found.", HttpStatus.NOT_FOUND);
+            } else {
+                return new ResponseEntity<>("An error occurred while retrieving the shipment.", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
     }
+
 
     public ResponseEntity<BigInteger> getNextShipmentId() throws Exception {
         return new ResponseEntity<>(shipmentContract.getNextShipmentId().send(), HttpStatus.OK);
