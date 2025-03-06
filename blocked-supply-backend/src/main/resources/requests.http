@@ -45,7 +45,7 @@ POST http://localhost:8080/api/shipment/create
 Content-Type: application/json
 
 {
-  "name": "Vaccine",
+  "name": "Vaccine2",
   "description": "pfizer",
   "origin": "Sant Pol de Mar",
   "destination": "Brazil",
@@ -54,7 +54,10 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:8080/api/shipment/0
+GET http://localhost:8080/api/shipment/1
+
+###
+GET http://localhost:8080/api/shipment/0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1/owner
 
 ###
 GET http://localhost:8080/api/shipment/nextId

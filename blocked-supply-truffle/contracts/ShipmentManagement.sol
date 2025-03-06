@@ -53,7 +53,7 @@ contract ShipmentManagement {
 
     mapping(uint256 => Shipment) private shipments;
     mapping(uint256 => Transfer[]) private transfersByShipment;
-
+    mapping(address => uint256[]) shipmentsByOwner;
 
     modifier onlyOwner(uint256 shipmentId) {
         require(shipments[shipmentId].currentOwner == msg.sender, "Only the current owner can perform this action.");
@@ -90,6 +90,8 @@ contract ShipmentManagement {
             currentState: State.CREATED,
             currentOwner: msg.sender
         });
+
+        shipmentsByOwner[msg.sender].push(shipmentId);
     }
 
     function shipmentTransfer(
@@ -151,6 +153,9 @@ contract ShipmentManagement {
         return transfersByShipment[shipmentId].length;
     }
 
+    function getShipmentsByOwner(address owner) public view returns (uint256[] memory) {
+        return shipmentsByOwner[owner];
+    }
 
     function getNextShipmentId() public view returns (uint256) {
         return nextShipmentId;
