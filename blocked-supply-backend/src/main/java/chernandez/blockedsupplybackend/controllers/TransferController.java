@@ -1,13 +1,11 @@
 package chernandez.blockedsupplybackend.controllers;
 
 import chernandez.blockedsupplybackend.domain.dto.TransferInput;
-import chernandez.blockedsupplybackend.domain.dto.TransferOutput;
 import chernandez.blockedsupplybackend.services.TransferService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/transfer")
