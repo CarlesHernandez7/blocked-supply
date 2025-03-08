@@ -1,8 +1,10 @@
 package chernandez.blockedsupplybackend.services;
 
+import chernandez.blockedsupplybackend.domain.ShipmentRecord;
 import chernandez.blockedsupplybackend.domain.State;
 import chernandez.blockedsupplybackend.domain.dto.ShipmentInput;
 import chernandez.blockedsupplybackend.domain.dto.ShipmentOutput;
+import chernandez.blockedsupplybackend.repositories.ShipmentRecordRepository;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +20,8 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 public class ShipmentService {
@@ -26,10 +29,12 @@ public class ShipmentService {
     private final Web3j web3j;
     private final Credentials credentials;
     private ShipmentManagement shipmentContract;
+    private final ShipmentRecordRepository shipmentRecordRepository;
 
-    public ShipmentService(Web3j web3j, Credentials credentials) {
+    public ShipmentService(Web3j web3j, Credentials credentials, ShipmentRecordRepository shipmentRecordRepository) {
         this.web3j = web3j;
         this.credentials = credentials;
+        this.shipmentRecordRepository = shipmentRecordRepository;
     }
 
     public void setContractAddress(String contractAddress) {
@@ -40,6 +45,9 @@ public class ShipmentService {
         TransactionReceipt receipt;
         BigInteger units = BigInteger.valueOf(shipmentInput.getUnits());
         BigInteger weight = BigInteger.valueOf(shipmentInput.getWeight());
+
+        AtomicLong shipmentId = new AtomicLong();
+        AtomicReference<String> currentOwner = new AtomicReference<>();
 
         if (units.signum() < 0 || weight.signum() < 0) {
             return new ResponseEntity<>("Units and weight must be non-negative.", HttpStatus.BAD_REQUEST);
@@ -54,9 +62,22 @@ public class ShipmentService {
                     units,
                     weight
             ).send();
+
+            shipmentContract.shipmentCreatedEventFlowable(DefaultBlockParameterName.LATEST, DefaultBlockParameterName.LATEST)
+                    .subscribe(event -> {
+                        shipmentId.set(event.id.longValue());
+                        currentOwner.set((event.currentOwner));
+            });
+
         } catch (Exception e) {
             return new ResponseEntity<>("Failed to create shipment: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+
+        // UPDATE owener id WHEN JWT AUTHENTICATION IS IMPLEMENTED
+        ShipmentRecord shipmentRecord = new ShipmentRecord(shipmentId.get(), currentOwner.get(), State.CREATED, 0L);
+
+        shipmentRecordRepository.save(shipmentRecord);
+
         return new ResponseEntity<>(receipt, HttpStatus.CREATED);
     }
 
