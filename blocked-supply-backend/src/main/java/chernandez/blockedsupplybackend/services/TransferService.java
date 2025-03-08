@@ -1,8 +1,10 @@
 package chernandez.blockedsupplybackend.services;
 
+import chernandez.blockedsupplybackend.domain.ShipmentRecord;
 import chernandez.blockedsupplybackend.domain.State;
 import chernandez.blockedsupplybackend.domain.dto.TransferInput;
 import chernandez.blockedsupplybackend.domain.dto.TransferOutput;
+import chernandez.blockedsupplybackend.repositories.ShipmentRecordRepository;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,9 @@ import smartContracts.web3.ShipmentManagement;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 public class TransferService {
@@ -24,10 +29,12 @@ public class TransferService {
     private final Web3j web3j;
     private final Credentials credentials;
     private ShipmentManagement shipmentContract;
+    private final ShipmentRecordRepository shipmentRecordRepository;
 
-    public TransferService(Web3j web3j, Credentials credentials) {
+    public TransferService(Web3j web3j, Credentials credentials, ShipmentRecordRepository shipmentRecordRepository) {
         this.web3j = web3j;
         this.credentials = credentials;
+        this.shipmentRecordRepository = shipmentRecordRepository;
     }
 
     public void setContractAddress(String contractAddress) {
@@ -38,16 +45,25 @@ public class TransferService {
         TransactionReceipt receipt;
         BigInteger id = BigInteger.valueOf(request.getShipmentId());
 
+        AtomicLong shipmentId = new AtomicLong();
+        AtomicReference<BigInteger> newState = new AtomicReference<>();
+
         try {
-            receipt = shipmentContract
-                    .shipmentTransfer(
-                            id,
-                            request.getNewShipmentOwner(),
-                            BigInteger.valueOf(request.getNewState()),
-                            request.getLocation(),
-                            request.getTransferNotes()
+            receipt = shipmentContract.shipmentTransfer(
+                    id,
+                    request.getNewShipmentOwner(),
+                    BigInteger.valueOf(request.getNewState()),
+                    request.getLocation(),
+                    request.getTransferNotes()
                     )
-                    .send();
+            .send();
+
+            shipmentContract.transferCreatedEventFlowable(DefaultBlockParameterName.LATEST, DefaultBlockParameterName.LATEST)
+                    .subscribe(event -> {
+                        shipmentId.set(event.shipmentId.longValue());
+                        newState.set(event.newState);
+            });
+
         } catch (Exception e) {
             if (e.getMessage().contains("Only the current owner can perform this action.")) {
                 return new ResponseEntity<>("Only the current owner can perform this action.", HttpStatus.FORBIDDEN);
@@ -56,6 +72,15 @@ public class TransferService {
                 return new ResponseEntity<>("Failed to create transfer for the shipment: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
+
+        Optional<ShipmentRecord> optionalShipmentRecord = shipmentRecordRepository.findById(shipmentId.get());
+        if (optionalShipmentRecord.isEmpty()) {
+            return new ResponseEntity<>("Shipment record not found", HttpStatus.NOT_FOUND);
+        }
+        ShipmentRecord shipmentRecord = optionalShipmentRecord.get();
+        shipmentRecord.setStatus(State.fromBigInt(newState.get()));
+        shipmentRecordRepository.save(shipmentRecord);
+
         return new ResponseEntity<>(receipt, HttpStatus.CREATED);
     }
 

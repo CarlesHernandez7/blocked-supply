@@ -26,6 +26,16 @@ contract ShipmentManagement {
         string transferNotes;
     }
 
+    event ShipmentCreated(
+        uint256 indexed id,
+        address currentOwner
+    );
+
+    event TransferCreated(
+        uint256 shipmentId,
+        uint256 newState
+    );
+
     event ShipmentRetrieved(
         uint256 indexed id,
         string name,
@@ -92,6 +102,8 @@ contract ShipmentManagement {
         });
 
         shipmentsByOwner[msg.sender].push(shipmentId);
+
+        emit ShipmentCreated(shipmentId, msg.sender);
     }
 
     function shipmentTransfer(
@@ -120,6 +132,8 @@ contract ShipmentManagement {
             newShipmentOwner: newShipmentOwner,
             transferNotes: transferNotes
         }));
+
+        emit TransferCreated(shipmentId, uint256(newState));
     }
 
     function removeShipmentFromOwner(address owner, uint256 shipmentId) private {
