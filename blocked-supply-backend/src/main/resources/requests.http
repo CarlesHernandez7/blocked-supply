@@ -1,5 +1,10 @@
+//BLOCKCHAIN
+
 ###
-POST http://localhost:8080/api/contract
+POST http://localhost:8080/api/blockchain
+
+###
+GET http://localhost:8080/api/blockchain/blockNumber
 
 //USERS
 
@@ -8,10 +13,13 @@ POST http://localhost:8080/api/user/create
 Content-Type: application/json
 
 {
-  "name": "Test",
+  "name": "Test4",
   "email": "111@",
   "password": "AAAAAaaa11",
-  "roles": ["ADMIN", "CUSTOMER"]
+  "roles": [
+    "ADMIN",
+    "CUSTOMER"
+  ]
 }
 
 ###
@@ -21,7 +29,7 @@ GET http://localhost:8080/api/user/1
 GET http://localhost:8080/api/user
 
 ###
-PUT http://localhost:8080/api/user/address/2
+PUT http://localhost:8080/api/user/address/1
 Content-Type: application/json
 
 {
@@ -31,7 +39,6 @@ Content-Type: application/json
 ###
 DELETE http://localhost:8080/api/user/1
 
-
 //SHIPMENTS
 
 ###
@@ -39,7 +46,7 @@ POST http://localhost:8080/api/shipment/create
 Content-Type: application/json
 
 {
-  "name": "Vaccine",
+  "name": "Vaccine3",
   "description": "pfizer",
   "origin": "Sant Pol de Mar",
   "destination": "Brazil",
@@ -49,6 +56,9 @@ Content-Type: application/json
 
 ###
 GET http://localhost:8080/api/shipment/1
+
+###
+GET http://localhost:8080/api/shipment/0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1/owner
 
 ###
 GET http://localhost:8080/api/shipment/nextId
@@ -61,13 +71,31 @@ Content-Type: application/json
 
 {
   "shipmentId": 1,
-  "newShipmentOwner": "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1",
+  "newShipmentOwner": "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C2",
   "newState": 2,
+  "location": "SAMBA",
   "transferNotes": "Transferred to new warehouse"
 }
 
 ###
-GET http://localhost:8080/api/transfer/1
+GET http://localhost:8080/api/transfer/2
 
 ###
 GET http://localhost:8080/api/transfer/nextId
+
+//RECCORDS
+
+###
+GET http://localhost:8080/api/records/shipment/1
+
+###
+GET http://localhost:8080/api/records/all
+
+###
+GET http://localhost:8080/api/records/progress
+
+###
+GET http://localhost:8080/api/records/delivered
+
+###
+GET http://localhost:8080/api/records/user/0
