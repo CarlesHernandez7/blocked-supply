@@ -15,7 +15,7 @@ export default function Traceability() {
                 </CardHeader>
                 <CardContent>
                     <div className="flex space-x-2">
-                        <Input placeholder="Search by Product ID or SKU"/>
+                        <Input placeholder="Search by Product ID"/>
                         <Button>
                             <Search className="h-4 w-4 mr-2"/>
                             Search
