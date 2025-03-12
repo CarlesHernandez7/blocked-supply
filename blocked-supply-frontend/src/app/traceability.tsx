@@ -22,10 +22,12 @@ export default function Traceability() {
     const [shipmentId, setShipmentId] = useState("");
     const [transfers, setTransfers] = useState<TransferOutput[] | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [noTransfers, setNoTransfers] = useState<boolean>(false);
 
     const handleSearch = async () => {
         setTransfers(null);
         setError(null);
+        setNoTransfers(false);
 
         const idNumber = Number(shipmentId);
         if (isNaN(idNumber) || idNumber <= 0) {
@@ -42,6 +44,10 @@ export default function Traceability() {
             }
 
             const data: TransferOutput[] = await response.json();
+            if (data.length === 0) {
+                setNoTransfers(true);
+                return;
+            }
             setTransfers(data);
         } catch (err) {
             console.log(err);
@@ -68,11 +74,11 @@ export default function Traceability() {
                             Search
                         </Button>
                     </div>
-                    {error && <p className="text-red-500 mt-2">{error}</p>}
                 </CardContent>
             </Card>
+            {error && <p className="text-red-500 mt-2">{error}</p>}
 
-            {!transfers && (
+            {!transfers && !noTransfers && (
                 <div className="flex justify-center">
                     <Image
                         src="/trace-product.png"
@@ -82,6 +88,17 @@ export default function Traceability() {
                         className="rounded-lg shadow-md"
                     />
                 </div>
+            )}
+
+            {noTransfers && (
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Tracking Results</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <p className="text-gray-500">No transfers found for this shipment yet.</p>
+                    </CardContent>
+                </Card>
             )}
 
             {transfers && (
