@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Image from "next/image";
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -34,7 +35,6 @@ export default function Traceability() {
 
         try {
             const response = await fetch(`${API_URL}/transfer/${idNumber}`);
-            console.log(response);
             if (!response.ok) {
                 const errorMessage = await response.text();
                 setError(errorMessage);
@@ -71,6 +71,18 @@ export default function Traceability() {
                     {error && <p className="text-red-500 mt-2">{error}</p>}
                 </CardContent>
             </Card>
+
+            {!transfers && (
+                <div className="flex justify-center">
+                    <Image
+                        src="/trace-product.png"
+                        alt="Trace your product"
+                        width={500}
+                        height={300}
+                        className="rounded-lg shadow-md"
+                    />
+                </div>
+            )}
 
             {transfers && (
                 <Card>
