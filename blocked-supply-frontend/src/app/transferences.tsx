@@ -16,12 +16,12 @@ export default function Transferences() {
                 <CardContent>
                     <form className="space-y-4">
                         <div className="grid gap-2">
-                            <Label htmlFor="product-id">Product ID/SKU</Label>
-                            <Input id="product-id" placeholder="Enter Product ID or SKU"/>
+                            <Label htmlFor="product-id">Product ID</Label>
+                            <Input id="product-id" placeholder="Enter Product ID"/>
                         </div>
                         <div className="grid gap-2">
                             <Label htmlFor="current-status">Current Status</Label>
-                            <Input id="current-status" disabled value="In Warehouse A"/>
+                            <Input id="current-status" disabled value="Created"/>
                         </div>
                         <div className="grid gap-2">
                             <Label htmlFor="new-status">New Status</Label>
@@ -30,26 +30,20 @@ export default function Transferences() {
                                     <SelectValue placeholder="Select new status"/>
                                 </SelectTrigger>
                                 <SelectContent>
+                                    <SelectItem value="created">Created</SelectItem>
                                     <SelectItem value="in-transit">In Transit</SelectItem>
                                     <SelectItem value="delivered">Delivered</SelectItem>
-                                    <SelectItem value="inspection">Under Inspection</SelectItem>
                                     <SelectItem value="stored">Stored</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
                         <div className="grid gap-2">
                             <Label htmlFor="new-location">New Location</Label>
-                            <Select>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select new location"/>
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="warehouse-a">Warehouse A</SelectItem>
-                                    <SelectItem value="warehouse-b">Warehouse B</SelectItem>
-                                    <SelectItem value="distribution">Distribution Center</SelectItem>
-                                    <SelectItem value="retail">Retail Location</SelectItem>
-                                </SelectContent>
-                            </Select>
+                            <Input id="new-location" placeholder="Enter the new location of the product" />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="new-owner">New Owner</Label>
+                            <Input id="new-owner" placeholder="Enter the new owner of the product" />
                         </div>
                         <div className="grid gap-2">
                             <Label htmlFor="notes">Transfer Notes</Label>

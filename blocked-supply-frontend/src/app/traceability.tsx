@@ -1,11 +1,60 @@
-import {Search} from "lucide-react"
+import { useState } from "react";
+import Image from "next/image";
+import { Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
-import {Button} from "@/components/ui/button"
-import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card"
-import {Input} from "@/components/ui/input"
-import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table"
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+interface TransferOutput {
+    id: number;
+    shipmentId: number;
+    timestamp: number;
+    newState: string;
+    location: string;
+    newOwner: string;
+    transferNotes: string;
+}
 
 export default function Traceability() {
+    const [shipmentId, setShipmentId] = useState("");
+    const [transfers, setTransfers] = useState<TransferOutput[] | null>(null);
+    const [error, setError] = useState<string | null>(null);
+    const [noTransfers, setNoTransfers] = useState<boolean>(false);
+
+    const handleSearch = async () => {
+        setTransfers(null);
+        setError(null);
+        setNoTransfers(false);
+
+        const idNumber = Number(shipmentId);
+        if (isNaN(idNumber) || idNumber <= 0) {
+            setError("Invalid Shipment ID: Must be greater than 0.");
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_URL}/transfer/${idNumber}`);
+            if (!response.ok) {
+                const errorMessage = await response.text();
+                setError(errorMessage);
+                return;
+            }
+
+            const data: TransferOutput[] = await response.json();
+            if (data.length === 0) {
+                setNoTransfers(true);
+                return;
+            }
+            setTransfers(data);
+        } catch (err) {
+            console.log(err);
+            setError("An error occurred while retrieving the shipment.");
+        }
+    };
+
     return (
         <div className="space-y-4">
             <Card>
@@ -15,56 +64,74 @@ export default function Traceability() {
                 </CardHeader>
                 <CardContent>
                     <div className="flex space-x-2">
-                        <Input placeholder="Search by Product ID or SKU"/>
-                        <Button>
-                            <Search className="h-4 w-4 mr-2"/>
+                        <Input
+                            placeholder="Search by Product ID"
+                            value={shipmentId}
+                            onChange={(e) => setShipmentId(e.target.value)}
+                        />
+                        <Button onClick={handleSearch}>
+                            <Search className="h-4 w-4 mr-2" />
                             Search
                         </Button>
                     </div>
                 </CardContent>
             </Card>
-            <Card>
-                <CardHeader>
-                    <CardTitle>Tracking Results</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Timestamp</TableHead>
-                                <TableHead>Location</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead>Handler</TableHead>
-                                <TableHead>Notes</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            <TableRow>
-                                <TableCell>2024-02-22 10:30 AM</TableCell>
-                                <TableCell>Warehouse A</TableCell>
-                                <TableCell>Received</TableCell>
-                                <TableCell>John Doe</TableCell>
-                                <TableCell>Initial receipt of product</TableCell>
-                            </TableRow>
-                            <TableRow>
-                                <TableCell>2024-02-22 02:15 PM</TableCell>
-                                <TableCell>Quality Control</TableCell>
-                                <TableCell>Inspected</TableCell>
-                                <TableCell>Jane Smith</TableCell>
-                                <TableCell>Passed quality inspection</TableCell>
-                            </TableRow>
-                            <TableRow>
-                                <TableCell>2024-02-22 04:45 PM</TableCell>
-                                <TableCell>Distribution Center</TableCell>
-                                <TableCell>In Transit</TableCell>
-                                <TableCell>Mike Johnson</TableCell>
-                                <TableCell>Preparing for shipment</TableCell>
-                            </TableRow>
-                        </TableBody>
-                    </Table>
-                </CardContent>
-            </Card>
-        </div>
-    )
-}
+            {error && <p className="text-red-500 mt-2">{error}</p>}
 
+            {!transfers && !noTransfers && (
+                <div className="flex justify-center">
+                    <Image
+                        src="/trace-product.png"
+                        alt="Trace your product"
+                        width={500}
+                        height={300}
+                        className="rounded-lg shadow-md"
+                    />
+                </div>
+            )}
+
+            {noTransfers && (
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Tracking Results</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <p className="text-gray-500">No transfers found for this shipment yet.</p>
+                    </CardContent>
+                </Card>
+            )}
+
+            {transfers && (
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Tracking Results</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Timestamp</TableHead>
+                                    <TableHead>Location</TableHead>
+                                    <TableHead>Status</TableHead>
+                                    <TableHead>Handler</TableHead>
+                                    <TableHead>Notes</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {transfers.map((transfer) => (
+                                    <TableRow key={transfer.id}>
+                                        <TableCell>{new Date(transfer.timestamp * 1000).toLocaleString()}</TableCell>
+                                        <TableCell>{transfer.location}</TableCell>
+                                        <TableCell>{transfer.newState}</TableCell>
+                                        <TableCell>{transfer.newOwner}</TableCell>
+                                        <TableCell>{transfer.transferNotes}</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </CardContent>
+                </Card>
+            )}
+        </div>
+    );
+}
