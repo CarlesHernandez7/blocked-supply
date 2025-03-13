@@ -73,8 +73,8 @@ public class ShipmentService {
             return new ResponseEntity<>("Failed to create shipment: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        // UPDATE owener id WHEN JWT AUTHENTICATION IS IMPLEMENTED
-        ShipmentRecord shipmentRecord = new ShipmentRecord(shipmentId.get(), currentOwner.get(), State.CREATED, 0L);
+        // TODO UPDATE owener id WHEN JWT AUTHENTICATION IS IMPLEMENTED
+        ShipmentRecord shipmentRecord = new ShipmentRecord(shipmentId.get(), currentOwner.get(), State.CREATED, 1L);
 
         shipmentRecordRepository.save(shipmentRecord);
 
