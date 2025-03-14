@@ -51,7 +51,7 @@ export default function ShipmentsPage() {
                 const data: ShipmentRecord[] = await response.json();
                 setShipments(data.length ? data : null);
             } catch (err) {
-                console.log(err);
+                console.error(err);
                 setError("An error occurred while fetching shipments.");
             }
         };

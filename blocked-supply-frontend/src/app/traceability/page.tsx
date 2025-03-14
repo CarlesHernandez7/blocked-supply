@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Loading from "@/components/loading";
 import Image from "next/image";
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -25,15 +26,18 @@ export default function TraceabilityPage() {
     const [transfers, setTransfers] = useState<TransferOutput[] | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [noTransfers, setNoTransfers] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(false);
 
     const handleSearch = async () => {
         setTransfers(null);
         setError(null);
         setNoTransfers(false);
+        setLoading(true);
 
         const idNumber = Number(shipmentId);
         if (isNaN(idNumber) || idNumber <= 0) {
             setError("Invalid Shipment ID: Must be greater than 0.");
+            setLoading(false);
             return;
         }
 
@@ -42,23 +46,28 @@ export default function TraceabilityPage() {
             if (!response.ok) {
                 const errorMessage = await response.text();
                 setError(errorMessage);
+                setLoading(true);
                 return;
             }
 
             const data: TransferOutput[] = await response.json();
             if (data.length === 0) {
                 setNoTransfers(true);
-                return;
+            } else {
+                setTransfers(data);
             }
-            setTransfers(data);
         } catch (err) {
-            console.log(err);
+            console.error(err);
             setError("An error occurred while retrieving the shipment.");
+        } finally {
+            //setLoading(false);
         }
     };
 
     return (
-        <div className="space-y-4">
+        <div className={`space-y-4 ${loading ? "opacity-50 pointer-events-none" : ""}`}>
+            {loading && <Loading />} {}
+
             <Card>
                 <CardHeader>
                     <CardTitle>Product Traceability</CardTitle>
@@ -78,9 +87,10 @@ export default function TraceabilityPage() {
                     </div>
                 </CardContent>
             </Card>
+
             {error && <p className="text-red-500 mt-2">{error}</p>}
 
-            {!transfers && !noTransfers && (
+            {!transfers && !noTransfers && !loading && (
                 <div className="flex justify-center pt-20">
                     <Image
                         src="/trace-product.png"
