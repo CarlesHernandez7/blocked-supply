@@ -78,7 +78,7 @@ public class TransferService {
             return new ResponseEntity<>("Shipment record not found", HttpStatus.NOT_FOUND);
         }
 
-        //Add participant if transaction have a new owner and the new owner is not already in the list when JWT authentication is implemented
+        // TODO Add participant if transaction have a new owner and the new owner is not already in the list when JWT authentication is implemented
         ShipmentRecord shipmentRecord = optionalShipmentRecord.get();
         shipmentRecord.setStatus(State.fromBigInt(newState.get()));
         shipmentRecordRepository.save(shipmentRecord);

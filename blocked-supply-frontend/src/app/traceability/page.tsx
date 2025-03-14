@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import Image from "next/image";
 import { Search } from "lucide-react";
@@ -18,7 +20,7 @@ interface TransferOutput {
     transferNotes: string;
 }
 
-export default function Traceability() {
+export default function TraceabilityPage() {
     const [shipmentId, setShipmentId] = useState("");
     const [transfers, setTransfers] = useState<TransferOutput[] | null>(null);
     const [error, setError] = useState<string | null>(null);
