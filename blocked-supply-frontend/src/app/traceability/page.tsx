@@ -81,12 +81,12 @@ export default function TraceabilityPage() {
             {error && <p className="text-red-500 mt-2">{error}</p>}
 
             {!transfers && !noTransfers && (
-                <div className="flex justify-center">
+                <div className="flex justify-center pt-20">
                     <Image
                         src="/trace-product.png"
                         alt="Trace your product"
-                        width={500}
-                        height={300}
+                        width={200}
+                        height={50}
                         className="rounded-lg shadow-md"
                     />
                 </div>
