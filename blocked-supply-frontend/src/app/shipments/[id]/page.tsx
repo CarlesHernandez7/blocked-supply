@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import Loading from "@/components/loading";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -24,9 +25,11 @@ export default function ShipmentDetail() {
     const { id } = useParams();
     const [shipment, setShipment] = useState<Shipment | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
         const fetchShipment = async () => {
+            setLoading(true);
             try {
                 const response = await fetch(`${API_URL}/shipment/${id}`);
                 if (!response.ok) {
@@ -38,10 +41,16 @@ export default function ShipmentDetail() {
             } catch (err) {
                 console.error(err);
                 setError("An error occurred while fetching shipment.");
+            } finally {
+                setLoading(false);
             }
         };
         fetchShipment();
     }, [id]);
+
+    if (loading) {
+        return <Loading />;
+    }
 
     if (error) {
         return (
@@ -60,7 +69,7 @@ export default function ShipmentDetail() {
     }
 
     if (!shipment) {
-        return <p>Loading...</p>;
+        return null;
     }
 
     return (
