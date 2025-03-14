@@ -1,13 +1,15 @@
 import React from 'react';
-import Image from "next/image";
+import Image from 'next/image';
+import '@/styles/globals.css';
 
 const Loading: React.FC = () => (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+    <div className="loading-overlay">
         <Image
             src="/load-block.gif"
             alt="Loading..."
-            width={70}
-            height={70}
+            width={100}
+            height={100}
+            className="loading-gif"
         />
     </div>
 );
