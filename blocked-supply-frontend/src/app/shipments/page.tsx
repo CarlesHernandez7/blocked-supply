@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import Link from "next/link";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const USER_ID = "1";
@@ -25,7 +26,7 @@ interface ShipmentRecord {
     status: string;
 }
 
-export default function NewProductPage() {
+export default function ShipmentsPage() {
     const [shipments, setShipments] = useState<ShipmentRecord[] | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [showForm, setShowForm] = useState(false);
@@ -121,10 +122,12 @@ export default function NewProductPage() {
                         ) : (
                             <ul className="space-y-2">
                                 {shipments?.map(shipment => (
-                                    <li key={shipment.shipmentId} className="border p-2 rounded">
-                                        <p><strong>ID:</strong> {shipment.shipmentId}</p>
-                                        <p><strong>Status:</strong> {shipment.status}</p>
-                                        <p><strong>Created At:</strong> {new Date(shipment.createdAt).toLocaleString()}</p>
+                                    <li key={shipment.shipmentId} className="border p-2 rounded transition-colors duration-200 hover:bg-gray-200/50">
+                                    <Link href={`/shipments/${shipment.shipmentId}`} className="block p-2">
+                                            <p><strong>ID:</strong> {shipment.shipmentId}</p>
+                                            <p><strong>Status:</strong> {shipment.status}</p>
+                                            <p><strong>Created At:</strong> {new Date(shipment.createdAt).toLocaleString()}</p>
+                                        </Link>
                                     </li>
                                 ))}
                             </ul>

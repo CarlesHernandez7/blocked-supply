@@ -13,8 +13,8 @@ const navItems = [
         icon: Home,
     },
     {
-        name: "New Product",
-        href: "/new-product",
+        name: "Shipments",
+        href: "/shipments",
         icon: Box,
     },
     {
