@@ -27,11 +27,6 @@ public class ShipmentController {
         return shipmentService.getShipment(id);
     }
 
-    @GetMapping("/{ownerAddress}/owner")
-    public ResponseEntity<?> getShipmentsByOwner(@PathVariable String ownerAddress) {
-        return shipmentService.getShipmentsByOwner(ownerAddress);
-    }
-
     @GetMapping("/nextId")
     public ResponseEntity<BigInteger> getNextShipmentId() throws Exception {
         return shipmentService.getNextShipmentId();

@@ -1,10 +1,10 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { Activity, Box, Home, RefreshCw } from "lucide-react"
+import {usePathname} from "next/navigation"
+import {Activity, Box, Home, RefreshCw} from "lucide-react"
 
-import { cn } from "@/lib/utils"
+import {cn} from "@/lib/utils"
 
 const navItems = [
     {

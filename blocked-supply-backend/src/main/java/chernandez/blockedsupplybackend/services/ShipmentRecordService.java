@@ -59,4 +59,12 @@ public class ShipmentRecordService {
         }
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
+
+    public ResponseEntity<?> getShipmentRecordsByowner(int userId) {
+        List<ShipmentRecord> list = shipmentRecordRepository.findByOwnerId((long) userId);
+        if (list.isEmpty()) {
+            return new ResponseEntity<>("No shipments found for user.", HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
 }

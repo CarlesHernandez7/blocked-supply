@@ -17,9 +17,6 @@ import org.web3j.tx.gas.DefaultGasProvider;
 import smartContracts.web3.ShipmentManagement;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -112,43 +109,6 @@ public class ShipmentService {
             } else {
                 return new ResponseEntity<>("An error occurred while retrieving the shipment.", HttpStatus.INTERNAL_SERVER_ERROR);
             }
-        }
-    }
-
-    public ResponseEntity<?> getShipmentsByOwner(String ownerAddress) {
-        try {
-            List<?> rawList = shipmentContract.getShipmentsByOwner(ownerAddress).send();
-            List<BigInteger> shipmentIds = rawList.stream().filter(Objects::nonNull).map(item -> (BigInteger) item).toList();
-
-            List<ShipmentOutput> shipments = new ArrayList<>();
-
-            for (BigInteger id : shipmentIds) {
-                shipmentContract.getShipment(id).send();
-
-                ShipmentOutput shipment = new ShipmentOutput();
-
-                shipmentContract.shipmentRetrievedEventFlowable(DefaultBlockParameterName.LATEST, DefaultBlockParameterName.LATEST)
-                        .subscribe(event -> {
-                            if (event.id.equals(id)) {
-                                shipment.setId(event.id.intValue());
-                                shipment.setName(event.name);
-                                shipment.setDescription(event.description);
-                                shipment.setOrigin(event.origin);
-                                shipment.setDestination(event.destination);
-                                shipment.setUnits(event.units.intValue());
-                                shipment.setWeight(event.weight.intValue());
-                                shipment.setCurrentState(State.fromBigInt(event.currentState));
-                                shipment.setCurrentOwner(event.currentOwner);
-                            }
-                        });
-
-                shipments.add(shipment);
-            }
-
-            return new ResponseEntity<>(shipments, HttpStatus.OK);
-
-        } catch (Exception e) {
-            return new ResponseEntity<>("Failed to retrieve shipments: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
