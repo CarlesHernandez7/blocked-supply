@@ -14,4 +14,6 @@ public interface ShipmentRecordRepository extends JpaRepository<ShipmentRecord, 
     List<ShipmentRecord> findByStatusAndCreatedAtBetween(State status, LocalDateTime start, LocalDateTime end);
 
     List<ShipmentRecord> findByParticipantsContaining(Long userId);
+
+    List<ShipmentRecord> findByOwnerId(Long ownerId);
 }

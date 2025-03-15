@@ -55,10 +55,7 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:8080/api/shipment/1
-
-###
-GET http://localhost:8080/api/shipment/0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1/owner
+GET http://localhost:8080/api/shipment/3
 
 ###
 GET http://localhost:8080/api/shipment/nextId
@@ -70,8 +67,8 @@ POST http://localhost:8080/api/transfer/create
 Content-Type: application/json
 
 {
-  "shipmentId": 1,
-  "newShipmentOwner": "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1",
+  "shipmentId": 2,
+  "newShipmentOwner": "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C2",
   "newState": 2,
   "location": "SAMBA2",
   "transferNotes": "Transferred to new warehouse"
@@ -98,4 +95,7 @@ GET http://localhost:8080/api/records/progress
 GET http://localhost:8080/api/records/delivered
 
 ###
-GET http://localhost:8080/api/records/user/0
+GET http://localhost:8080/api/records/participant/1
+
+###
+GET http://localhost:8080/api/records/owner/1

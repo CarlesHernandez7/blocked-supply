@@ -1,8 +1,8 @@
 import type React from "react"
 import "@/styles/globals.css"
-import { Inter } from "next/font/google"
+import {Inter} from "next/font/google"
 
-import { cn } from "@/lib/utils"
+import {cn} from "@/lib/utils"
 import Navigation from "@/components/navigation"
 
 const inter = Inter({ subsets: ["latin"] })

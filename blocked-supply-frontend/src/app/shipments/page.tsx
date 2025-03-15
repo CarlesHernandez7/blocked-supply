@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import {useEffect, useState} from "react";
+import {Button} from "@/components/ui/button";
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
+import {Input} from "@/components/ui/input";
+import {Label} from "@/components/ui/label";
+import {Textarea} from "@/components/ui/textarea";
 import Link from "next/link";
 import Loading from "@/components/loading";
 
@@ -48,7 +48,7 @@ export default function ShipmentsPage() {
             setError(null);
 
             try {
-                const response = await fetch(`${API_URL}/records/user/${USER_ID}`);
+                const response = await fetch(`${API_URL}/records/participant/${USER_ID}`);
                 if (!response.ok) {
                     setError("You are not a participant in any shipment.");
                     setShipments(null);

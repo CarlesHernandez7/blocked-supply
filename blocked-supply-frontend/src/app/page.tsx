@@ -1,6 +1,6 @@
-import { Activity, Box, RefreshCw } from "lucide-react"
+import {Activity, Box, RefreshCw} from "lucide-react"
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card"
 
 export default function HomePage() {
     return (

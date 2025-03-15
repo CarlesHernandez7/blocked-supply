@@ -1,0 +1,149 @@
+"use client";
+
+import {useState} from "react";
+import {useParams, useRouter} from "next/navigation";
+import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
+import {Button} from "@/components/ui/button";
+import {Input} from "@/components/ui/input";
+import {Label} from "@/components/ui/label";
+import {Textarea} from "@/components/ui/textarea";
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
+import Loading from "@/components/loading";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+const stateMap: Record<string, number> = {
+    "created": 0,
+    "in-transit": 1,
+    "delivered": 2,
+    "stored": 3
+};
+
+interface TransferForm {
+    shipmentId: number;
+    newShipmentOwner: string;
+    newState: number;
+    location: string;
+    transferNotes: string;
+}
+
+export default function TransferShipmentPage() {
+    const { id } = useParams();
+    const router = useRouter();
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [transferData, setTransferData] = useState<TransferForm>({
+        shipmentId: Number(id),
+        newShipmentOwner: "",
+        newState: stateMap["created"],
+        location: "",
+        transferNotes: ""
+    });
+
+    const handleChange = (field: keyof TransferForm, value: string) => {
+        setTransferData(prev => ({
+            ...prev,
+            [field]: field === "newState" ? stateMap[value] : value
+        }));
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        setError(null);
+
+        try {
+            const response = await fetch(`${API_URL}/transfer/create`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(transferData)
+            });
+
+            if (!response.ok) throw new Error("Failed to update shipment");
+
+            router.push("/shipments");
+        } catch (err) {
+            console.error(err);
+            setError("Failed to update shipment.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <div className="relative">
+            {loading && (
+                <div>
+                    <Loading />
+                </div>
+            )}
+            <Card className={`${loading ? "opacity-50 pointer-events-none" : ""}`}>
+                <CardHeader>
+                    <CardTitle>Transfer Shipment #{id}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <form className="space-y-4" onSubmit={handleSubmit}>
+                        <div className="grid gap-2">
+                            <Label>New State</Label>
+                            <Select
+                                onValueChange={(value) => handleChange("newState", value)}
+                                disabled={loading}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select new state" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="created">Created</SelectItem>
+                                    <SelectItem value="in-transit">In Transit</SelectItem>
+                                    <SelectItem value="delivered">Delivered</SelectItem>
+                                    <SelectItem value="stored">Stored</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="grid gap-2">
+                            <Label>New Owner</Label>
+                            <Input
+                                value={transferData.newShipmentOwner}
+                                onChange={(e) => handleChange("newShipmentOwner", e.target.value)}
+                                placeholder="Enter new owner"
+                                disabled={loading}
+                            />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label>Location</Label>
+                            <Input
+                                value={transferData.location}
+                                onChange={(e) => handleChange("location", e.target.value)}
+                                placeholder="Enter new location"
+                                disabled={loading}
+                            />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label>Transfer Notes</Label>
+                            <Textarea
+                                value={transferData.transferNotes}
+                                onChange={(e) => handleChange("transferNotes", e.target.value)}
+                                placeholder="Enter additional notes"
+                                disabled={loading}
+                            />
+                        </div>
+                        {error && <p className="text-red-500">{error}</p>}
+                        <div className="flex justify-between">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => router.back()}
+                                disabled={loading}
+                            >
+                                Cancel
+                            </Button>
+                            <Button type="submit" disabled={loading}>
+                                {loading ? "Saving..." : "Save"}
+                            </Button>
+                        </div>
+                    </form>
+                </CardContent>
+            </Card>
+        </div>
+    );
+}

@@ -1,59 +1,78 @@
-import {Button} from "@/components/ui/button"
-import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card"
-import {Input} from "@/components/ui/input"
-import {Label} from "@/components/ui/label"
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
-import {Textarea} from "@/components/ui/textarea"
+"use client";
+
+import {useEffect, useState} from "react";
+import Loading from "@/components/loading";
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
+import Link from "next/link";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const USER_ID = "1";
+
+interface ShipmentRecord {
+    shipmentId: number;
+    createdAt: string;
+    status: string;
+}
 
 export default function TransferencesPage() {
+    const [shipments, setShipments] = useState<ShipmentRecord[] | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchShipments = async () => {
+            setLoading(true);
+            setError(null);
+
+            try {
+                const response = await fetch(`${API_URL}/records/owner/${USER_ID}`);
+                if (!response.ok) {
+                    setError("You are not a participant in any shipment.");
+                    setShipments(null);
+                    return;
+                }
+                const data: ShipmentRecord[] = await response.json();
+                setShipments(data.length ? data : null);
+            } catch (err) {
+                console.error(err);
+                setError("An error occurred while fetching shipments.");
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchShipments();
+    }, []);
+
     return (
-        <div className="space-y-4">
-            <Card>
-                <CardHeader>
-                    <CardTitle>Transfer Product</CardTitle>
-                    <CardDescription>Update the status or location of a product in the supply chain.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <form className="space-y-4">
-                        <div className="grid gap-2">
-                            <Label htmlFor="product-id">Product ID</Label>
-                            <Input id="product-id" placeholder="Enter Product ID"/>
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="current-status">Current Status</Label>
-                            <Input id="current-status" disabled value="Created"/>
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="new-status">New Status</Label>
-                            <Select>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select new status"/>
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="created">Created</SelectItem>
-                                    <SelectItem value="in-transit">In Transit</SelectItem>
-                                    <SelectItem value="delivered">Delivered</SelectItem>
-                                    <SelectItem value="stored">Stored</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="new-location">New Location</Label>
-                            <Input id="new-location" placeholder="Enter the new location of the product" />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="new-owner">New Owner</Label>
-                            <Input id="new-owner" placeholder="Enter the new owner of the product" />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="notes">Transfer Notes</Label>
-                            <Textarea id="notes" placeholder="Enter any additional notes about the transfer"/>
-                        </div>
-                        <Button className="w-full">Update Product Status</Button>
-                    </form>
-                </CardContent>
-            </Card>
+        <div className="relative">
+            {loading && <Loading />} {}
+
+            <div className={`${loading ? "opacity-50 pointer-events-none" : ""}`}>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Your Shipments</CardTitle>
+                        <CardDescription>List of shipments you are part of.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        {error ? (
+                            <p className="text-red-500">{error}</p>
+                        ) : (
+                            <ul className="space-y-2">
+                                {shipments?.map(shipment => (
+                                    <li key={shipment.shipmentId} className="border p-2 rounded transition-colors hover:bg-gray-200/50">
+                                        <Link href={`/transferences/${shipment.shipmentId}`} className="block p-2">
+                                            <p><strong>ID:</strong> {shipment.shipmentId}</p>
+                                            <p><strong>Status:</strong> {shipment.status}</p>
+                                            <p><strong>Created At:</strong> {new Date(shipment.createdAt).toLocaleString()}</p>
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </CardContent>
+                </Card>
+            </div>
         </div>
-    )
+    );
 }
 
