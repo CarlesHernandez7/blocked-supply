@@ -8,6 +8,7 @@ import {Label} from "@/components/ui/label";
 import {Textarea} from "@/components/ui/textarea";
 import Link from "next/link";
 import Loading from "@/components/loading";
+import { ClipboardCopy } from "lucide-react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const USER_ID = "1";
@@ -41,6 +42,7 @@ export default function ShipmentsPage() {
     });
     const [errors, setErrors] = useState<Partial<ShipmentForm>>({});
     const [loading, setLoading] = useState(false);
+    const [copiedId, setCopiedId] = useState<number | null>(null);
 
     useEffect(() => {
         const fetchShipments = async () => {
@@ -122,6 +124,16 @@ export default function ShipmentsPage() {
         }
     };
 
+    const handleCopy = async (id: number) => {
+        try {
+            await navigator.clipboard.writeText(id.toString());
+            setCopiedId(id);
+            setTimeout(() => setCopiedId(null), 1500);
+        } catch (err) {
+            console.error("Failed to copy:", err);
+        }
+    };
+
     return (
         <div className="relative">
             {loading && <Loading />} {}
@@ -138,13 +150,25 @@ export default function ShipmentsPage() {
                                 <p className="text-red-500">{error}</p>
                             ) : (
                                 <ul className="space-y-2">
-                                    {shipments?.map(shipment => (
-                                        <li key={shipment.shipmentId} className="border p-2 rounded transition-colors hover:bg-gray-200/50">
-                                            <Link href={`/shipments/${shipment.shipmentId}`} className="block p-2">
+                                    {shipments?.map((shipment) => (
+                                        <li
+                                            key={shipment.shipmentId}
+                                            className="border p-2 rounded transition-colors hover:bg-gray-200/50 flex justify-between items-center"
+                                        >
+                                            <Link href={`/shipments/${shipment.shipmentId}`} className="block p-2 flex-grow">
                                                 <p><strong>ID:</strong> {shipment.shipmentId}</p>
                                                 <p><strong>Status:</strong> {shipment.status}</p>
                                                 <p><strong>Created At:</strong> {new Date(shipment.createdAt).toLocaleString()}</p>
                                             </Link>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => handleCopy(shipment.shipmentId)}
+                                                className="ml-2"
+                                            >
+                                                <ClipboardCopy className="w-4 h-4 mr-1" />
+                                                {copiedId === shipment.shipmentId ? "Copied!" : "Copy ID"}
+                                            </Button>
                                         </li>
                                     ))}
                                 </ul>
