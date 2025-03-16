@@ -5,7 +5,6 @@ import {Button} from "@/components/ui/button";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
 import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
-import {Textarea} from "@/components/ui/textarea";
 import Link from "next/link";
 import Loading from "@/components/loading";
 import { ClipboardCopy } from "lucide-react";
@@ -186,32 +185,32 @@ export default function ShipmentsPage() {
                             <form onSubmit={handleSubmit} className="space-y-4">
                                 <div className="grid gap-2">
                                     <Label htmlFor="name">Shipment Name</Label>
-                                    <Input id="name" value={shipmentForm.name} onChange={handleChange} />
+                                    <Input id="name" value={shipmentForm.name} placeholder={"Enter shipment name"} onChange={handleChange} />
                                     {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
                                 </div>
                                 <div className="grid gap-2">
                                     <Label htmlFor="description">Description</Label>
-                                    <Textarea id="description" value={shipmentForm.description} onChange={handleChange} />
+                                    <Input id="description" value={shipmentForm.description} placeholder={"Enter description"} onChange={handleChange} />
                                     {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
                                 </div>
                                 <div className="grid gap-2">
                                     <Label htmlFor="origin">Origin</Label>
-                                    <Input id="origin" value={shipmentForm.origin} onChange={handleChange} />
+                                    <Input id="origin" value={shipmentForm.origin} placeholder={"Enter origin"} onChange={handleChange} />
                                     {errors.origin && <p className="text-red-500 text-sm">{errors.origin}</p>}
                                 </div>
                                 <div className="grid gap-2">
                                     <Label htmlFor="destination">Destination</Label>
-                                    <Input id="destination" value={shipmentForm.destination} onChange={handleChange} />
+                                    <Input id="destination" value={shipmentForm.destination} placeholder={"Enter destination"} onChange={handleChange} />
                                     {errors.destination && <p className="text-red-500 text-sm">{errors.destination}</p>}
                                 </div>
                                 <div className="grid gap-2">
                                     <Label htmlFor="units">Units</Label>
-                                    <Input id="units" value={shipmentForm.units} onChange={handleChange} />
+                                    <Input id="units" value={shipmentForm.units} placeholder={"Enter units"} onChange={handleChange} />
                                     {errors.units && <p className="text-red-500 text-sm">{errors.units}</p>}
                                 </div>
                                 <div className="grid gap-2">
                                     <Label htmlFor="weight">Weight</Label>
-                                    <Input id="weight" value={shipmentForm.weight} onChange={handleChange} />
+                                    <Input id="weight" value={shipmentForm.weight} placeholder={"Enter weight"} onChange={handleChange} />
                                     {errors.weight && <p className="text-red-500 text-sm">{errors.weight}</p>}
                                 </div>
                                 <div className="flex justify-between">

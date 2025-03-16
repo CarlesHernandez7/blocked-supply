@@ -6,7 +6,6 @@ import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
-import {Textarea} from "@/components/ui/textarea";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import Loading from "@/components/loading";
 
@@ -27,6 +26,14 @@ interface TransferForm {
     transferNotes: string;
 }
 
+interface TransferFormErrors {
+    shipmentId?: string;
+    newShipmentOwner?: string;
+    newState?: string;
+    location?: string;
+    transferNotes?: string;
+}
+
 export default function TransferShipmentPage() {
     const { id } = useParams();
     const router = useRouter();
@@ -39,6 +46,7 @@ export default function TransferShipmentPage() {
         location: "",
         transferNotes: ""
     });
+    const [errors, setErrors] = useState<TransferFormErrors>({});
 
     const handleChange = (field: keyof TransferForm, value: string) => {
         setTransferData(prev => ({
@@ -47,8 +55,24 @@ export default function TransferShipmentPage() {
         }));
     };
 
+    const validateForm = () => {
+        const newErrors: TransferFormErrors = {};
+
+        Object.entries(transferData).forEach(([key, value]) => {
+            if (typeof value === "string" && !value.trim()) {
+                newErrors[key as keyof TransferFormErrors] = "This field is required";
+            } else if (key === "newState" && (value === null || isNaN(value))) {
+                newErrors.newState = "This field is required";
+            }
+        });
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!validateForm()) return;
         setLoading(true);
         setError(null);
 
@@ -87,6 +111,7 @@ export default function TransferShipmentPage() {
                             <Label>New State</Label>
                             <Select
                                 onValueChange={(value) => handleChange("newState", value)}
+                                value={Object.keys(stateMap).find(key => stateMap[key] === transferData.newState)}
                                 disabled={loading}
                             >
                                 <SelectTrigger>
@@ -99,6 +124,7 @@ export default function TransferShipmentPage() {
                                     <SelectItem value="stored">Stored</SelectItem>
                                 </SelectContent>
                             </Select>
+                            {errors.newState && <p className="text-red-500 text-sm">{errors.newState}</p>}
                         </div>
                         <div className="grid gap-2">
                             <Label>New Owner</Label>
@@ -108,6 +134,7 @@ export default function TransferShipmentPage() {
                                 placeholder="Enter new owner"
                                 disabled={loading}
                             />
+                            {errors.newShipmentOwner && <p className="text-red-500 text-sm">{errors.newShipmentOwner}</p>}
                         </div>
                         <div className="grid gap-2">
                             <Label>Location</Label>
@@ -117,15 +144,17 @@ export default function TransferShipmentPage() {
                                 placeholder="Enter new location"
                                 disabled={loading}
                             />
+                            {errors.location && <p className="text-red-500 text-sm">{errors.location}</p>}
                         </div>
                         <div className="grid gap-2">
                             <Label>Transfer Notes</Label>
-                            <Textarea
+                            <Input
                                 value={transferData.transferNotes}
                                 onChange={(e) => handleChange("transferNotes", e.target.value)}
                                 placeholder="Enter additional notes"
                                 disabled={loading}
                             />
+                            {errors.transferNotes && <p className="text-red-500 text-sm">{errors.transferNotes}</p>}
                         </div>
                         {error && <p className="text-red-500">{error}</p>}
                         <div className="flex justify-between">
