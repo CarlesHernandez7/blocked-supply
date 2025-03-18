@@ -1,8 +1,6 @@
 package chernandez.blockedsupplybackend;
 
 import chernandez.blockedsupplybackend.domain.User;
-import chernandez.blockedsupplybackend.domain.dto.UserAddressInput;
-import chernandez.blockedsupplybackend.domain.dto.UserRegisterDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

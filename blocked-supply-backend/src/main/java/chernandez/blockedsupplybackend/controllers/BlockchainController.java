@@ -21,6 +21,7 @@ public class BlockchainController {
 
     @PostMapping()
     public ResponseEntity<String> deployContract() throws Exception {
+        System.out.println("🚀 Blockchain API called!");
         return blockchainService.deployContract();
     }
 

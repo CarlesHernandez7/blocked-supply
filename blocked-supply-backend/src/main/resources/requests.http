@@ -2,42 +2,36 @@
 
 ###
 POST http://localhost:8080/api/blockchain
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6Inp6eiIsInN1YiI6ImFhYSIsImlhdCI6MTc0MjMwNjUyMSwiZXhwIjoxNzQyMzkyOTIxfQ.tuGps1EYXuc2nK1Nhzq3p67v7WSwIqkDIjaTx7Hu7Dr8SQxtod7WCnZOepyXTG1j
 
 ###
 GET http://localhost:8080/api/blockchain/blockNumber
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6Inp6eiIsInN1YiI6ImFhYSIsImlhdCI6MTc0MjMwNTA0MSwiZXhwIjoxNzQyMzkxNDQxfQ.jqS9VyWrEqS6XHn9GV8ilFlf4aFViS7o_Qr2gx4s2mFmmm-u7UU3va7bTqFeagFz
 
 //USERS
 
 ###
-POST http://localhost:8080/api/user/create
+POST http://localhost:8080/auth/register
 Content-Type: application/json
 
 {
-  "name": "Test4",
-  "email": "111@",
-  "password": "AAAAAaaa11",
-  "roles": [
-    "ADMIN",
-    "CUSTOMER"
-  ]
+  "email": "aaa",
+  "password": "zzz",
+  "name": "zzz"
 }
 
 ###
-GET http://localhost:8080/api/user/1
-
-###
-GET http://localhost:8080/api/user
-
-###
-PUT http://localhost:8080/api/user/address/1
+POST http://localhost:8080/auth/login
 Content-Type: application/json
 
 {
-  "address": "0x0"
+  "email": "aaa",
+  "password": "zzz"
 }
 
 ###
-DELETE http://localhost:8080/api/user/1
+POST http://localhost:8080/auth/logout
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6Inp6eiIsInN1YiI6ImFhYSIsImlhdCI6MTc0MjMwNjUyMSwiZXhwIjoxNzQyMzkyOTIxfQ.tuGps1EYXuc2nK1Nhzq3p67v7WSwIqkDIjaTx7Hu7Dr8SQxtod7WCnZOepyXTG1j
 
 //SHIPMENTS
 
@@ -87,6 +81,7 @@ GET http://localhost:8080/api/records/shipment/1
 
 ###
 GET http://localhost:8080/api/records/all
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6Inp6eiIsInN1YiI6ImFhYSIsImlhdCI6MTc0MjMwNjc4NSwiZXhwIjoxNzQyMzkzMTg1fQ.K54U1G-jMzcQJZTa9ioWCuQqLyrg96-fvEZRxRxkvH39Ab8_KeUCXmUsXIgXAmi1
 
 ###
 GET http://localhost:8080/api/records/progress

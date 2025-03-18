@@ -8,7 +8,7 @@ import org.web3j.protocol.Web3j;
 import org.web3j.protocol.http.HttpService;
 
 @Configuration
-public class Web3jConfiguration {
+public class Web3jConfig {
 
     @Value("${web3j.client-address}")
     private String web3ClientUrl;

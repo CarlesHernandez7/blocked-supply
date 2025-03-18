@@ -59,7 +59,7 @@ public class TransferTests {
     @Test
     @Order(1)
     public void testTransferShipment() throws Exception {
-        TransferInput transferInput = new TransferInput(1, "0xNewOwnerAddress", 1, "Transferred to new owner");
+        TransferInput transferInput = new TransferInput(1, "0xNewOwnerAddress", 1, "Sant Pol", "Transferred to new owner");
         String transferInputJson = objectMapper.writeValueAsString(transferInput);
 
         this.mockMvc.perform(post("/api/transfer/create")
@@ -72,7 +72,7 @@ public class TransferTests {
 
     @Test
     public void testTransferShipment_InvalidShipmentId() throws Exception {
-        TransferInput transferInput = new TransferInput(-1, "0xNewOwnerAddress", 2, "Invalid shipment ID");
+        TransferInput transferInput = new TransferInput(-1, "0xNewOwnerAddress", 1, "Sant Pol", "Transferred to new owner");
         String transferInputJson = objectMapper.writeValueAsString(transferInput);
 
         this.mockMvc.perform(post("/api/transfer/create")
@@ -86,7 +86,7 @@ public class TransferTests {
 
     @Test
     public void testGetTransferHistory() throws Exception {
-        TransferInput transferInput = new TransferInput(1, "0xNewOwnerAddress", 2, "Transferred to new owner");
+        TransferInput transferInput = new TransferInput(1, "0xNewOwnerAddress", 1, "Sant Pol", "Transferred to new owner");
         String transferInputJson = objectMapper.writeValueAsString(transferInput);
 
         this.mockMvc.perform(post("/api/transfer/create")
