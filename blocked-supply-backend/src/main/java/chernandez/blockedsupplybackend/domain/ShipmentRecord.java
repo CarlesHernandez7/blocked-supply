@@ -15,6 +15,7 @@ public class ShipmentRecord {
     @Id
     private Long shipmentId;
     private String ownerAddress;
+    private long ownerId;
 
     private LocalDateTime createdAt;
 
@@ -37,9 +38,12 @@ public class ShipmentRecord {
     }
 
     public void addParticipant(Long participantId) {
+        this.ownerId = participantId;
         if (this.participants == null) {
             this.participants = new ArrayList<>();
         }
-        this.participants.add(participantId);
+        if (!this.participants.contains(participantId)) {
+            this.participants.add(participantId);
+        }
     }
 }

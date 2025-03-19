@@ -1,5 +1,8 @@
 package chernandez.blockedsupplybackend.services;
 
+import chernandez.blockedsupplybackend.domain.User;
+import chernandez.blockedsupplybackend.utils.EncryptionUtil;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -15,16 +18,18 @@ import java.math.BigInteger;
 @Service
 public class BlockchainService {
 
+    @Value("${application.security.encryption.secret-key}")
+    private String encryptionKey;
+
     private final Web3j web3j;
     private final Credentials credentials;
-    private final ShipmentService shipmentService;
-    private final TransferService transferService;
+    private final AuthService authService;
+    private String contractAddress;
 
-    public BlockchainService(Web3j web3j, Credentials credentials, ShipmentService shipmentService, TransferService transferService) {
+    public BlockchainService(Web3j web3j, Credentials credentials, AuthService authService) {
         this.web3j = web3j;
         this.credentials = credentials;
-        this.shipmentService = shipmentService;
-        this.transferService = transferService;
+        this.authService = authService;
     }
 
     public ResponseEntity<String> deployContract() throws Exception {
@@ -39,11 +44,8 @@ public class BlockchainService {
                 }
         ).send();
 
-        String contractAddress = shipmentManagement.getContractAddress();
-        System.out.println("Contract deployed at address: " + contractAddress);
-
-        shipmentService.setContractAddress(contractAddress);
-        transferService.setContractAddress(contractAddress);
+        this.contractAddress = shipmentManagement.getContractAddress();
+        System.out.println("Contract deployed at address: " + this.contractAddress);
 
         return new ResponseEntity<>(contractAddress, HttpStatus.CREATED);
     }
@@ -51,5 +53,35 @@ public class BlockchainService {
     public ResponseEntity<Long> getLatestBlockNumber() throws IOException {
         EthBlockNumber blockNumber = web3j.ethBlockNumber().send();
         return new ResponseEntity<>(blockNumber.getBlockNumber().longValue(), HttpStatus.OK);
+    }
+
+    public ShipmentManagement setCredentialsToContractInstance() throws Exception {
+        User user = authService.getUserFromJWT();
+        String userAddress = user.getBlockchainAddress();
+        ShipmentManagement shipmentContract;
+
+        if (userAddress == null) {
+            throw new Exception("User does not have set a blockchain address.");
+        }
+
+        String decryptedKey = EncryptionUtil.decrypt(this.encryptionKey, user.getBlockchainKey());
+        Credentials newCredentials = Credentials.create(decryptedKey);
+        try {
+            shipmentContract = ShipmentManagement.load(
+                    this.contractAddress,
+                    web3j,
+                    newCredentials,
+                    new DefaultGasProvider()
+            );
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
+
+        return ShipmentManagement.load(
+                shipmentContract.getContractAddress(),
+                web3j,
+                newCredentials,
+                new DefaultGasProvider()
+        );
     }
 }

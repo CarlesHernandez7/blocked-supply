@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/api/blockchain")
+@RequestMapping("/blockchain")
 public class BlockchainController {
 
     private final BlockchainService blockchainService;
@@ -21,7 +21,7 @@ public class BlockchainController {
 
     @PostMapping()
     public ResponseEntity<String> deployContract() throws Exception {
-        return blockchainService.deployContract();
+        return this.blockchainService.deployContract();
     }
 
     @GetMapping("/blockNumber")

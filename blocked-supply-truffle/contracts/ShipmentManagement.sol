@@ -63,7 +63,6 @@ contract ShipmentManagement {
 
     mapping(uint256 => Shipment) private shipments;
     mapping(uint256 => Transfer[]) private transfersByShipment;
-    mapping(address => uint256[]) shipmentsByOwner;
 
     modifier onlyOwner(uint256 shipmentId) {
         require(shipments[shipmentId].currentOwner == msg.sender, "Only the current owner can perform this action.");
@@ -101,8 +100,6 @@ contract ShipmentManagement {
             currentOwner: msg.sender
         });
 
-        shipmentsByOwner[msg.sender].push(shipmentId);
-
         emit ShipmentCreated(shipmentId, msg.sender);
     }
 
@@ -114,11 +111,7 @@ contract ShipmentManagement {
         string memory transferNotes
     ) public onlyOwner(shipmentId) {
         Shipment storage shipment = shipments[shipmentId];
-        address previousOwner = shipment.currentOwner;
-
-        removeShipmentFromOwner(previousOwner, shipmentId);
-        shipmentsByOwner[newShipmentOwner].push(shipmentId);
-
+        
         shipment.currentOwner = newShipmentOwner;
         shipment.currentState = newState;
 
@@ -134,18 +127,6 @@ contract ShipmentManagement {
         }));
 
         emit TransferCreated(shipmentId, uint256(newState));
-    }
-
-    function removeShipmentFromOwner(address owner, uint256 shipmentId) private {
-        uint256[] storage ids = shipmentsByOwner[owner];
-
-        for (uint256 i = 0; i < ids.length; i++) {
-            if (ids[i] == shipmentId) {
-                ids[i] = ids[ids.length - 1];
-                ids.pop();
-                break;
-            }
-        }
     }
 
     function getShipment(uint256 shipmentId) public exists(shipmentId){    
@@ -181,10 +162,6 @@ contract ShipmentManagement {
 
     function getTransferCount(uint256 shipmentId) public exists(shipmentId) view returns (uint256) {
         return transfersByShipment[shipmentId].length;
-    }
-
-    function getShipmentsByOwner(address owner) public view returns (uint256[] memory) {
-        return shipmentsByOwner[owner];
     }
 
     function getNextShipmentId() public view returns (uint256) {
