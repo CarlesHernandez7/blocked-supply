@@ -31,7 +31,6 @@ public class ShipmentRecord {
 
     public ShipmentRecord(Long shipmentId, String ownerAddress, State status, Long owner) {
         this.shipmentId = shipmentId;
-        this.ownerAddress = ownerAddress;
         this.createdAt = LocalDateTime.now();
         this.status = status;
         addParticipant(owner);
@@ -42,6 +41,8 @@ public class ShipmentRecord {
         if (this.participants == null) {
             this.participants = new ArrayList<>();
         }
-        this.participants.add(participantId);
+        if (!this.participants.contains(participantId)) {
+            this.participants.add(participantId);
+        }
     }
 }

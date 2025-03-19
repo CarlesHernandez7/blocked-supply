@@ -27,6 +27,7 @@ public class User {
     private String password;
 
     private String blockchainAddress;
+    private String blockchainKey;
 
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> roles;

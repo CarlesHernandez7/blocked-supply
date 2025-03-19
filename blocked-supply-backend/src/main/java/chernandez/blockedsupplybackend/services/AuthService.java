@@ -2,14 +2,19 @@ package chernandez.blockedsupplybackend.services;
 
 import chernandez.blockedsupplybackend.domain.Token;
 import chernandez.blockedsupplybackend.domain.User;
+import chernandez.blockedsupplybackend.domain.dto.auth.BlockchainCredentialsInput;
 import chernandez.blockedsupplybackend.domain.dto.auth.LoginRequest;
 import chernandez.blockedsupplybackend.domain.dto.auth.RegisterRequest;
 import chernandez.blockedsupplybackend.domain.dto.auth.TokenResponse;
 import chernandez.blockedsupplybackend.repositories.TokenRepository;
 import chernandez.blockedsupplybackend.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -66,14 +71,17 @@ public class AuthService {
         final User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new UsernameNotFoundException(userEmail));
 
-        /*if (!jwtService.isTokenValid(refreshToken, user)) {
-            throw new IllegalArgumentException("Invalid Refresh token");
-        }*/
-
         final String accessToken = jwtService.generateToken(user);
         revokeAllUserTokens(user);
         saveUserToken(user, accessToken);
         return new TokenResponse(accessToken, refreshToken);
+    }
+
+    public User getUserFromJWT() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        return userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
     }
 
     private void saveUserToken(User user, String jwtToken) {
@@ -98,4 +106,21 @@ public class AuthService {
         }
     }
 
+    public ResponseEntity<?> setBlockchainCredentials(BlockchainCredentialsInput credentialsInput) {
+        User user = getUserFromJWT();
+        if (credentialsInput == null || credentialsInput.address() == null || credentialsInput.key() == null) {
+            return new ResponseEntity<>("Blockchain credentials cannot be null", HttpStatus.BAD_REQUEST);
+        }
+        if (user.getBlockchainAddress() != null && user.getBlockchainKey() != null) {
+            return new ResponseEntity<>("User already has a blockchain credentials", HttpStatus.BAD_REQUEST);
+        }
+        if (!credentialsInput.address().startsWith("0x") || !credentialsInput.key().startsWith("0x")) {
+            return new ResponseEntity<>("Invalid blockchain credentials type", HttpStatus.BAD_REQUEST);
+        }
+
+        user.setBlockchainAddress(credentialsInput.address());
+        user.setBlockchainKey(credentialsInput.key());
+        userRepository.save(user);
+        return new ResponseEntity<>("Credentials correctly set for user " + user.getId(), HttpStatus.OK);
+    }
 }

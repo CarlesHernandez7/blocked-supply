@@ -2,6 +2,7 @@ package chernandez.blockedsupplybackend.services;
 
 import chernandez.blockedsupplybackend.domain.ShipmentRecord;
 import chernandez.blockedsupplybackend.domain.State;
+import chernandez.blockedsupplybackend.domain.User;
 import chernandez.blockedsupplybackend.domain.dto.TransferInput;
 import chernandez.blockedsupplybackend.domain.dto.TransferOutput;
 import chernandez.blockedsupplybackend.repositories.ShipmentRecordRepository;
@@ -9,11 +10,8 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.web3j.crypto.Credentials;
-import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
-import org.web3j.tx.gas.DefaultGasProvider;
 import smartContracts.web3.ShipmentManagement;
 
 import java.math.BigInteger;
@@ -26,22 +24,20 @@ import java.util.concurrent.atomic.AtomicReference;
 @Service
 public class TransferService {
 
-    private final Web3j web3j;
-    private final Credentials credentials;
-    private ShipmentManagement shipmentContract;
     private final ShipmentRecordRepository shipmentRecordRepository;
+    private final BlockchainService blockchainService;
+    private final AuthService authService;
 
-    public TransferService(Web3j web3j, Credentials credentials, ShipmentRecordRepository shipmentRecordRepository) {
-        this.web3j = web3j;
-        this.credentials = credentials;
+    public TransferService(ShipmentRecordRepository shipmentRecordRepository, BlockchainService blockchainService, AuthService authService) {
         this.shipmentRecordRepository = shipmentRecordRepository;
+        this.blockchainService = blockchainService;
+        this.authService = authService;
     }
 
-    public void setContractAddress(String contractAddress) {
-        this.shipmentContract = ShipmentManagement.load(contractAddress, web3j, credentials, new DefaultGasProvider());
-    }
+    public ResponseEntity<?> transferShipment(@NotNull TransferInput request) throws Exception {
+        ShipmentManagement contract = blockchainService.setCredentialsToContractInstance();
+        User user = authService.getUserFromJWT();
 
-    public ResponseEntity<?> transferShipment(@NotNull TransferInput request) {
         TransactionReceipt receipt;
         BigInteger id = BigInteger.valueOf(request.getShipmentId());
 
@@ -49,16 +45,16 @@ public class TransferService {
         AtomicReference<BigInteger> newState = new AtomicReference<>();
 
         try {
-            receipt = shipmentContract.shipmentTransfer(
+            receipt = contract.shipmentTransfer(
                     id,
-                    request.getNewShipmentOwner(),
+                    user.getBlockchainAddress(),
                     BigInteger.valueOf(request.getNewState()),
                     request.getLocation(),
                     request.getTransferNotes()
                     )
             .send();
 
-            shipmentContract.transferCreatedEventFlowable(DefaultBlockParameterName.LATEST, DefaultBlockParameterName.LATEST)
+            contract.transferCreatedEventFlowable(DefaultBlockParameterName.LATEST, DefaultBlockParameterName.LATEST)
                     .subscribe(event -> {
                         shipmentId.set(event.shipmentId.longValue());
                         newState.set(event.newState);
@@ -78,31 +74,33 @@ public class TransferService {
             return new ResponseEntity<>("Shipment record not found", HttpStatus.NOT_FOUND);
         }
 
-        // TODO Add participant if transaction have a new owner and the new owner is not already in the list when JWT authentication is implemented
         ShipmentRecord shipmentRecord = optionalShipmentRecord.get();
         shipmentRecord.setStatus(State.fromBigInt(newState.get()));
+        shipmentRecord.addParticipant(user.getId());
         shipmentRecordRepository.save(shipmentRecord);
 
         return new ResponseEntity<>(receipt, HttpStatus.CREATED);
     }
 
-    public ResponseEntity<?> getTransferHistory(int shipmentId) {
+    public ResponseEntity<?> getTransferHistory(int shipmentId) throws Exception {
+        ShipmentManagement contract = blockchainService.setCredentialsToContractInstance();
+
         BigInteger shipmentIdBigInt = BigInteger.valueOf(shipmentId);
 
         List<TransferOutput> transfers;
 
         try {
 
-            BigInteger transferCount = shipmentContract.getTransferCount(shipmentIdBigInt).send();
+            BigInteger transferCount = contract.getTransferCount(shipmentIdBigInt).send();
 
             transfers = new ArrayList<>();
 
             for (BigInteger i = BigInteger.ZERO; i.compareTo(transferCount) < 0; i = i.add(BigInteger.ONE)) {
                 TransferOutput transfer = new TransferOutput();
 
-                shipmentContract.getTransferByIndex(shipmentIdBigInt, i).send();
+                contract.getTransferByIndex(shipmentIdBigInt, i).send();
 
-                shipmentContract.transferRetrievedEventFlowable(DefaultBlockParameterName.LATEST, DefaultBlockParameterName.LATEST)
+                contract.transferRetrievedEventFlowable(DefaultBlockParameterName.LATEST, DefaultBlockParameterName.LATEST)
                         .subscribe(event -> {
                             transfer.setId(event.id.intValue());
                             transfer.setShipmentId(event.shipmentId.intValue());
@@ -129,6 +127,7 @@ public class TransferService {
     }
 
     public ResponseEntity<BigInteger> getNextTransfertId() throws Exception {
+        ShipmentManagement shipmentContract = blockchainService.setCredentialsToContractInstance();
         return new ResponseEntity<>(shipmentContract.getNextTransferId().send(), HttpStatus.OK);
     }
 }
