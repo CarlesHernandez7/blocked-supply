@@ -8,9 +8,8 @@ import {Label} from "@/components/ui/label";
 import Link from "next/link";
 import Loading from "@/components/loading";
 import { ClipboardCopy } from "lucide-react";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
-const USER_ID = "1";
+import ProtectedRoute from "@/components/protectedroute";
+import api from "@/utils/baseApi";
 
 interface ShipmentForm {
     name: string;
@@ -47,21 +46,29 @@ export default function ShipmentsPage() {
         const fetchShipments = async () => {
             setLoading(true);
             setError(null);
-
-            try {
-                const response = await fetch(`${API_URL}/records/participant/${USER_ID}`);
-                if (!response.ok) {
-                    setError("You are not a participant in any shipment.");
-                    setShipments(null);
-                    return;
+            const token = localStorage.getItem("authToken");
+            if(token) {
+                try {
+                    const response = await fetch(`${api.baseURL}/api/records/participant`, {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${token}`
+                        }
+                    });
+                    if (!response.ok) {
+                        setError("You are not a participant in any shipment.");
+                        setShipments(null);
+                        return;
+                    }
+                    const data: ShipmentRecord[] = await response.json();
+                    setShipments(data.length ? data : null);
+                } catch (err) {
+                    console.error(err);
+                    setError("An error occurred while fetching shipments.");
+                } finally {
+                    setLoading(false);
                 }
-                const data: ShipmentRecord[] = await response.json();
-                setShipments(data.length ? data : null);
-            } catch (err) {
-                console.error(err);
-                setError("An error occurred while fetching shipments.");
-            } finally {
-                setLoading(false);
             }
         };
         fetchShipments();
@@ -96,14 +103,17 @@ export default function ShipmentsPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!validateForm()) return;
-
         setLoading(true);
         setError(null);
 
+        const token = localStorage.getItem("authToken");
         try {
-            const response = await fetch(`${API_URL}/shipment/create`, {
+            const response = await fetch(`${api.baseURL}/api/shipment/create`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
                 body: JSON.stringify({
                     ...shipmentForm,
                     units: Number(shipmentForm.units),
@@ -134,94 +144,96 @@ export default function ShipmentsPage() {
     };
 
     return (
-        <div className="relative">
-            {loading && <Loading />} {}
+        <ProtectedRoute>
+            <div className="relative">
+                {loading && <Loading />} {}
 
-            <div className={`${loading ? "opacity-50 pointer-events-none" : ""}`}>
-                {!showForm ? (
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Your Shipments</CardTitle>
-                            <CardDescription>List of shipments you are part of.</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            {error ? (
-                                <p className="text-red-500">{error}</p>
-                            ) : (
-                                <ul className="space-y-2">
-                                    {shipments?.map((shipment) => (
-                                        <li
-                                            key={shipment.shipmentId}
-                                            className="border p-2 rounded transition-colors hover:bg-gray-200/50 flex justify-between items-center"
-                                        >
-                                            <Link href={`/shipments/${shipment.shipmentId}`} className="block p-2 flex-grow">
-                                                <p><strong>ID:</strong> {shipment.shipmentId}</p>
-                                                <p><strong>Status:</strong> {shipment.status}</p>
-                                                <p><strong>Created At:</strong> {new Date(shipment.createdAt).toLocaleString()}</p>
-                                            </Link>
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => handleCopy(shipment.shipmentId)}
-                                                className="ml-2"
+                <div className={`${loading ? "opacity-50 pointer-events-none" : ""}`}>
+                    {!showForm ? (
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Your Shipments</CardTitle>
+                                <CardDescription>List of shipments you are part of.</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                {error ? (
+                                    <p className="text-red-500">{error}</p>
+                                ) : (
+                                    <ul className="space-y-2">
+                                        {shipments?.map((shipment) => (
+                                            <li
+                                                key={shipment.shipmentId}
+                                                className="border p-2 rounded transition-colors hover:bg-gray-200/50 flex justify-between items-center"
                                             >
-                                                <ClipboardCopy className="w-4 h-4 mr-1" />
-                                                {copiedId === shipment.shipmentId ? "Copied!" : "Copy ID"}
-                                            </Button>
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
-                            <Button className="mt-4 w-full" onClick={() => setShowForm(true)}>Create Shipment</Button>
-                        </CardContent>
-                    </Card>
-                ) : (
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Create New Shipment</CardTitle>
-                            <CardDescription>Fill in the details to create a shipment.</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <form onSubmit={handleSubmit} className="space-y-4">
-                                <div className="grid gap-2">
-                                    <Label htmlFor="name">Shipment Name</Label>
-                                    <Input id="name" value={shipmentForm.name} placeholder={"Enter shipment name"} onChange={handleChange} />
-                                    {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="description">Description</Label>
-                                    <Input id="description" value={shipmentForm.description} placeholder={"Enter description"} onChange={handleChange} />
-                                    {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="origin">Origin</Label>
-                                    <Input id="origin" value={shipmentForm.origin} placeholder={"Enter origin"} onChange={handleChange} />
-                                    {errors.origin && <p className="text-red-500 text-sm">{errors.origin}</p>}
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="destination">Destination</Label>
-                                    <Input id="destination" value={shipmentForm.destination} placeholder={"Enter destination"} onChange={handleChange} />
-                                    {errors.destination && <p className="text-red-500 text-sm">{errors.destination}</p>}
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="units">Units</Label>
-                                    <Input id="units" value={shipmentForm.units} placeholder={"Enter units"} onChange={handleChange} />
-                                    {errors.units && <p className="text-red-500 text-sm">{errors.units}</p>}
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="weight">Weight</Label>
-                                    <Input id="weight" value={shipmentForm.weight} placeholder={"Enter weight"} onChange={handleChange} />
-                                    {errors.weight && <p className="text-red-500 text-sm">{errors.weight}</p>}
-                                </div>
-                                <div className="flex justify-between">
-                                    <Button type="button" onClick={() => setShowForm(false)}>Cancel</Button>
-                                    <Button type="submit">Create Shipment</Button>
-                                </div>
-                            </form>
-                        </CardContent>
-                    </Card>
-                )}
+                                                <Link href={`/shipments/${shipment.shipmentId}`} className="block p-2 flex-grow">
+                                                    <p><strong>ID:</strong> {shipment.shipmentId}</p>
+                                                    <p><strong>Status:</strong> {shipment.status}</p>
+                                                    <p><strong>Created At:</strong> {new Date(shipment.createdAt).toLocaleString()}</p>
+                                                </Link>
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => handleCopy(shipment.shipmentId)}
+                                                    className="ml-2"
+                                                >
+                                                    <ClipboardCopy className="w-4 h-4 mr-1" />
+                                                    {copiedId === shipment.shipmentId ? "Copied!" : "Copy ID"}
+                                                </Button>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
+                                <Button className="mt-4 w-full" onClick={() => setShowForm(true)}>Create Shipment</Button>
+                            </CardContent>
+                        </Card>
+                    ) : (
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Create New Shipment</CardTitle>
+                                <CardDescription>Fill in the details to create a shipment.</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <form onSubmit={handleSubmit} className="space-y-4">
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="name">Shipment Name</Label>
+                                        <Input id="name" value={shipmentForm.name} placeholder={"Enter shipment name"} onChange={handleChange} />
+                                        {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
+                                    </div>
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="description">Description</Label>
+                                        <Input id="description" value={shipmentForm.description} placeholder={"Enter description"} onChange={handleChange} />
+                                        {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
+                                    </div>
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="origin">Origin</Label>
+                                        <Input id="origin" value={shipmentForm.origin} placeholder={"Enter origin"} onChange={handleChange} />
+                                        {errors.origin && <p className="text-red-500 text-sm">{errors.origin}</p>}
+                                    </div>
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="destination">Destination</Label>
+                                        <Input id="destination" value={shipmentForm.destination} placeholder={"Enter destination"} onChange={handleChange} />
+                                        {errors.destination && <p className="text-red-500 text-sm">{errors.destination}</p>}
+                                    </div>
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="units">Units</Label>
+                                        <Input id="units" value={shipmentForm.units} placeholder={"Enter units"} onChange={handleChange} />
+                                        {errors.units && <p className="text-red-500 text-sm">{errors.units}</p>}
+                                    </div>
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="weight">Weight</Label>
+                                        <Input id="weight" value={shipmentForm.weight} placeholder={"Enter weight"} onChange={handleChange} />
+                                        {errors.weight && <p className="text-red-500 text-sm">{errors.weight}</p>}
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <Button type="button" onClick={() => setShowForm(false)}>Cancel</Button>
+                                        <Button type="submit">Create Shipment</Button>
+                                    </div>
+                                </form>
+                            </CardContent>
+                        </Card>
+                    )}
+                </div>
             </div>
-        </div>
+        </ProtectedRoute>
     );
 }

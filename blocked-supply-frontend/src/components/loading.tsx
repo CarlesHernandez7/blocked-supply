@@ -10,6 +10,7 @@ const Loading: React.FC = () => (
             width={100}
             height={100}
             className="loading-gif"
+            unoptimized={true}
         />
     </div>
 );

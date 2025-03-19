@@ -2,6 +2,7 @@ package chernandez.blockedsupplybackend.services;
 
 import chernandez.blockedsupplybackend.domain.ShipmentRecord;
 import chernandez.blockedsupplybackend.domain.State;
+import chernandez.blockedsupplybackend.domain.User;
 import chernandez.blockedsupplybackend.domain.dto.ShipmentInput;
 import chernandez.blockedsupplybackend.domain.dto.ShipmentOutput;
 import chernandez.blockedsupplybackend.repositories.ShipmentRecordRepository;
@@ -9,11 +10,8 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.web3j.crypto.Credentials;
-import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
-import org.web3j.tx.gas.DefaultGasProvider;
 import smartContracts.web3.ShipmentManagement;
 
 import java.math.BigInteger;
@@ -23,22 +21,20 @@ import java.util.concurrent.atomic.AtomicReference;
 @Service
 public class ShipmentService {
 
-    private final Web3j web3j;
-    private final Credentials credentials;
-    private ShipmentManagement shipmentContract;
     private final ShipmentRecordRepository shipmentRecordRepository;
+    private final BlockchainService blockchainService;
+    private final AuthService authService;
 
-    public ShipmentService(Web3j web3j, Credentials credentials, ShipmentRecordRepository shipmentRecordRepository) {
-        this.web3j = web3j;
-        this.credentials = credentials;
+    public ShipmentService(ShipmentRecordRepository shipmentRecordRepository, BlockchainService blockchainService, AuthService authService) {
         this.shipmentRecordRepository = shipmentRecordRepository;
+        this.blockchainService = blockchainService;
+        this.authService = authService;
     }
 
-    public void setContractAddress(String contractAddress) {
-        this.shipmentContract = ShipmentManagement.load(contractAddress, web3j, credentials, new DefaultGasProvider());
-    }
+    public ResponseEntity<?> createShipment(@NotNull ShipmentInput shipmentInput) throws Exception {
+        ShipmentManagement contract = blockchainService.setCredentialsToContractInstance();
+        User user = authService.getUserFromJWT();
 
-    public ResponseEntity<?> createShipment(@NotNull ShipmentInput shipmentInput) {
         TransactionReceipt receipt;
         BigInteger units = BigInteger.valueOf(shipmentInput.getUnits());
         BigInteger weight = BigInteger.valueOf(shipmentInput.getWeight());
@@ -51,7 +47,7 @@ public class ShipmentService {
         }
 
         try {
-            receipt = shipmentContract.createShipment(
+            receipt = contract.createShipment(
                     shipmentInput.getName(),
                     shipmentInput.getDescription(),
                     shipmentInput.getOrigin(),
@@ -60,7 +56,7 @@ public class ShipmentService {
                     weight
             ).send();
 
-            shipmentContract.shipmentCreatedEventFlowable(DefaultBlockParameterName.LATEST, DefaultBlockParameterName.LATEST)
+            contract.shipmentCreatedEventFlowable(DefaultBlockParameterName.LATEST, DefaultBlockParameterName.LATEST)
                     .subscribe(event -> {
                         shipmentId.set(event.id.longValue());
                         currentOwner.set((event.currentOwner));
@@ -70,23 +66,22 @@ public class ShipmentService {
             return new ResponseEntity<>("Failed to create shipment: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        // TODO UPDATE owener id WHEN JWT AUTHENTICATION IS IMPLEMENTED
-        ShipmentRecord shipmentRecord = new ShipmentRecord(shipmentId.get(), currentOwner.get(), State.CREATED, 1L);
-
+        ShipmentRecord shipmentRecord = new ShipmentRecord(shipmentId.get(), currentOwner.get(), State.CREATED, user.getId());
         shipmentRecordRepository.save(shipmentRecord);
 
         return new ResponseEntity<>(receipt, HttpStatus.CREATED);
     }
 
-    public ResponseEntity<?> getShipment(int shipmentId) {
+    public ResponseEntity<?> getShipment(int shipmentId) throws Exception {
+        ShipmentManagement contract = blockchainService.setCredentialsToContractInstance();
         try {
             BigInteger id = BigInteger.valueOf(shipmentId);
 
-            shipmentContract.getShipment(id).send();
+            contract.getShipment(id).send();
 
             ShipmentOutput shipment = new ShipmentOutput();
 
-            shipmentContract.shipmentRetrievedEventFlowable(DefaultBlockParameterName.LATEST, DefaultBlockParameterName.LATEST)
+            contract.shipmentRetrievedEventFlowable(DefaultBlockParameterName.LATEST, DefaultBlockParameterName.LATEST)
                     .subscribe(event -> {
                         shipment.setId(event.id.intValue());
                         shipment.setName(event.name);
@@ -114,6 +109,7 @@ public class ShipmentService {
 
 
     public ResponseEntity<BigInteger> getNextShipmentId() throws Exception {
+        ShipmentManagement shipmentContract = blockchainService.setCredentialsToContractInstance();
         return new ResponseEntity<>(shipmentContract.getNextShipmentId().send(), HttpStatus.OK);
     }
 

@@ -6,8 +6,8 @@ import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {Button} from "@/components/ui/button";
 import Link from "next/link";
 import Loading from "@/components/loading";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+import ProtectedRoute from "@/components/protectedroute";
+import api from "@/utils/baseApi";
 
 interface Shipment {
     id: number;
@@ -30,8 +30,15 @@ export default function ShipmentDetail() {
     useEffect(() => {
         const fetchShipment = async () => {
             setLoading(true);
+            const token = localStorage.getItem("authToken");
             try {
-                const response = await fetch(`${API_URL}/shipment/${id}`);
+                const response = await fetch(`${api.baseURL}/api/shipment/${id}`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    }
+                });
                 if (!response.ok) {
                     const errorMessage = await response.text();
                     throw new Error(errorMessage);
@@ -73,24 +80,26 @@ export default function ShipmentDetail() {
     }
 
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle>Shipment Details</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <p><strong>ID:</strong> {shipment.id}</p>
-                <p><strong>Name:</strong> {shipment.name}</p>
-                <p><strong>Description:</strong> {shipment.description}</p>
-                <p><strong>Origin:</strong> {shipment.origin}</p>
-                <p><strong>Destination:</strong> {shipment.destination}</p>
-                <p><strong>Units:</strong> {shipment.units}</p>
-                <p><strong>Weight:</strong> {shipment.weight} kg</p>
-                <p><strong>Current State:</strong> {shipment.currentState}</p>
-                <p><strong>Current Owner:</strong> {shipment.currentOwner}</p>
-                <Link href="/shipments">
-                    <Button className="mt-4">Back to Shipments</Button>
-                </Link>
-            </CardContent>
-        </Card>
+        <ProtectedRoute>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Shipment Details</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <p><strong>ID:</strong> {shipment.id}</p>
+                    <p><strong>Name:</strong> {shipment.name}</p>
+                    <p><strong>Description:</strong> {shipment.description}</p>
+                    <p><strong>Origin:</strong> {shipment.origin}</p>
+                    <p><strong>Destination:</strong> {shipment.destination}</p>
+                    <p><strong>Units:</strong> {shipment.units}</p>
+                    <p><strong>Weight:</strong> {shipment.weight} kg</p>
+                    <p><strong>Current State:</strong> {shipment.currentState}</p>
+                    <p><strong>Current Owner:</strong> {shipment.currentOwner}</p>
+                    <Link href="/shipments">
+                        <Button className="mt-4">Back to Shipments</Button>
+                    </Link>
+                </CardContent>
+            </Card>
+        </ProtectedRoute>
     );
 }

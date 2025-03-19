@@ -42,6 +42,8 @@ public class ShipmentRecord {
         if (this.participants == null) {
             this.participants = new ArrayList<>();
         }
-        this.participants.add(participantId);
+        if (!this.participants.contains(participantId)) {
+            this.participants.add(participantId);
+        }
     }
 }

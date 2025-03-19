@@ -1,48 +1,52 @@
 //BLOCKCHAIN
 
 ###
-POST http://localhost:8080/api/blockchain
+POST http://localhost:8080/blockchain
 
 ###
-GET http://localhost:8080/api/blockchain/blockNumber
+GET http://localhost:8080/blockchain/blockNumber
 
 //USERS
 
 ###
-POST http://localhost:8080/api/user/create
+POST http://localhost:8080/auth/register
 Content-Type: application/json
 
 {
-  "name": "Test4",
-  "email": "111@",
-  "password": "AAAAAaaa11",
-  "roles": [
-    "ADMIN",
-    "CUSTOMER"
-  ]
+  "email": "John2@gmail.com",
+  "password": "123456",
+  "name": "John3"
 }
 
 ###
-GET http://localhost:8080/api/user/1
-
-###
-GET http://localhost:8080/api/user
-
-###
-PUT http://localhost:8080/api/user/address/1
+POST http://localhost:8080/auth/login
 Content-Type: application/json
 
 {
-  "address": "0x0"
+  "email": "John3@gmail.com",
+  "password": "123456"
 }
 
 ###
-DELETE http://localhost:8080/api/user/1
+POST http://localhost:8080/auth/logout
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6Inp6eiIsInN1YiI6ImFhYSIsImlhdCI6MTc0MjMwNjUyMSwiZXhwIjoxNzQyMzkyOTIxfQ.tuGps1EYXuc2nK1Nhzq3p67v7WSwIqkDIjaTx7Hu7Dr8SQxtod7WCnZOepyXTG1j
+
+###
+PUT http://localhost:8080/api/user/credentials
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG4zIiwic3ViIjoiSm9objNAZ21haWwuY29tIiwiaWF0IjoxNzQyMzk1Njg0LCJleHAiOjE3NDI0ODIwODR9.TCNGF-pLY5oNjPm0n0jpJNky0bJINpJxU6eHxw-CxKYfcndA1bongNRaMueAKhJO
+Content-Type: application/json
+
+{
+  "address": "0x22d491Bde2303f2f43325b2108D26f1eAbA1e32b",
+  "key": "0x6370fd033278c143179d81c5526140625662b8daa446c22ee2d73db3707e620c"
+}
+###
 
 //SHIPMENTS
 
 ###
 POST http://localhost:8080/api/shipment/create
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG4zIiwic3ViIjoiSm9objNAZ21haWwuY29tIiwiaWF0IjoxNzQyMzc5MjEzLCJleHAiOjE3NDI0NjU2MTN9.2NKFVX36hAzt6LDXIsq7zGgE2uOB2N3ukW4yrVYnox6JOI7lLLHceijZaYwmpuTX
 Content-Type: application/json
 
 {
@@ -55,47 +59,59 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:8080/api/shipment/3
+GET http://localhost:8080/api/shipment/1
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG4zIiwic3ViIjoiSm9objNAZ21haWwuY29tIiwiaWF0IjoxNzQyMzc5MjEzLCJleHAiOjE3NDI0NjU2MTN9.2NKFVX36hAzt6LDXIsq7zGgE2uOB2N3ukW4yrVYnox6JOI7lLLHceijZaYwmpuTX
 
 ###
 GET http://localhost:8080/api/shipment/nextId
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG4iLCJzdWIiOiJKb2huQGdtYWlsLmNvbSIsImlhdCI6MTc0MjM0NTc4NCwiZXhwIjoxNzQyNDMyMTg0fQ.Ks73u_riS9vHnPZQ7n32OsXJ8pvluBgF96cM-21EZsfUhon9WeEMoYnrcZbR2cWm
 
 //TRANSFERS
 
 ###
 POST http://localhost:8080/api/transfer/create
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIyIiwibmFtZSI6IkpvaG4yIiwic3ViIjoiSm9objJAZ21haWwuY29tIiwiaWF0IjoxNzQyMzQ2MTI5LCJleHAiOjE3NDI0MzI1Mjl9.AyH3rAXvpRi268OWbT0xaVunsrGLRnwrjO3qg_2hTUxP6bXn1AGB7asV69_UUnNV
 Content-Type: application/json
 
 {
-  "shipmentId": 2,
-  "newShipmentOwner": "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C2",
-  "newState": 2,
+  "shipmentId": 1,
+  "newShipmentOwner": 3,
+  "newState": 3,
   "location": "SAMBA2",
   "transferNotes": "Transferred to new warehouse"
 }
 
 ###
 GET http://localhost:8080/api/transfer/1
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG4iLCJzdWIiOiJKb2huQGdtYWlsLmNvbSIsImlhdCI6MTc0MjM0NTc4NCwiZXhwIjoxNzQyNDMyMTg0fQ.Ks73u_riS9vHnPZQ7n32OsXJ8pvluBgF96cM-21EZsfUhon9WeEMoYnrcZbR2cWm
 
 ###
 GET http://localhost:8080/api/transfer/nextId
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG4iLCJzdWIiOiJKb2huQGdtYWlsLmNvbSIsImlhdCI6MTc0MjM0NDMwNCwiZXhwIjoxNzQyNDMwNzA0fQ.l4D04_y1rdjJN2F83k3smtw0B5YEITvjsVWSJwa4kMjRX9i7_UW9eRTB6991e2Kj
 
 //RECCORDS
 
 ###
 GET http://localhost:8080/api/records/shipment/1
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIyIiwibmFtZSI6IkpvaG4yIiwic3ViIjoiSm9objJAZ21haWwuY29tIiwiaWF0IjoxNzQyMzQ2MTI5LCJleHAiOjE3NDI0MzI1Mjl9.AyH3rAXvpRi268OWbT0xaVunsrGLRnwrjO3qg_2hTUxP6bXn1AGB7asV69_UUnNV
 
 ###
 GET http://localhost:8080/api/records/all
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIyIiwibmFtZSI6IkpvaG4yIiwic3ViIjoiSm9objJAZ21haWwuY29tIiwiaWF0IjoxNzQyMzQ2MTI5LCJleHAiOjE3NDI0MzI1Mjl9.AyH3rAXvpRi268OWbT0xaVunsrGLRnwrjO3qg_2hTUxP6bXn1AGB7asV69_UUnNV
 
 ###
 GET http://localhost:8080/api/records/progress
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIyIiwibmFtZSI6IkpvaG4yIiwic3ViIjoiSm9objJAZ21haWwuY29tIiwiaWF0IjoxNzQyMzQ2MTI5LCJleHAiOjE3NDI0MzI1Mjl9.AyH3rAXvpRi268OWbT0xaVunsrGLRnwrjO3qg_2hTUxP6bXn1AGB7asV69_UUnNV
 
 ###
 GET http://localhost:8080/api/records/delivered
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIyIiwibmFtZSI6IkpvaG4yIiwic3ViIjoiSm9objJAZ21haWwuY29tIiwiaWF0IjoxNzQyMzQ2MTI5LCJleHAiOjE3NDI0MzI1Mjl9.AyH3rAXvpRi268OWbT0xaVunsrGLRnwrjO3qg_2hTUxP6bXn1AGB7asV69_UUnNV
 
 ###
-GET http://localhost:8080/api/records/participant/1
+GET http://localhost:8080/api/records/participant
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIyIiwibmFtZSI6IkpvaG4yIiwic3ViIjoiSm9objJAZ21haWwuY29tIiwiaWF0IjoxNzQyMzQ2MTI5LCJleHAiOjE3NDI0MzI1Mjl9.AyH3rAXvpRi268OWbT0xaVunsrGLRnwrjO3qg_2hTUxP6bXn1AGB7asV69_UUnNV
 
 ###
-GET http://localhost:8080/api/records/owner/1
+GET http://localhost:8080/api/records/owner
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvYW4iLCJzdWIiOiJhYWFAYWFhIiwiaWF0IjoxNzQyMzg4OTk3LCJleHAiOjE3NDI0NzUzOTd9.mDHdpF-FmOyV7Vo_kgi7da9qr6iQBt5Q1ocAubmK1Tt5HqVgYD_ANX9GQwo3c5Lo
+

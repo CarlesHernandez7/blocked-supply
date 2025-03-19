@@ -37,14 +37,14 @@ public class ShipmentRecordController {
         return shipmentRecordService.getShipmentRecordsDeliveredToday();
     }
 
-    @GetMapping("/participant/{userId}")
-    public ResponseEntity<?> getShipmentRecordsByParticipant(@PathVariable int userId) {
-        return shipmentRecordService.getShipmentRecordsByParticipant(userId);
+    @GetMapping("/participant")
+    public ResponseEntity<?> getShipmentRecordsByParticipant() {
+        return shipmentRecordService.getShipmentRecordsByParticipant();
     }
 
-    @GetMapping("/owner/{userId}")
-    public ResponseEntity<?> getNextShipmentRecordId(@PathVariable int userId) {
-        return shipmentRecordService.getShipmentRecordsByowner(userId);
+    @GetMapping("/owner")
+    public ResponseEntity<?> getNextShipmentRecordId() {
+        return shipmentRecordService.getShipmentRecordsByowner();
     }
 
 

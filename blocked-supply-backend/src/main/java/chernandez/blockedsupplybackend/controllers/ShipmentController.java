@@ -18,12 +18,12 @@ public class ShipmentController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> createShipment(@RequestBody ShipmentInput shipmentInput) {
+    public ResponseEntity<?> createShipment(@RequestBody ShipmentInput shipmentInput) throws Exception {
         return shipmentService.createShipment(shipmentInput);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getShipment(@PathVariable int id) {
+    public ResponseEntity<?> getShipment(@PathVariable int id) throws Exception {
         return shipmentService.getShipment(id);
     }
 
