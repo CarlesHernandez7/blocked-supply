@@ -32,7 +32,13 @@ public class ShipmentService {
     }
 
     public ResponseEntity<?> createShipment(@NotNull ShipmentInput shipmentInput) throws Exception {
-        ShipmentManagement contract = blockchainService.setCredentialsToContractInstance();
+        ShipmentManagement contract;
+        try{
+            contract = blockchainService.setCredentialsToContractInstance();
+        } catch (Exception e){
+           return new ResponseEntity<>("User does not have set a blockchain address.", HttpStatus.BAD_REQUEST);
+        }
+
         User user = authService.getUserFromJWT();
 
         TransactionReceipt receipt;
@@ -73,7 +79,13 @@ public class ShipmentService {
     }
 
     public ResponseEntity<?> getShipment(int shipmentId) throws Exception {
-        ShipmentManagement contract = blockchainService.setCredentialsToContractInstance();
+        ShipmentManagement contract;
+        try{
+            contract = blockchainService.setCredentialsToContractInstance();
+        } catch (Exception e){
+            return new ResponseEntity<>("User does not have set a blockchain address.", HttpStatus.BAD_REQUEST);
+        }
+
         try {
             BigInteger id = BigInteger.valueOf(shipmentId);
 

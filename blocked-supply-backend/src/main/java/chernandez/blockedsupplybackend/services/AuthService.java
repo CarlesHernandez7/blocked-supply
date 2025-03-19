@@ -2,10 +2,7 @@ package chernandez.blockedsupplybackend.services;
 
 import chernandez.blockedsupplybackend.domain.Token;
 import chernandez.blockedsupplybackend.domain.User;
-import chernandez.blockedsupplybackend.domain.dto.auth.BlockchainCredentialsInput;
-import chernandez.blockedsupplybackend.domain.dto.auth.LoginRequest;
-import chernandez.blockedsupplybackend.domain.dto.auth.RegisterRequest;
-import chernandez.blockedsupplybackend.domain.dto.auth.TokenResponse;
+import chernandez.blockedsupplybackend.domain.dto.auth.*;
 import chernandez.blockedsupplybackend.repositories.TokenRepository;
 import chernandez.blockedsupplybackend.repositories.UserRepository;
 import chernandez.blockedsupplybackend.utils.EncryptionUtil;
@@ -128,5 +125,14 @@ public class AuthService {
         user.setBlockchainAddress(credentialsInput.address());
         userRepository.save(user);
         return new ResponseEntity<>("Credentials correctly set for user " + user.getId(), HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> getUser() {
+        User user = getUserFromJWT();
+        if (user == null) {
+            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        }
+        UserDetails details = new UserDetails(user.getName(), user.getEmail(), user.getBlockchainAddress());
+        return new ResponseEntity<>(details, HttpStatus.OK);
     }
 }

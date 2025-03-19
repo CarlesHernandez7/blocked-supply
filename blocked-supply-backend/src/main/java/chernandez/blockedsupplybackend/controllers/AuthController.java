@@ -38,4 +38,9 @@ public class AuthController {
     public ResponseEntity<?> setBlockchainCredentials(@RequestBody BlockchainCredentialsInput credentialsInput) throws Exception {
         return authService.setBlockchainCredentials(credentialsInput);
     }
+
+    @GetMapping("/api/user")
+    public ResponseEntity<?> getUser() {
+        return authService.getUser();
+    }
 }

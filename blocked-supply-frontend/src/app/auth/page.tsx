@@ -1,16 +1,16 @@
 "use client"
 
-import { useState } from "react"
+import {useState} from "react"
 import Link from "next/link"
-import { Eye, EyeOff, LogIn, UserPlus } from "lucide-react"
+import {Eye, EyeOff, LogIn, UserPlus} from "lucide-react"
 import api from "@/utils/baseApi";
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useAuth } from "@/context/AuthContext";
+import {Button} from "@/components/ui/button"
+import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card"
+import {Input} from "@/components/ui/input"
+import {Label} from "@/components/ui/label"
+import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs"
+import {useAuth} from "@/context/AuthContext";
 
 interface LoginForm {
     email: string;
@@ -34,7 +34,7 @@ export default function AuthPage() {
     const [loginLoading, setLoginLoading] = useState(false);
     const [registerLoading, setRegisterLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const { login } = useAuth();
+    const {login} = useAuth();
     const [loginData, setLoginData] = useState<LoginForm>({
         email: "",
         password: ""
@@ -50,19 +50,19 @@ export default function AuthPage() {
     };
 
     const handleLoginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { id, value } = e.target;
+        const {id, value} = e.target;
         const field = id === "loginEmail" ? "email" : "password";
-        setLoginData(prev => ({ ...prev, [field]: value }));
+        setLoginData(prev => ({...prev, [field]: value}));
     };
 
     const handleRegisterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { id, value } = e.target;
+        const {id, value} = e.target;
         let field: keyof RegisterForm;
         if (id === "registerName") field = "name";
         else if (id === "registerEmail") field = "email";
         else field = "password";
 
-        setRegisterData(prev => ({ ...prev, [field]: value }));
+        setRegisterData(prev => ({...prev, [field]: value}));
     };
 
     const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -135,11 +135,11 @@ export default function AuthPage() {
                     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                         <TabsList className="grid w-full grid-cols-2 mb-6">
                             <TabsTrigger value="login" className="flex items-center gap-2">
-                                <LogIn className="h-4 w-4" />
+                                <LogIn className="h-4 w-4"/>
                                 Login
                             </TabsTrigger>
                             <TabsTrigger value="register" className="flex items-center gap-2">
-                                <UserPlus className="h-4 w-4" />
+                                <UserPlus className="h-4 w-4"/>
                                 Register
                             </TabsTrigger>
                         </TabsList>
@@ -176,7 +176,7 @@ export default function AuthPage() {
                                             className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8"
                                             onClick={togglePasswordVisibility}
                                         >
-                                            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                            {showPassword ? <EyeOff className="h-4 w-4"/> : <Eye className="h-4 w-4"/>}
                                         </Button>
                                     </div>
                                 </div>
@@ -224,7 +224,7 @@ export default function AuthPage() {
                                             className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8"
                                             onClick={togglePasswordVisibility}
                                         >
-                                            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                            {showPassword ? <EyeOff className="h-4 w-4"/> : <Eye className="h-4 w-4"/>}
                                         </Button>
                                     </div>
                                 </div>

@@ -1,6 +1,7 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import {createContext, useContext, useEffect, useState} from "react";
+import {usePathname, useRouter} from "next/navigation";
 import Loading from "@/components/loading";
+import api from "@/utils/baseApi";
 
 interface AuthContextType {
     token: string | null;
@@ -10,7 +11,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+export const AuthProvider = ({children}: { children: React.ReactNode }) => {
     const [token, setToken] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const router = useRouter();
@@ -38,18 +39,26 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         router.push("/");
     };
 
-    const logout = () => {
+    const logout = async () => {
+        const token = localStorage.getItem("authToken");
+        await fetch(`${api.baseURL}/auth/logout`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+        });
         localStorage.removeItem("authToken");
         setToken(null);
         router.push("/");
     };
 
     if (loading) {
-        return <Loading />;
+        return <Loading/>;
     }
 
     return (
-        <AuthContext.Provider value={{ token, login, logout }}>
+        <AuthContext.Provider value={{token, login, logout}}>
             {children}
         </AuthContext.Provider>
     );

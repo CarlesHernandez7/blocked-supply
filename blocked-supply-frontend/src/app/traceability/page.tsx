@@ -76,7 +76,7 @@ export default function TraceabilityPage() {
     return (
         <ProtectedRoute>
             <div className="relative">
-                {loading && <Loading />} {}
+                {loading && <Loading/>} {}
 
                 <div className={`space-y-4 ${loading ? "opacity-50 pointer-events-none" : ""}`}>
                     <Card>
@@ -94,7 +94,7 @@ export default function TraceabilityPage() {
                                     onChange={(e) => setShipmentId(e.target.value)}
                                 />
                                 <Button onClick={handleSearch}>
-                                    <Search className="h-4 w-4 mr-2" />
+                                    <Search className="h-4 w-4 mr-2"/>
                                     Search
                                 </Button>
                             </div>
