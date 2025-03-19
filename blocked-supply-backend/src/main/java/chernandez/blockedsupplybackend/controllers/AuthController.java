@@ -35,7 +35,7 @@ public class AuthController {
     }
 
     @PutMapping("/api/user/credentials")
-    public ResponseEntity<?> setBlockchainCredentials(@RequestBody BlockchainCredentialsInput credentialsInput) {
+    public ResponseEntity<?> setBlockchainCredentials(@RequestBody BlockchainCredentialsInput credentialsInput) throws Exception {
         return authService.setBlockchainCredentials(credentialsInput);
     }
 }

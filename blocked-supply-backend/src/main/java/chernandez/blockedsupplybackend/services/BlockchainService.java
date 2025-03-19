@@ -1,6 +1,8 @@
 package chernandez.blockedsupplybackend.services;
 
 import chernandez.blockedsupplybackend.domain.User;
+import chernandez.blockedsupplybackend.utils.EncryptionUtil;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,9 @@ import java.math.BigInteger;
 
 @Service
 public class BlockchainService {
+
+    @Value("${application.security.encryption.secret-key}")
+    private String encryptionKey;
 
     private final Web3j web3j;
     private final Credentials credentials;
@@ -59,7 +64,8 @@ public class BlockchainService {
             throw new Exception("User does not have set a blockchain address.");
         }
 
-        Credentials newCredentials = Credentials.create(user.getBlockchainKey());
+        String decryptedKey = EncryptionUtil.decrypt(this.encryptionKey, user.getBlockchainKey());
+        Credentials newCredentials = Credentials.create(decryptedKey);
         try {
             shipmentContract = ShipmentManagement.load(
                     this.contractAddress,

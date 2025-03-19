@@ -23,7 +23,7 @@ POST http://localhost:8080/auth/login
 Content-Type: application/json
 
 {
-  "email": "John2@gmail.com",
+  "email": "John3@gmail.com",
   "password": "123456"
 }
 
@@ -33,7 +33,7 @@ Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6Inp6eiIsInN1Y
 
 ###
 PUT http://localhost:8080/api/user/credentials
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIyIiwibmFtZSI6IkpvaG4yIiwic3ViIjoiSm9objJAZ21haWwuY29tIiwiaWF0IjoxNzQyMzQ1ODQxLCJleHAiOjE3NDI0MzIyNDF9.Y24fo-HvSgb_1k6Yl5fzwWG6s2dm_7Xocth3lEGiHjA166IsCfYWocKz_Jiud2sw
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG4zIiwic3ViIjoiSm9objNAZ21haWwuY29tIiwiaWF0IjoxNzQyMzc5MjEzLCJleHAiOjE3NDI0NjU2MTN9.2NKFVX36hAzt6LDXIsq7zGgE2uOB2N3ukW4yrVYnox6JOI7lLLHceijZaYwmpuTX
 Content-Type: application/json
 
 {
@@ -46,7 +46,7 @@ Content-Type: application/json
 
 ###
 POST http://localhost:8080/api/shipment/create
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG4iLCJzdWIiOiJKb2huQGdtYWlsLmNvbSIsImlhdCI6MTc0MjM0NTc4NCwiZXhwIjoxNzQyNDMyMTg0fQ.Ks73u_riS9vHnPZQ7n32OsXJ8pvluBgF96cM-21EZsfUhon9WeEMoYnrcZbR2cWm
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG4zIiwic3ViIjoiSm9objNAZ21haWwuY29tIiwiaWF0IjoxNzQyMzc5MjEzLCJleHAiOjE3NDI0NjU2MTN9.2NKFVX36hAzt6LDXIsq7zGgE2uOB2N3ukW4yrVYnox6JOI7lLLHceijZaYwmpuTX
 Content-Type: application/json
 
 {
@@ -60,7 +60,7 @@ Content-Type: application/json
 
 ###
 GET http://localhost:8080/api/shipment/1
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIyIiwibmFtZSI6IkpvaG4yIiwic3ViIjoiSm9objJAZ21haWwuY29tIiwiaWF0IjoxNzQyMzQ2MTI5LCJleHAiOjE3NDI0MzI1Mjl9.AyH3rAXvpRi268OWbT0xaVunsrGLRnwrjO3qg_2hTUxP6bXn1AGB7asV69_UUnNV
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG4zIiwic3ViIjoiSm9objNAZ21haWwuY29tIiwiaWF0IjoxNzQyMzc5MjEzLCJleHAiOjE3NDI0NjU2MTN9.2NKFVX36hAzt6LDXIsq7zGgE2uOB2N3ukW4yrVYnox6JOI7lLLHceijZaYwmpuTX
 
 ###
 GET http://localhost:8080/api/shipment/nextId

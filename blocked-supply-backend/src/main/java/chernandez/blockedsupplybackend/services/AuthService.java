@@ -8,7 +8,9 @@ import chernandez.blockedsupplybackend.domain.dto.auth.RegisterRequest;
 import chernandez.blockedsupplybackend.domain.dto.auth.TokenResponse;
 import chernandez.blockedsupplybackend.repositories.TokenRepository;
 import chernandez.blockedsupplybackend.repositories.UserRepository;
+import chernandez.blockedsupplybackend.utils.EncryptionUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,6 +26,9 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
+
+    @Value("${application.security.encryption.secret-key}")
+    private String encryptionKey;
 
     private final UserRepository userRepository;
     private final TokenRepository tokenRepository;
@@ -106,7 +111,7 @@ public class AuthService {
         }
     }
 
-    public ResponseEntity<?> setBlockchainCredentials(BlockchainCredentialsInput credentialsInput) {
+    public ResponseEntity<?> setBlockchainCredentials(BlockchainCredentialsInput credentialsInput) throws Exception {
         User user = getUserFromJWT();
         if (credentialsInput == null || credentialsInput.address() == null || credentialsInput.key() == null) {
             return new ResponseEntity<>("Blockchain credentials cannot be null", HttpStatus.BAD_REQUEST);
@@ -118,8 +123,9 @@ public class AuthService {
             return new ResponseEntity<>("Invalid blockchain credentials type", HttpStatus.BAD_REQUEST);
         }
 
+        String encryptedKey = EncryptionUtil.encrypt(this.encryptionKey, credentialsInput.key());
+        user.setBlockchainKey(encryptedKey);
         user.setBlockchainAddress(credentialsInput.address());
-        user.setBlockchainKey(credentialsInput.key());
         userRepository.save(user);
         return new ResponseEntity<>("Credentials correctly set for user " + user.getId(), HttpStatus.OK);
     }
