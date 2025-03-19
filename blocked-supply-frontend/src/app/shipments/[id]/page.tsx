@@ -22,7 +22,7 @@ interface Shipment {
 }
 
 export default function ShipmentDetail() {
-    const { id } = useParams();
+    const {id} = useParams();
     const [shipment, setShipment] = useState<Shipment | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
@@ -41,7 +41,9 @@ export default function ShipmentDetail() {
                 });
                 if (!response.ok) {
                     const errorMessage = await response.text();
-                    throw new Error(errorMessage);
+                    setError(errorMessage);
+                    setLoading(false);
+                    return;
                 }
                 const data: Shipment = await response.json();
                 setShipment(data);
@@ -56,7 +58,7 @@ export default function ShipmentDetail() {
     }, [id]);
 
     if (loading) {
-        return <Loading />;
+        return <Loading/>;
     }
 
     if (error) {

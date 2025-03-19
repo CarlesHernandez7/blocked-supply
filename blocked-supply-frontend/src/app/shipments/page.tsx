@@ -7,7 +7,7 @@ import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
 import Link from "next/link";
 import Loading from "@/components/loading";
-import { ClipboardCopy } from "lucide-react";
+import {ClipboardCopy} from "lucide-react";
 import ProtectedRoute from "@/components/protectedroute";
 import api from "@/utils/baseApi";
 
@@ -47,7 +47,7 @@ export default function ShipmentsPage() {
             setLoading(true);
             setError(null);
             const token = localStorage.getItem("authToken");
-            if(token) {
+            if (token) {
                 try {
                     const response = await fetch(`${api.baseURL}/api/records/participant`, {
                         method: "GET",
@@ -75,8 +75,8 @@ export default function ShipmentsPage() {
     }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { id, value } = e.target;
-        setShipmentForm(prev => ({ ...prev, [id]: value }));
+        const {id, value} = e.target;
+        setShipmentForm(prev => ({...prev, [id]: value}));
     };
 
     const validateForm = () => {
@@ -121,7 +121,13 @@ export default function ShipmentsPage() {
                 })
             });
 
-            if (!response.ok) throw new Error("Failed to create shipment");
+            if (!response.ok) {
+                const errorMessage = await response.text();
+                console.log("API Error:", errorMessage);
+                setError(errorMessage);
+                setLoading(false);
+                return;
+            }
 
             setShowForm(false);
             window.location.reload();
@@ -146,7 +152,7 @@ export default function ShipmentsPage() {
     return (
         <ProtectedRoute>
             <div className="relative">
-                {loading && <Loading />} {}
+                {loading && <Loading/>} {}
 
                 <div className={`${loading ? "opacity-50 pointer-events-none" : ""}`}>
                     {!showForm ? (
@@ -156,19 +162,21 @@ export default function ShipmentsPage() {
                                 <CardDescription>List of shipments you are part of.</CardDescription>
                             </CardHeader>
                             <CardContent>
-                                {error ? (
-                                    <p className="text-red-500">{error}</p>
-                                ) : (
+                                {error && <p className="text-red-500 pb-5">{error}</p>} {}
+
+                                {shipments ? (
                                     <ul className="space-y-2">
-                                        {shipments?.map((shipment) => (
+                                        {shipments.map((shipment) => (
                                             <li
                                                 key={shipment.shipmentId}
                                                 className="border p-2 rounded transition-colors hover:bg-gray-200/50 flex justify-between items-center"
                                             >
-                                                <Link href={`/shipments/${shipment.shipmentId}`} className="block p-2 flex-grow">
+                                                <Link href={`/shipments/${shipment.shipmentId}`}
+                                                      className="block p-2 flex-grow">
                                                     <p><strong>ID:</strong> {shipment.shipmentId}</p>
                                                     <p><strong>Status:</strong> {shipment.status}</p>
-                                                    <p><strong>Created At:</strong> {new Date(shipment.createdAt).toLocaleString()}</p>
+                                                    <p><strong>Created
+                                                        At:</strong> {new Date(shipment.createdAt).toLocaleString()}</p>
                                                 </Link>
                                                 <Button
                                                     variant="outline"
@@ -176,14 +184,26 @@ export default function ShipmentsPage() {
                                                     onClick={() => handleCopy(shipment.shipmentId)}
                                                     className="ml-2"
                                                 >
-                                                    <ClipboardCopy className="w-4 h-4 mr-1" />
+                                                    <ClipboardCopy className="w-4 h-4 mr-1"/>
                                                     {copiedId === shipment.shipmentId ? "Copied!" : "Copy ID"}
                                                 </Button>
                                             </li>
                                         ))}
                                     </ul>
+                                ) : (
+                                    <p className="text-gray-500">No shipments found.</p>
                                 )}
-                                <Button className="mt-4 w-full" onClick={() => setShowForm(true)}>Create Shipment</Button>
+
+                                <Button
+                                    className="mt-4 w-full"
+                                    onClick={() => {
+                                        setShowForm(true);
+                                        setError(null);
+                                        setErrors({});
+                                    }}
+                                >
+                                    Create Shipment
+                                </Button>
                             </CardContent>
                         </Card>
                     ) : (
@@ -193,35 +213,40 @@ export default function ShipmentsPage() {
                                 <CardDescription>Fill in the details to create a shipment.</CardDescription>
                             </CardHeader>
                             <CardContent>
+                                {error && <p className="text-red-500 pb-5">{error}</p>} {}
                                 <form onSubmit={handleSubmit} className="space-y-4">
                                     <div className="grid gap-2">
                                         <Label htmlFor="name">Shipment Name</Label>
-                                        <Input id="name" value={shipmentForm.name} placeholder={"Enter shipment name"} onChange={handleChange} />
+                                        <Input id="name" value={shipmentForm.name} onChange={handleChange}/>
                                         {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
                                     </div>
                                     <div className="grid gap-2">
                                         <Label htmlFor="description">Description</Label>
-                                        <Input id="description" value={shipmentForm.description} placeholder={"Enter description"} onChange={handleChange} />
-                                        {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
+                                        <Input id="description" value={shipmentForm.description}
+                                               onChange={handleChange}/>
+                                        {errors.description &&
+                                            <p className="text-red-500 text-sm">{errors.description}</p>}
                                     </div>
                                     <div className="grid gap-2">
                                         <Label htmlFor="origin">Origin</Label>
-                                        <Input id="origin" value={shipmentForm.origin} placeholder={"Enter origin"} onChange={handleChange} />
+                                        <Input id="origin" value={shipmentForm.origin} onChange={handleChange}/>
                                         {errors.origin && <p className="text-red-500 text-sm">{errors.origin}</p>}
                                     </div>
                                     <div className="grid gap-2">
                                         <Label htmlFor="destination">Destination</Label>
-                                        <Input id="destination" value={shipmentForm.destination} placeholder={"Enter destination"} onChange={handleChange} />
-                                        {errors.destination && <p className="text-red-500 text-sm">{errors.destination}</p>}
+                                        <Input id="destination" value={shipmentForm.destination}
+                                               onChange={handleChange}/>
+                                        {errors.destination &&
+                                            <p className="text-red-500 text-sm">{errors.destination}</p>}
                                     </div>
                                     <div className="grid gap-2">
                                         <Label htmlFor="units">Units</Label>
-                                        <Input id="units" value={shipmentForm.units} placeholder={"Enter units"} onChange={handleChange} />
+                                        <Input id="units" value={shipmentForm.units} onChange={handleChange}/>
                                         {errors.units && <p className="text-red-500 text-sm">{errors.units}</p>}
                                     </div>
                                     <div className="grid gap-2">
                                         <Label htmlFor="weight">Weight</Label>
-                                        <Input id="weight" value={shipmentForm.weight} placeholder={"Enter weight"} onChange={handleChange} />
+                                        <Input id="weight" value={shipmentForm.weight} onChange={handleChange}/>
                                         {errors.weight && <p className="text-red-500 text-sm">{errors.weight}</p>}
                                     </div>
                                     <div className="flex justify-between">

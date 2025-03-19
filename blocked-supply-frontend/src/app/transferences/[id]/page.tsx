@@ -36,7 +36,7 @@ interface TransferFormErrors {
 }
 
 export default function TransferShipmentPage() {
-    const { id } = useParams();
+    const {id} = useParams();
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -93,19 +93,16 @@ export default function TransferShipmentPage() {
             });
 
             if (!response.ok) {
-                if (response.status === 404) {
-                    throw new Error("New owner not found.");
-                } else if (response.status === 400) {
-                    throw new Error("New owner does not have a blockchain address.");
-                } else {
-                    throw new Error("Failed to update shipment.");
-                }
+                const errorMessage = await response.text();
+                setError(errorMessage);
+                setLoading(false);
+                return;
             }
 
             router.push("/shipments");
-        } catch (err: any) {
+        } catch (err) {
             console.error(err);
-            setError(err.message || "Failed to update shipment.");
+            setError("Failed to update shipment.");
         } finally {
             setLoading(false);
         }
@@ -116,7 +113,7 @@ export default function TransferShipmentPage() {
             <div className="relative">
                 {loading && (
                     <div>
-                        <Loading />
+                        <Loading/>
                     </div>
                 )}
                 <Card className={`${loading ? "opacity-50 pointer-events-none" : ""}`}>
@@ -133,7 +130,7 @@ export default function TransferShipmentPage() {
                                     disabled={loading}
                                 >
                                     <SelectTrigger>
-                                        <SelectValue placeholder="Select new state" />
+                                        <SelectValue placeholder="Select new state"/>
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="created">Created</SelectItem>
@@ -152,7 +149,8 @@ export default function TransferShipmentPage() {
                                     placeholder="Enter new owner"
                                     disabled={loading}
                                 />
-                                {errors.newShipmentOwner && <p className="text-red-500 text-sm">{errors.newShipmentOwner}</p>}
+                                {errors.newShipmentOwner &&
+                                    <p className="text-red-500 text-sm">{errors.newShipmentOwner}</p>}
                             </div>
                             <div className="grid gap-2">
                                 <Label>Location</Label>

@@ -37,8 +37,13 @@ public class TransferService {
         this.userRepository = userRepository;
     }
 
-    public ResponseEntity<?> transferShipment(@NotNull TransferInput request) throws Exception {
-        ShipmentManagement contract = blockchainService.setCredentialsToContractInstance();
+    public ResponseEntity<?> transferShipment(@NotNull TransferInput request) {
+        ShipmentManagement contract;
+        try{
+            contract = blockchainService.setCredentialsToContractInstance();
+        } catch (Exception e){
+            return new ResponseEntity<>("User does not have set a blockchain address.", HttpStatus.BAD_REQUEST);
+        }
 
         Optional<User> newOwner = userRepository.findById(request.getNewShipmentOwner());
         if (newOwner.isEmpty()) {
@@ -94,7 +99,12 @@ public class TransferService {
     }
 
     public ResponseEntity<?> getTransferHistory(int shipmentId) throws Exception {
-        ShipmentManagement contract = blockchainService.setCredentialsToContractInstance();
+        ShipmentManagement contract;
+        try{
+            contract = blockchainService.setCredentialsToContractInstance();
+        } catch (Exception e){
+            return new ResponseEntity<>("User does not have set a blockchain address.", HttpStatus.BAD_REQUEST);
+        }
 
         BigInteger shipmentIdBigInt = BigInteger.valueOf(shipmentId);
 

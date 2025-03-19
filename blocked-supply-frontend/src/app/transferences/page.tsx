@@ -59,7 +59,7 @@ export default function TransferencesPage() {
     return (
         <ProtectedRoute>
             <div className="relative">
-                {loading && <Loading />} {}
+                {loading && <Loading/>} {}
 
                 <div className={`${loading ? "opacity-50 pointer-events-none" : ""}`}>
                     <Card>
@@ -73,11 +73,13 @@ export default function TransferencesPage() {
                             ) : (
                                 <ul className="space-y-2">
                                     {shipments?.map(shipment => (
-                                        <li key={shipment.shipmentId} className="border p-2 rounded transition-colors hover:bg-gray-200/50">
+                                        <li key={shipment.shipmentId}
+                                            className="border p-2 rounded transition-colors hover:bg-gray-200/50">
                                             <Link href={`/transferences/${shipment.shipmentId}`} className="block p-2">
                                                 <p><strong>ID:</strong> {shipment.shipmentId}</p>
                                                 <p><strong>Status:</strong> {shipment.status}</p>
-                                                <p><strong>Created At:</strong> {new Date(shipment.createdAt).toLocaleString()}</p>
+                                                <p><strong>Created
+                                                    At:</strong> {new Date(shipment.createdAt).toLocaleString()}</p>
                                             </Link>
                                         </li>
                                     ))}

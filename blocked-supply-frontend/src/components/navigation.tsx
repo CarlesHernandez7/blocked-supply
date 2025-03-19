@@ -34,7 +34,8 @@ export default function Navigation() {
 
     return (
         <nav className="flex overflow-auto">
-            <div className="inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground w-full">
+            <div
+                className="inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground w-full">
                 {navItems.map((item) => {
                     const isActive = pathname === item.href
                     const Icon = item.icon
@@ -48,7 +49,7 @@ export default function Navigation() {
                                 isActive ? "bg-background text-foreground shadow-sm" : "hover:bg-background/50 hover:text-foreground",
                             )}
                         >
-                            <Icon className="h-4 w-4 mr-2" />
+                            <Icon className="h-4 w-4 mr-2"/>
                             {item.name}
                         </Link>
                     )

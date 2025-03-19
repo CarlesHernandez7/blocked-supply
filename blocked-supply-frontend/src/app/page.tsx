@@ -9,7 +9,7 @@ export default function HomePage() {
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Total Products</CardTitle>
-                        <Box className="h-4 w-4 text-muted-foreground" />
+                        <Box className="h-4 w-4 text-muted-foreground"/>
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">1,234</div>
@@ -19,7 +19,7 @@ export default function HomePage() {
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Active Transfers</CardTitle>
-                        <RefreshCw className="h-4 w-4 text-muted-foreground" />
+                        <RefreshCw className="h-4 w-4 text-muted-foreground"/>
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">45</div>
@@ -29,7 +29,7 @@ export default function HomePage() {
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Completed Today</CardTitle>
-                        <Activity className="h-4 w-4 text-muted-foreground" />
+                        <Activity className="h-4 w-4 text-muted-foreground"/>
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">127</div>
@@ -39,7 +39,7 @@ export default function HomePage() {
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Success Rate</CardTitle>
-                        <Activity className="h-4 w-4 text-muted-foreground" />
+                        <Activity className="h-4 w-4 text-muted-foreground"/>
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">98.5%</div>
@@ -54,7 +54,8 @@ export default function HomePage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <p>
-                        Welcome to our supply chain management system. This platform helps you track and manage products throughout
+                        Welcome to our supply chain management system. This platform helps you track and manage products
+                        throughout
                         their lifecycle in the supply chain. Here&apos;s what you can do:
                     </p>
                     <ul className="list-disc pl-4 space-y-2">
