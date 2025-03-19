@@ -31,6 +31,7 @@ public class ShipmentRecord {
 
     public ShipmentRecord(Long shipmentId, String ownerAddress, State status, Long owner) {
         this.shipmentId = shipmentId;
+        this.ownerAddress = ownerAddress;
         this.createdAt = LocalDateTime.now();
         this.status = status;
         addParticipant(owner);

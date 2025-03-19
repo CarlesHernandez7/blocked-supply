@@ -57,25 +57,24 @@ public class BlockchainService {
 
         if (userAddress == null) {
             throw new Exception("User does not have set a blockchain address.");
-        } else {
-            try {
-                Credentials newCredentials = Credentials.create(user.getBlockchainKey());
+        }
 
-                shipmentContract = ShipmentManagement.load(
-                        this.contractAddress,
-                        web3j,
-                        newCredentials,
-                        new DefaultGasProvider()
-                );
-            } catch (Exception e) {
-                throw new Exception(e.getMessage());
-            }
+        Credentials newCredentials = Credentials.create(user.getBlockchainKey());
+        try {
+            shipmentContract = ShipmentManagement.load(
+                    this.contractAddress,
+                    web3j,
+                    newCredentials,
+                    new DefaultGasProvider()
+            );
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
         }
 
         return ShipmentManagement.load(
                 shipmentContract.getContractAddress(),
                 web3j,
-                credentials,
+                newCredentials,
                 new DefaultGasProvider()
         );
     }

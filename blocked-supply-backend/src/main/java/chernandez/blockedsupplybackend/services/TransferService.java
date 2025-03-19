@@ -6,6 +6,7 @@ import chernandez.blockedsupplybackend.domain.User;
 import chernandez.blockedsupplybackend.domain.dto.TransferInput;
 import chernandez.blockedsupplybackend.domain.dto.TransferOutput;
 import chernandez.blockedsupplybackend.repositories.ShipmentRecordRepository;
+import chernandez.blockedsupplybackend.repositories.UserRepository;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,16 +28,25 @@ public class TransferService {
     private final ShipmentRecordRepository shipmentRecordRepository;
     private final BlockchainService blockchainService;
     private final AuthService authService;
+    private final UserRepository userRepository;
 
-    public TransferService(ShipmentRecordRepository shipmentRecordRepository, BlockchainService blockchainService, AuthService authService) {
+    public TransferService(ShipmentRecordRepository shipmentRecordRepository, BlockchainService blockchainService, AuthService authService, UserRepository userRepository) {
         this.shipmentRecordRepository = shipmentRecordRepository;
         this.blockchainService = blockchainService;
         this.authService = authService;
+        this.userRepository = userRepository;
     }
 
     public ResponseEntity<?> transferShipment(@NotNull TransferInput request) throws Exception {
         ShipmentManagement contract = blockchainService.setCredentialsToContractInstance();
-        User user = authService.getUserFromJWT();
+
+        Optional<User> newOwner = userRepository.findById(request.getNewShipmentOwner());
+        if (newOwner.isEmpty()) {
+            return new ResponseEntity<>("New owner not found.", HttpStatus.NOT_FOUND);
+        }
+        if (newOwner.get().getBlockchainAddress() == null || newOwner.get().getBlockchainAddress().isEmpty()) {
+            return new ResponseEntity<>("New owner does not have a blockchain address.", HttpStatus.BAD_REQUEST);
+        }
 
         TransactionReceipt receipt;
         BigInteger id = BigInteger.valueOf(request.getShipmentId());
@@ -47,7 +57,7 @@ public class TransferService {
         try {
             receipt = contract.shipmentTransfer(
                     id,
-                    user.getBlockchainAddress(),
+                    newOwner.get().getBlockchainAddress(),
                     BigInteger.valueOf(request.getNewState()),
                     request.getLocation(),
                     request.getTransferNotes()
@@ -76,7 +86,8 @@ public class TransferService {
 
         ShipmentRecord shipmentRecord = optionalShipmentRecord.get();
         shipmentRecord.setStatus(State.fromBigInt(newState.get()));
-        shipmentRecord.addParticipant(user.getId());
+        shipmentRecord.setOwnerAddress(newOwner.get().getBlockchainAddress());
+        shipmentRecord.addParticipant(newOwner.get().getId());
         shipmentRecordRepository.save(shipmentRecord);
 
         return new ResponseEntity<>(receipt, HttpStatus.CREATED);
