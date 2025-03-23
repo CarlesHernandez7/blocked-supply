@@ -9,9 +9,9 @@ import java.util.List;
 
 public interface ShipmentRecordRepository extends JpaRepository<ShipmentRecord, Long> {
 
-    List<ShipmentRecord> findByStatusNot(State status);
+    List<ShipmentRecord> findByStateNot(State status);
 
-    List<ShipmentRecord> findByStatusAndCreatedAtBetween(State status, LocalDateTime start, LocalDateTime end);
+    List<ShipmentRecord> findByStateAndCreatedAtBetween(State status, LocalDateTime start, LocalDateTime end);
 
     List<ShipmentRecord> findByParticipantsContaining(Long userId);
 

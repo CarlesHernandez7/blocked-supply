@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/records")
 public class ShipmentRecordController {
@@ -22,19 +24,9 @@ public class ShipmentRecordController {
         return shipmentRecordService.getShipmentRecord(shipmentId);
     }
 
-    @GetMapping("/all")
-    public ResponseEntity<?> getAllShipmentRecords() {
-        return shipmentRecordService.getAllShipmentRecords();
-    }
-
-    @GetMapping("/progress")
-    public ResponseEntity<?> getShipmentRecordsInProgress() {
-        return shipmentRecordService.getShipmentRecordsInProgress();
-    }
-
-    @GetMapping("/delivered")
-    public ResponseEntity<?> getShipmentRecordsDeliveredToday() {
-        return shipmentRecordService.getShipmentRecordsDeliveredToday();
+    @GetMapping("/stats")
+    public ResponseEntity<Map<String, Object>> getAllShipmentRecords() {
+        return shipmentRecordService.getShipmentStatistics();
     }
 
     @GetMapping("/participant")
@@ -43,7 +35,7 @@ public class ShipmentRecordController {
     }
 
     @GetMapping("/owner")
-    public ResponseEntity<?> getNextShipmentRecordId() {
+    public ResponseEntity<?> getShipmentRecordsByowner() {
         return shipmentRecordService.getShipmentRecordsByowner();
     }
 
