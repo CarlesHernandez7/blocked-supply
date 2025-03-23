@@ -10,7 +10,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -32,27 +34,22 @@ public class ShipmentRecordService {
         return new ResponseEntity<>(record.get(), HttpStatus.OK);
     }
 
-    public ResponseEntity<?> getAllShipmentRecords() {
-        return new ResponseEntity<>(shipmentRecordRepository.count(), HttpStatus.OK);
-    }
+    public ResponseEntity<Map<String, Object>> getShipmentStatistics() {
+        Map<String, Object> response = new HashMap<>();
 
-    public ResponseEntity<?> getShipmentRecordsInProgress() {
-        List<ShipmentRecord> list = shipmentRecordRepository.findByStatusNot(State.DELIVERED);
-        if (list.isEmpty()) {
-            return new ResponseEntity<>("No shipments in progress.", HttpStatus.BAD_REQUEST);
-        }
-        return new ResponseEntity<>(list, HttpStatus.OK);
-    }
+        long totalShipments = shipmentRecordRepository.count();
+        response.put("totalShipments", totalShipments);
 
-    public ResponseEntity<?> getShipmentRecordsDeliveredToday() {
+        List<ShipmentRecord> activeShipments = shipmentRecordRepository.findByStateNot(State.DELIVERED);
+        response.put("activeShipments", (long) activeShipments.size());
+
         LocalDate today = LocalDate.now();
         LocalDateTime startOfDay = today.atStartOfDay();
         LocalDateTime endOfDay = today.atTime(23, 59, 59);
-        List<ShipmentRecord> list = shipmentRecordRepository.findByStatusAndCreatedAtBetween(State.DELIVERED, startOfDay, endOfDay);
-        if (list.isEmpty()) {
-            return new ResponseEntity<>("No shipments completed today yet.", HttpStatus.BAD_REQUEST);
-        }
-        return new ResponseEntity<>(list, HttpStatus.OK);
+        List<ShipmentRecord> deliveredToday = shipmentRecordRepository.findByStateAndCreatedAtBetween(State.DELIVERED, startOfDay, endOfDay);
+        response.put("deliveredToday", (long) deliveredToday.size());
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     public ResponseEntity<?> getShipmentRecordsByParticipant() {

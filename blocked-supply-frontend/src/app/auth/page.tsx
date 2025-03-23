@@ -85,9 +85,9 @@ export default function AuthPage() {
             localStorage.setItem("refreshToken", data.refresh_token);
 
             login(data.access_token);
-        } catch (err: any) {
+        } catch (err) {
             console.error(err);
-            setError(err.response?.data || "Login failed. Please try again.");
+            setError("Login failed. Please try again.");
         } finally {
             setLoginLoading(false);
         }
@@ -113,9 +113,9 @@ export default function AuthPage() {
             localStorage.setItem("refreshToken", data.refresh_token);
 
             login(data.access_token);
-        } catch (err: any) {
+        } catch (err) {
             console.error(err);
-            setError(err.response?.data || "Registration failed. Please try again.");
+            setError("Registration failed. Please try again.");
         } finally {
             setRegisterLoading(false);
         }

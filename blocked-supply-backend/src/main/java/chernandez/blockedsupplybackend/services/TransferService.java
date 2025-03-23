@@ -27,13 +27,11 @@ public class TransferService {
 
     private final ShipmentRecordRepository shipmentRecordRepository;
     private final BlockchainService blockchainService;
-    private final AuthService authService;
     private final UserRepository userRepository;
 
-    public TransferService(ShipmentRecordRepository shipmentRecordRepository, BlockchainService blockchainService, AuthService authService, UserRepository userRepository) {
+    public TransferService(ShipmentRecordRepository shipmentRecordRepository, BlockchainService blockchainService, UserRepository userRepository) {
         this.shipmentRecordRepository = shipmentRecordRepository;
         this.blockchainService = blockchainService;
-        this.authService = authService;
         this.userRepository = userRepository;
     }
 
@@ -55,6 +53,11 @@ public class TransferService {
 
         TransactionReceipt receipt;
         BigInteger id = BigInteger.valueOf(request.getShipmentId());
+
+        Optional<ShipmentRecord> currentShipmentRecord = shipmentRecordRepository.findById((long) request.getShipmentId());
+        if (currentShipmentRecord.isEmpty()) {
+            return new ResponseEntity<>("Shipment not found.", HttpStatus.NOT_FOUND);
+        }
 
         AtomicLong shipmentId = new AtomicLong();
         AtomicReference<BigInteger> newState = new AtomicReference<>();
@@ -90,7 +93,7 @@ public class TransferService {
         }
 
         ShipmentRecord shipmentRecord = optionalShipmentRecord.get();
-        shipmentRecord.setStatus(State.fromBigInt(newState.get()));
+        shipmentRecord.setState(State.fromBigInt(newState.get()));
         shipmentRecord.setOwnerAddress(newOwner.get().getBlockchainAddress());
         shipmentRecord.addParticipant(newOwner.get().getId());
         shipmentRecordRepository.save(shipmentRecord);
@@ -98,7 +101,7 @@ public class TransferService {
         return new ResponseEntity<>(receipt, HttpStatus.CREATED);
     }
 
-    public ResponseEntity<?> getTransferHistory(int shipmentId) throws Exception {
+    public ResponseEntity<?> getTransferHistory(int shipmentId) {
         ShipmentManagement contract;
         try{
             contract = blockchainService.setCredentialsToContractInstance();

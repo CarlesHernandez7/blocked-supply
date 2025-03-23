@@ -8,7 +8,7 @@ import {usePathname} from "next/navigation";
 import {cn} from "@/lib/utils";
 import Navigation from "@/components/navigation";
 import {AuthProvider} from "@/context/AuthContext";
-import {UserInfoModal} from "@/components/UserInfoModal"; // Ensure correct import
+import {UserInfoModal} from "@/components/UserInfoModal";
 
 const inter = Inter({subsets: ["latin"]});
 
