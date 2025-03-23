@@ -31,7 +31,7 @@ public class ShipmentService {
         this.authService = authService;
     }
 
-    public ResponseEntity<?> createShipment(@NotNull ShipmentInput shipmentInput) throws Exception {
+    public ResponseEntity<?> createShipment(@NotNull ShipmentInput shipmentInput) {
         ShipmentManagement contract;
         try{
             contract = blockchainService.setCredentialsToContractInstance();
@@ -78,7 +78,7 @@ public class ShipmentService {
         return new ResponseEntity<>(receipt, HttpStatus.CREATED);
     }
 
-    public ResponseEntity<?> getShipment(int shipmentId) throws Exception {
+    public ResponseEntity<?> getShipment(int shipmentId) {
         ShipmentManagement contract;
         try{
             contract = blockchainService.setCredentialsToContractInstance();

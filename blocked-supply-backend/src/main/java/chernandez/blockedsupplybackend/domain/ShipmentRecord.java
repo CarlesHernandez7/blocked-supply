@@ -20,7 +20,7 @@ public class ShipmentRecord {
     private LocalDateTime createdAt;
 
     @Enumerated(EnumType.STRING)
-    private State status;
+    private State state;
 
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "shipment_participants", joinColumns = @JoinColumn(name = "shipment_id"))
@@ -29,11 +29,11 @@ public class ShipmentRecord {
 
     public ShipmentRecord() {}
 
-    public ShipmentRecord(Long shipmentId, String ownerAddress, State status, Long owner) {
+    public ShipmentRecord(Long shipmentId, String ownerAddress, State state, Long owner) {
         this.shipmentId = shipmentId;
         this.ownerAddress = ownerAddress;
         this.createdAt = LocalDateTime.now();
-        this.status = status;
+        this.state = state;
         addParticipant(owner);
     }
 
