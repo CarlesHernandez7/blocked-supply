@@ -1,78 +1,67 @@
 const ShipmentManagement = artifacts.require("ShipmentManagement");
 
 contract("ShipmentManagement", (accounts) => {
-    let contractInstance;
+    const owner = accounts[0];
+    const newOwner = accounts[1];
+
+    let shipmentContract;
+    let shipmentId;
 
     before(async () => {
-        contractInstance = await ShipmentManagement.new();
+        shipmentContract = await ShipmentManagement.new();
     });
 
-    it("should create a shipment", async () => {
-        await contractInstance.createShipment(
-            "Laptop",
-            "A high-end gaming laptop",
+    it("should create a new shipment", async () => {
+        const receipt = await shipmentContract.createShipment(
+            "Electronics",
+            "Fragile Items",
             "New York",
             "San Francisco",
             10,
-            2000,
-            { from: accounts[0] }
+            100,
+            { from: owner }
         );
 
-        const nextShipmentId = await contractInstance.getNextShipmentId();
-        assert.equal(nextShipmentId.toNumber(), 2, "Shipment ID should be 2 after first creation");
-    });
-
-    it("should transfer a shipment", async () => {
-        const shipmentId = 1;
-        const newOwner = accounts[1];
-        const newState = 1; // IN_TRANSIT
-        const transferNotes = "Shipment is now in transit.";
-
-        await contractInstance.shipmentTransfer(
-            shipmentId,
-            newOwner,
-            newState,
-            transferNotes,
-            { from: accounts[0] }
-        );
-
-        const transferCount = await contractInstance.getTransferCount(shipmentId);
-        assert.equal(transferCount.toNumber(), 1, "There should be one transfer record");
-    });
-
-    it("should not allow non-owner to transfer a shipment", async () => {
-        const shipmentId = 1;
-        const newOwner = accounts[2];
-        const newState = 2; // STORED
-        const transferNotes = "Unauthorized transfer attempt.";
-
-        try {
-            await contractInstance.shipmentTransfer(
-                shipmentId,
-                newOwner,
-                newState,
-                transferNotes,
-                { from: accounts[2] } // Not the owner
-            );
-            assert.fail("Only the current owner can perform this action.");
-        } catch (error) {
-            assert.include(error.message, "Only the current owner can perform this action.", "Error message should indicate ownership restriction.");
-        }
-
-        const transferCount = await contractInstance.getTransferCount(shipmentId);
-        assert.equal(transferCount.toNumber(), 1, "There should be one transfer record");
+        assert.isDefined(receipt.logs[0], "ShipmentCreated event should be emitted");
+        shipmentId = (await shipmentContract.getNextShipmentId()).toNumber() - 1;
     });
 
     it("should retrieve shipment details", async () => {
-        const shipmentId = 1;
-        const result = await contractInstance.getShipment(shipmentId);
-        assert.isDefined(result, "Shipment retrieval should emit an event");
+        const shipment = await shipmentContract.getShipment(shipmentId);
+        assert.isDefined(shipment, "Shipment should exist");
     });
 
-    it("should retrieve transfer details by index", async () => {
-        const shipmentId = 1;
-        const transferIndex = 0;
-        const result = await contractInstance.getTransferByIndex(shipmentId, transferIndex);
-        assert.isDefined(result, "Transfer retrieval should emit an event");
+    it("should transfer shipment to a new owner", async () => {
+        const receipt = await shipmentContract.shipmentTransfer(
+            shipmentId,
+            newOwner,
+            1, // IN_TRANSIT
+            "Chicago",
+            "Shipment left New York",
+            { from: owner }
+        );
+
+        assert.isDefined(receipt.logs[0], "TransferCreated event should be emitted");
+    });
+
+    it("should fail transfer if not owner", async () => {
+        try {
+            await shipmentContract.shipmentTransfer(
+                shipmentId,
+                owner,
+                2, // STORED
+                "Los Angeles",
+                "Arrived at warehouse",
+                { from: accounts[2] }
+            );
+            assert.fail("Expected revert, but transaction succeeded");
+        } catch (error) {
+            assert.include(error.message, "Only the current owner can perform this action.");
+        }
+    });
+
+    it("should retrieve transfer details", async () => {
+        const transferCount = await shipmentContract.getTransferCount(shipmentId);
+        assert.equal(transferCount.toNumber(), 1, "Transfer count should be 1");
     });
 });
