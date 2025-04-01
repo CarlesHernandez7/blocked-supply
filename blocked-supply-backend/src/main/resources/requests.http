@@ -33,7 +33,7 @@ Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6Inp6eiIsInN1Y
 
 ###
 PUT http://localhost:8080/api/user/credentials
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG4zIiwic3ViIjoiSm9objJAZ21haWwuY29tIiwiaWF0IjoxNzQyNzUzNjYyLCJleHAiOjE3NDI4NDAwNjJ9.9QYvLKhO9bdO1FkUD1sEkb7ke1SLmPvGvDBcIvGb9zIoKYIZMZuOqn9-6ma9TlsE
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG4zIiwic3ViIjoiSm9objJAZ21haWwuY29tIiwiaWF0IjoxNzQzNTA5MDgyLCJleHAiOjE3NDM1OTU0ODJ9.Qh5C6xVWz82d9lW7AMg-2Nzj1-LcZKu75_5Us_wlgmUZRWE8rVZwDd36UuCE-ny4
 Content-Type: application/json
 
 {
@@ -97,7 +97,7 @@ Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG4iLCJzd
 
 ###
 GET http://localhost:8080/api/records/shipment/1
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIyIiwibmFtZSI6IkpvaG4yIiwic3ViIjoiSm9objJAZ21haWwuY29tIiwiaWF0IjoxNzQyMzQ2MTI5LCJleHAiOjE3NDI0MzI1Mjl9.AyH3rAXvpRi268OWbT0xaVunsrGLRnwrjO3qg_2hTUxP6bXn1AGB7asV69_UUnNV
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG4zIiwic3ViIjoiSm9objJAZ21haWwuY29tIiwiaWF0IjoxNzQzNTA5Mzk0LCJleHAiOjE3NDM1OTU3OTR9.t5_bFKzd3uKBNyGaJMHg9QYFBwQdsOhUgKYXgU5W7KZLCnItojmAPa897c1kS079
 
 ###
 GET http://localhost:8080/api/records/stats
