@@ -1,10 +1,12 @@
 package chernandez.blockedsupplybackend.services;
 
+import chernandez.blockedsupplybackend.domain.Notification;
 import chernandez.blockedsupplybackend.domain.ShipmentRecord;
 import chernandez.blockedsupplybackend.domain.State;
 import chernandez.blockedsupplybackend.domain.User;
 import chernandez.blockedsupplybackend.domain.dto.TransferInput;
 import chernandez.blockedsupplybackend.domain.dto.TransferOutput;
+import chernandez.blockedsupplybackend.repositories.NotificationRepository;
 import chernandez.blockedsupplybackend.repositories.ShipmentRecordRepository;
 import chernandez.blockedsupplybackend.repositories.UserRepository;
 import org.jetbrains.annotations.NotNull;
@@ -28,11 +30,13 @@ public class TransferService {
     private final ShipmentRecordRepository shipmentRecordRepository;
     private final BlockchainService blockchainService;
     private final UserRepository userRepository;
+    private final NotificationRepository notificationRepository;
 
-    public TransferService(ShipmentRecordRepository shipmentRecordRepository, BlockchainService blockchainService, UserRepository userRepository) {
+    public TransferService(ShipmentRecordRepository shipmentRecordRepository, BlockchainService blockchainService, UserRepository userRepository, NotificationRepository notificationRepository, AuthService authService) {
         this.shipmentRecordRepository = shipmentRecordRepository;
         this.blockchainService = blockchainService;
         this.userRepository = userRepository;
+        this.notificationRepository = notificationRepository;
     }
 
     public ResponseEntity<?> transferShipment(@NotNull TransferInput request) {
@@ -98,6 +102,8 @@ public class TransferService {
         shipmentRecord.addParticipant(newOwner.get().getId());
         shipmentRecordRepository.save(shipmentRecord);
 
+        sendNotification(newOwner.get().getId(), request.getNewState(), request.getTransferNotes());
+
         return new ResponseEntity<>(receipt, HttpStatus.CREATED);
     }
 
@@ -153,5 +159,13 @@ public class TransferService {
     public ResponseEntity<BigInteger> getNextTransfertId() throws Exception {
         ShipmentManagement shipmentContract = blockchainService.setCredentialsToContractInstance();
         return new ResponseEntity<>(shipmentContract.getNextTransferId().send(), HttpStatus.OK);
+    }
+
+    private void sendNotification(Long toUserId, int state, String notes) {
+        Notification notification = new Notification();
+        notification.setToUserId(toUserId);
+        String stateString = State.fromInt(state).toString();
+        notification.setMessage("A user transferred a shipment to you. State: " + stateString + ". Notes: " + notes);
+        notificationRepository.save(notification);
     }
 }
