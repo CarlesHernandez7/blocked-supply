@@ -53,12 +53,14 @@ export function UserInfoModal() {
             });
 
             if (!response.ok) {
-                throw new Error("Failed to fetch user data");
+                router.push("/auth");
             }
-
-            const data = await response.json();
-            setUserData(data);
+            else{
+                const data = await response.json();
+                setUserData(data);
+            }
         } catch (err) {
+            router.push("/auth");
             console.error(err);
             setError("Could not load user data.");
         } finally {
@@ -80,8 +82,8 @@ export function UserInfoModal() {
                     <span className="sr-only">User profile</span>
                 </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-md">
-                <DialogHeader>
+            <DialogContent className="sm:max-w-xl">
+            <DialogHeader>
                     <DialogTitle>User Information</DialogTitle>
                     <DialogDescription>View and manage your account information</DialogDescription>
                 </DialogHeader>

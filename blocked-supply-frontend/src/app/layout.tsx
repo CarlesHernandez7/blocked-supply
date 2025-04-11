@@ -9,6 +9,7 @@ import {cn} from "@/lib/utils";
 import Navigation from "@/components/navigation";
 import {AuthProvider} from "@/context/AuthContext";
 import {UserInfoModal} from "@/components/UserInfoModal";
+import {NotificationInbox} from "@/components/NotificationInbox";
 
 const inter = Inter({subsets: ["latin"]});
 
@@ -25,7 +26,10 @@ export default function RootLayout({children}: { children: React.ReactNode }) {
                     <>
                         <div className="flex items-center justify-between">
                             <h1 className="text-2xl font-bold">Supply Chain Management</h1>
-                            <UserInfoModal/>
+                            <div>
+                                <NotificationInbox/>
+                                <UserInfoModal/>
+                            </div>
                         </div>
                         <Navigation/>
                     </>

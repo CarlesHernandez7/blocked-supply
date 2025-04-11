@@ -13,9 +13,9 @@ POST http://localhost:8080/auth/register
 Content-Type: application/json
 
 {
-  "email": "John2@gmail.com",
+  "email": "John4@gmail.com",
   "password": "123456",
-  "name": "John3"
+  "name": "John4"
 }
 
 ###
@@ -23,7 +23,7 @@ POST http://localhost:8080/auth/login
 Content-Type: application/json
 
 {
-  "email": "John2@gmail.com",
+  "email": "John4@gmail.com",
   "password": "123456"
 }
 
@@ -33,12 +33,12 @@ Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6Inp6eiIsInN1Y
 
 ###
 PUT http://localhost:8080/api/user/credentials
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG4zIiwic3ViIjoiSm9objJAZ21haWwuY29tIiwiaWF0IjoxNzQyNzUzNjYyLCJleHAiOjE3NDI4NDAwNjJ9.9QYvLKhO9bdO1FkUD1sEkb7ke1SLmPvGvDBcIvGb9zIoKYIZMZuOqn9-6ma9TlsE
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objRAZ21haWwuY29tIiwiaWF0IjoxNzQ0MzE4Mjc4LCJleHAiOjE3NDQ0MDQ2Nzh9.N5B5wPfbrf4L5Xm8WABPi-gLrraXiSqQBC__iq1Vah8lZP_lPEt2d_No0I-9GllB
 Content-Type: application/json
 
 {
-  "address": "0xE11BA2b4D45Eaed5996Cd0823791E0C93114882d",
-  "key": "0x646f1ce2fdad0e6deeeb5c7e8e5543bdde65e86029e2fd9fc169899c440a7913"
+  "address": "0x1dF62f291b2E969fB0849d99D9Ce41e2F137006e",
+  "key": "0xb0057716d5917badaf911b193b12b910811c1497b5bada8d7711f758981c3773"
 }
 
 ###
@@ -50,7 +50,7 @@ Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG4zIiwic
 
 ###
 POST http://localhost:8080/api/shipment/create
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG4zIiwic3ViIjoiSm9objJAZ21haWwuY29tIiwiaWF0IjoxNzQyNzUzNjYyLCJleHAiOjE3NDI4NDAwNjJ9.9QYvLKhO9bdO1FkUD1sEkb7ke1SLmPvGvDBcIvGb9zIoKYIZMZuOqn9-6ma9TlsE
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objRAZ21haWwuY29tIiwiaWF0IjoxNzQ0MzE3NjcxLCJleHAiOjE3NDQ0MDQwNzF9.uWzXryU-O24xbbQTzccYE6HbiudizGy-rJ87FyQZGAqgMGciY8RViDBUH8Yb33UJ
 Content-Type: application/json
 
 {
@@ -74,15 +74,15 @@ Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG4zIiwic
 
 ###
 POST http://localhost:8080/api/transfer/create
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG4zIiwic3ViIjoiSm9objJAZ21haWwuY29tIiwiaWF0IjoxNzQyNzUzNjYyLCJleHAiOjE3NDI4NDAwNjJ9.9QYvLKhO9bdO1FkUD1sEkb7ke1SLmPvGvDBcIvGb9zIoKYIZMZuOqn9-6ma9TlsE
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG4zIiwic3ViIjoiSm9objNAZ21haWwuY29tIiwiaWF0IjoxNzQ0MzEzODcyLCJleHAiOjE3NDQ0MDAyNzJ9.tKEvqP52Dcqag59ZoqKqUi17a5hSgCLPj01R-0Go-2m09tU2nw0kIOkL37BOUQ9k
 Content-Type: application/json
 
 {
   "shipmentId": 1,
-  "newShipmentOwner": 1,
-  "newState": 3,
-  "location": "SAMBA2",
-  "transferNotes": "Transferred to new warehouse"
+  "newShipmentOwner": 2,
+  "newState": 2,
+  "location": "SAMBA3",
+  "transferNotes": "Transferred to your address"
 }
 
 ###
@@ -97,7 +97,7 @@ Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG4iLCJzd
 
 ###
 GET http://localhost:8080/api/records/shipment/1
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIyIiwibmFtZSI6IkpvaG4yIiwic3ViIjoiSm9objJAZ21haWwuY29tIiwiaWF0IjoxNzQyMzQ2MTI5LCJleHAiOjE3NDI0MzI1Mjl9.AyH3rAXvpRi268OWbT0xaVunsrGLRnwrjO3qg_2hTUxP6bXn1AGB7asV69_UUnNV
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG4zIiwic3ViIjoiSm9objJAZ21haWwuY29tIiwiaWF0IjoxNzQzNTA5Mzk0LCJleHAiOjE3NDM1OTU3OTR9.t5_bFKzd3uKBNyGaJMHg9QYFBwQdsOhUgKYXgU5W7KZLCnItojmAPa897c1kS079
 
 ###
 GET http://localhost:8080/api/records/stats
@@ -109,4 +109,14 @@ Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIyIiwibmFtZSI6IkpvaG4yIiwic
 ###
 GET http://localhost:8080/api/records/owner
 Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvYW4iLCJzdWIiOiJhYWFAYWFhIiwiaWF0IjoxNzQyMzg4OTk3LCJleHAiOjE3NDI0NzUzOTd9.mDHdpF-FmOyV7Vo_kgi7da9qr6iQBt5Q1ocAubmK1Tt5HqVgYD_ANX9GQwo3c5Lo
+
+//NOTIFICATIONS
+
+###
+GET http://localhost:8080/api/notification
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIyIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objRAZ21haWwuY29tIiwiaWF0IjoxNzQ0MzE0MDE3LCJleHAiOjE3NDQ0MDA0MTd9.rxBTm-MQ7q_dPaBS3m8pBF7VYTJKgoIrawrRMM3ir3t8-14pMbp3PlQlEb27utMB
+
+###
+PATCH http://localhost:8080/api/notification/read/2
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG4zIiwic3ViIjoiSm9objNAZ21haWwuY29tIiwiaWF0IjoxNzQ0MzEzODcyLCJleHAiOjE3NDQ0MDAyNzJ9.tKEvqP52Dcqag59ZoqKqUi17a5hSgCLPj01R-0Go-2m09tU2nw0kIOkL37BOUQ9k
 

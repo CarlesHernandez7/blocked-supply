@@ -23,7 +23,7 @@ interface ShipmentForm {
 interface ShipmentRecord {
     shipmentId: number;
     createdAt: string;
-    status: string;
+    state: string;
 }
 
 export default function ShipmentsPage() {
@@ -62,6 +62,7 @@ export default function ShipmentsPage() {
                         return;
                     }
                     const data: ShipmentRecord[] = await response.json();
+                    console.log(data)
                     setShipments(data.length ? data : null);
                 } catch (err) {
                     console.error(err);
@@ -174,7 +175,7 @@ export default function ShipmentsPage() {
                                                 <Link href={`/shipments/${shipment.shipmentId}`}
                                                       className="block p-2 flex-grow">
                                                     <p><strong>ID:</strong> {shipment.shipmentId}</p>
-                                                    <p><strong>Status:</strong> {shipment.status}</p>
+                                                    <p><strong>Status:</strong> {shipment.state}</p>
                                                     <p><strong>Created
                                                         At:</strong> {new Date(shipment.createdAt).toLocaleString()}</p>
                                                 </Link>
