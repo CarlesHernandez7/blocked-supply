@@ -23,7 +23,7 @@ POST http://localhost:8080/auth/login
 Content-Type: application/json
 
 {
-  "email": "John4@gmail.com",
+  "email": "a@a",
   "password": "123456"
 }
 
@@ -33,7 +33,7 @@ Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6Inp6eiIsInN1Y
 
 ###
 PUT http://localhost:8080/api/user/credentials
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objRAZ21haWwuY29tIiwiaWF0IjoxNzQ0MzE4Mjc4LCJleHAiOjE3NDQ0MDQ2Nzh9.N5B5wPfbrf4L5Xm8WABPi-gLrraXiSqQBC__iq1Vah8lZP_lPEt2d_No0I-9GllB
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IlNhbWJhIiwic3ViIjoiYUBhIiwiaWF0IjoxNzQ0NTM1MTE1LCJleHAiOjE3NDQ2MjE1MTV9.Vsm-TDOfNLc1SBOMvleKqVyxZfUxGJwzCGYreYYrxhoNQQNT9ZF-cxqnx2UNqj2j
 Content-Type: application/json
 
 {
