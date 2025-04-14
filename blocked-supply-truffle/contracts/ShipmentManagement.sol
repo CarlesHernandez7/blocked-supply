@@ -10,6 +10,7 @@ contract ShipmentManagement {
         string description;
         string origin;
         string destination;
+        string deliveryDate;
         uint256 units;
         uint256 weight;
         State currentState;
@@ -28,6 +29,7 @@ contract ShipmentManagement {
 
     event ShipmentCreated(
         uint256 indexed id,
+        string deliveryDate,
         address currentOwner
     );
 
@@ -42,6 +44,7 @@ contract ShipmentManagement {
         string description,
         string origin,
         string destination,
+        string deliveryDate,
         uint256 units,
         uint256 weight,
         uint256 currentState,
@@ -81,6 +84,7 @@ contract ShipmentManagement {
         string memory description,
         string memory origin,
         string memory destination,
+        string memory deliveryDate,
         uint256 units,
         uint256 weight
     ) public {
@@ -94,13 +98,14 @@ contract ShipmentManagement {
             description: description,
             origin: origin,
             destination: destination,
+            deliveryDate: deliveryDate,
             units: units,
             weight: weight,
             currentState: State.CREATED,
             currentOwner: msg.sender
         });
 
-        emit ShipmentCreated(shipmentId, msg.sender);
+        emit ShipmentCreated(shipmentId, deliveryDate, msg.sender);
     }
 
     function shipmentTransfer(
@@ -139,6 +144,7 @@ contract ShipmentManagement {
             shipment.description,
             shipment.origin,
             shipment.destination,
+            shipment.deliveryDate,
             shipment.units,
             shipment.weight,
             uint256(shipment.currentState),
