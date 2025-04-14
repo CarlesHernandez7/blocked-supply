@@ -46,6 +46,7 @@ public class ShipmentService {
         BigInteger weight = BigInteger.valueOf(shipmentInput.getWeight());
 
         AtomicLong shipmentId = new AtomicLong();
+        AtomicReference<String> deliveryDate = new AtomicReference<>();
         AtomicReference<String> currentOwner = new AtomicReference<>();
 
         if (units.signum() < 0 || weight.signum() < 0) {
@@ -58,6 +59,7 @@ public class ShipmentService {
                     shipmentInput.getDescription(),
                     shipmentInput.getOrigin(),
                     shipmentInput.getDestination(),
+                    shipmentInput.getDeliveryDate(),
                     units,
                     weight
             ).send();
@@ -65,6 +67,7 @@ public class ShipmentService {
             contract.shipmentCreatedEventFlowable(DefaultBlockParameterName.LATEST, DefaultBlockParameterName.LATEST)
                     .subscribe(event -> {
                         shipmentId.set(event.id.longValue());
+                        deliveryDate.set(event.deliveryDate);
                         currentOwner.set((event.currentOwner));
             });
 
@@ -72,7 +75,7 @@ public class ShipmentService {
             return new ResponseEntity<>("Failed to create shipment: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        ShipmentRecord shipmentRecord = new ShipmentRecord(shipmentId.get(), currentOwner.get(), State.CREATED, user.getId());
+        ShipmentRecord shipmentRecord = new ShipmentRecord(shipmentId.get(), currentOwner.get(), deliveryDate.get(), State.CREATED, user.getId());
         shipmentRecordRepository.save(shipmentRecord);
 
         return new ResponseEntity<>(receipt, HttpStatus.CREATED);
@@ -100,6 +103,7 @@ public class ShipmentService {
                         shipment.setDescription(event.description);
                         shipment.setOrigin(event.origin);
                         shipment.setDestination(event.destination);
+                        shipment.setDeliveryDate(event.deliveryDate);
                         shipment.setUnits(event.units.intValue());
                         shipment.setWeight(event.weight.intValue());
                         shipment.setCurrentState(State.fromBigInt(event.currentState));

@@ -33,7 +33,7 @@ Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6Inp6eiIsInN1Y
 
 ###
 PUT http://localhost:8080/api/user/credentials
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IlNhbWJhIiwic3ViIjoiYUBhIiwiaWF0IjoxNzQ0NTM1MTE1LCJleHAiOjE3NDQ2MjE1MTV9.Vsm-TDOfNLc1SBOMvleKqVyxZfUxGJwzCGYreYYrxhoNQQNT9ZF-cxqnx2UNqj2j
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objRAZ21haWwuY29tIiwiaWF0IjoxNzQ0NTY0NzQ4LCJleHAiOjE3NDQ2NTExNDh9.KeAfhSaBQYYImh3w0hQ2J6zEbumFoYfRorNIUFuHVPzDWBw-P6Wj0dTlkI5CvMzX
 Content-Type: application/json
 
 {
@@ -50,7 +50,7 @@ Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG4zIiwic
 
 ###
 POST http://localhost:8080/api/shipment/create
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objRAZ21haWwuY29tIiwiaWF0IjoxNzQ0MzE3NjcxLCJleHAiOjE3NDQ0MDQwNzF9.uWzXryU-O24xbbQTzccYE6HbiudizGy-rJ87FyQZGAqgMGciY8RViDBUH8Yb33UJ
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objRAZ21haWwuY29tIiwiaWF0IjoxNzQ0NTY0NzQ4LCJleHAiOjE3NDQ2NTExNDh9.KeAfhSaBQYYImh3w0hQ2J6zEbumFoYfRorNIUFuHVPzDWBw-P6Wj0dTlkI5CvMzX
 Content-Type: application/json
 
 {
@@ -58,6 +58,7 @@ Content-Type: application/json
   "description": "pfizer",
   "origin": "Sant Pol de Mar",
   "destination": "Brazil",
+  "deliveryDate": "aaa",
   "units": 2,
   "weight": 2
 }
