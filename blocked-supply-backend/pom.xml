@@ -50,12 +50,6 @@
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
-        <!-- Web3j -->
-        <dependency>
-            <groupId>org.web3j</groupId>
-            <artifactId>core</artifactId>
-            <version>4.12.1</version>
-        </dependency>
         <!-- Spring Boot Starter Test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -89,6 +83,12 @@
             <artifactId>jjwt-jackson</artifactId>
             <version>0.12.5</version>
         </dependency>
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>24.0.0</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -115,28 +115,6 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.web3j</groupId>
-                <artifactId>web3j-maven-plugin</artifactId>
-                <version>4.12.1</version>
-                <configuration>
-                    <packageName>web3</packageName>
-                    <sourceDestination>src/main/java/smartContracts</sourceDestination>
-                    <nativeJavaType>true</nativeJavaType>
-                    <outputFormat>java,bin,abi</outputFormat>
-                    <soliditySourceFiles>
-                        <directory>../blocked-supply-truffle/contracts</directory>
-                        <includes>
-                            <include>**/*.sol</include>
-                        </includes>
-                    </soliditySourceFiles>
-                    <outputDirectory>
-                        <java>src/main/java/smartContracts</java>
-                        <bin>src/bin/smartContracts</bin>
-                        <abi>src/abi/smartContracts</abi>
-                    </outputDirectory>
                 </configuration>
             </plugin>
         </plugins>

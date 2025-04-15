@@ -16,9 +16,6 @@ public class ShipmentOutput {
     private State currentState;
     private String currentOwner;
 
-    public ShipmentOutput() {
-    }
-
     public ShipmentOutput(int id, String name, String description, String origin, String destination, String deliveryDate, int units, int weight, State currentState, String currentOwner) {
         this.id = id;
         this.name = name;

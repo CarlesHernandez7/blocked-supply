@@ -4,17 +4,14 @@ import lombok.Data;
 
 @Data
 public class TransferInput {
-
     private int shipmentId;
-    private long newShipmentOwner;
+    private String newShipmentOwner;
     private int newState;
     private String location;
     private String transferNotes;
+    private String from;
 
-    public TransferInput() {
-    }
-
-    public TransferInput(int shipmentId, long newShipmentOwner, int newState, String location, String transferNotes) {
+    public TransferInput(int shipmentId, String newShipmentOwner, int newState, String location, String transferNotes) {
         this.shipmentId = shipmentId;
         this.newShipmentOwner = newShipmentOwner;
         this.newState = newState;

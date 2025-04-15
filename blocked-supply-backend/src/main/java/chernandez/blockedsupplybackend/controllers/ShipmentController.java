@@ -22,13 +22,13 @@ public class ShipmentController {
         return shipmentService.createShipment(shipmentInput);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getShipment(@PathVariable int id) {
-        return shipmentService.getShipment(id);
+    @GetMapping("/{shipmentId}")
+    public ResponseEntity<?> getShipment(@PathVariable int shipmentId) {
+        return shipmentService.getShipment(shipmentId);
     }
 
     @GetMapping("/nextId")
-    public ResponseEntity<BigInteger> getNextShipmentId() throws Exception {
+    public ResponseEntity<?> getNextShipmentId() {
         return shipmentService.getNextShipmentId();
     }
 }
