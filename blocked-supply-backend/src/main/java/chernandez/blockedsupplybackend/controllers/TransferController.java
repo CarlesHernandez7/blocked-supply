@@ -5,8 +5,6 @@ import chernandez.blockedsupplybackend.services.TransferService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigInteger;
-
 @RestController
 @RequestMapping("/api/transfer")
 public class TransferController {

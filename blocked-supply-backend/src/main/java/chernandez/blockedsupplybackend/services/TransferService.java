@@ -9,11 +9,11 @@ import chernandez.blockedsupplybackend.domain.dto.TransferOutput;
 import chernandez.blockedsupplybackend.repositories.NotificationRepository;
 import chernandez.blockedsupplybackend.repositories.ShipmentRecordRepository;
 import chernandez.blockedsupplybackend.repositories.UserRepository;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
-import com.fasterxml.jackson.core.type.TypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -25,15 +25,14 @@ import java.util.Map;
 @Service
 public class TransferService {
 
-    @Value("${application.broker.address}")
-    private String brokerBaseUrl;
-
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final ShipmentRecordRepository shipmentRecordRepository;
     private final UserRepository userRepository;
     private final NotificationRepository notificationRepository;
     private final AuthService authService;
+    @Value("${application.broker.address}")
+    private String brokerBaseUrl;
 
     public TransferService(ShipmentRecordRepository shipmentRecordRepository, UserRepository userRepository, NotificationRepository notificationRepository, AuthService authService, AuthService authService1) {
         this.shipmentRecordRepository = shipmentRecordRepository;
@@ -88,7 +87,7 @@ public class TransferService {
                 int shipmentId = responseBody.get("shipmentId").asInt();
                 int newState = responseBody.get("newState").asInt();
 
-                ShipmentRecord shipmentRecord = shipmentRecordRepository.findById((long)shipmentId).orElse(null);
+                ShipmentRecord shipmentRecord = shipmentRecordRepository.findById((long) shipmentId).orElse(null);
                 if (shipmentRecord == null) {
                     return new ResponseEntity<>("Shipment record not found", HttpStatus.NOT_FOUND);
                 }
@@ -119,7 +118,8 @@ public class TransferService {
 
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
                 ObjectMapper mapper = new ObjectMapper();
-                List<Map<String, Object>> transferList = mapper.readValue(response.getBody(), new TypeReference<>() {});
+                List<Map<String, Object>> transferList = mapper.readValue(response.getBody(), new TypeReference<>() {
+                });
                 List<TransferOutput> transfers = new ArrayList<>();
 
                 for (Map<String, Object> transfer : transferList) {

@@ -24,14 +24,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AuthService {
 
-    @Value("${application.security.encryption.secret-key}")
-    private String encryptionKey;
-
     private final UserRepository userRepository;
     private final TokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    @Value("${application.security.encryption.secret-key}")
+    private String encryptionKey;
 
     public TokenResponse register(RegisterRequest request) {
         var user = User.builder()

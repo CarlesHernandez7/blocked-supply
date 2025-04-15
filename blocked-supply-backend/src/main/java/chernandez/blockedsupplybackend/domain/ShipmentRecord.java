@@ -28,7 +28,8 @@ public class ShipmentRecord {
     @Column(name = "participant_id")
     private List<Long> participants = new ArrayList<>();
 
-    public ShipmentRecord() {}
+    public ShipmentRecord() {
+    }
 
     public ShipmentRecord(Long shipmentId, String ownerAddress, String deliveryDate, State state, Long owner) {
         this.shipmentId = shipmentId;

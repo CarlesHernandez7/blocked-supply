@@ -16,13 +16,12 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class ShipmentService {
 
-    @Value("${application.broker.address}")
-    private String brokerBaseUrl;
-
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final ShipmentRecordRepository shipmentRecordRepository;
     private final AuthService authService;
+    @Value("${application.broker.address}")
+    private String brokerBaseUrl;
 
     public ShipmentService(ShipmentRecordRepository shipmentRecordRepository, AuthService authService) {
         this.shipmentRecordRepository = shipmentRecordRepository;
@@ -60,7 +59,7 @@ public class ShipmentService {
                 String deliveryDate = responseBody.get("deliveryDate").asText();
 
                 ShipmentRecord shipmentRecord = new ShipmentRecord(
-                        (long)shipmentId,
+                        (long) shipmentId,
                         currentOwner,
                         deliveryDate,
                         State.CREATED,
