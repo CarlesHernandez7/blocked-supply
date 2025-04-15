@@ -139,8 +139,7 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function",
-      "constant": true
+      "type": "function"
     },
     {
       "inputs": [
@@ -196,8 +195,7 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function",
-      "constant": true
+      "type": "function"
     },
     {
       "inputs": [],
@@ -210,8 +208,7 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function",
-      "constant": true
+      "type": "function"
     },
     {
       "inputs": [],
@@ -224,8 +221,7 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function",
-      "constant": true
+      "type": "function"
     }
   ],
   "metadata": "{\"compiler\":{\"version\":\"0.8.13+commit.abaa5c0e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"string\",\"name\":\"productName\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"description\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"origin\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"destination\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"deliveryDate\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"units\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"weight\",\"type\":\"uint256\"}],\"name\":\"createShipment\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getNextShipmentId\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getNextTransferId\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"shipmentId\",\"type\":\"uint256\"}],\"name\":\"getShipment\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"description\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"origin\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"destination\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"deliveryDate\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"units\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"weight\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"currentState\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"currentOwner\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"shipmentId\",\"type\":\"uint256\"}],\"name\":\"getTransfers\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"shipmentId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"timestamp\",\"type\":\"uint256\"},{\"internalType\":\"enum ShipmentManagement.State\",\"name\":\"newState\",\"type\":\"uint8\"},{\"internalType\":\"string\",\"name\":\"location\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"newShipmentOwner\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"transferNotes\",\"type\":\"string\"}],\"internalType\":\"struct ShipmentManagement.Transfer[]\",\"name\":\"\",\"type\":\"tuple[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"shipmentId\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"newShipmentOwner\",\"type\":\"address\"},{\"internalType\":\"enum ShipmentManagement.State\",\"name\":\"newState\",\"type\":\"uint8\"},{\"internalType\":\"string\",\"name\":\"location\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"transferNotes\",\"type\":\"string\"}],\"name\":\"shipmentTransfer\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/ShipmentManagement.sol\":\"ShipmentManagement\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/ShipmentManagement.sol\":{\"keccak256\":\"0xe07bdc3e6d9612ece155d5f5193537e476aa65744ae11e51c4a82d3786282087\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://2337467a0c00352d00b507134438fa3f2f9fd5319456866dbaf14391f9b7b5d1\",\"dweb:/ipfs/Qmd84KVvsBr1nNMr26ZnhC9KVVMswLGwRhpmE2DvFhg7Kx\"]}},\"version\":1}",
@@ -14508,35 +14504,10 @@
       "links": {},
       "address": "0x6eD79Aa1c71FD7BdBC515EfdA3Bd4e26394435cC",
       "transactionHash": "0xe0d5afffb4525d39310ba0ab8585c135ede81586aa2555fe78924946571b14d0"
-    },
-    "1744664407041": {
-      "events": {},
-      "links": {},
-      "address": "0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab",
-      "transactionHash": "0xcb148282065336f68848ebd0ef2b5a2c197f4264d4629a526e45dc3be71a15d5"
-    },
-    "1744665132948": {
-      "events": {},
-      "links": {},
-      "address": "0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab",
-      "transactionHash": "0xcb148282065336f68848ebd0ef2b5a2c197f4264d4629a526e45dc3be71a15d5"
-    },
-    "1744707938811": {
-      "events": {},
-      "links": {},
-      "address": "0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab",
-      "transactionHash": "0xcb148282065336f68848ebd0ef2b5a2c197f4264d4629a526e45dc3be71a15d5"
-    },
-    "1744709553226": {
-      "events": {},
-      "links": {},
-      "address": "0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab",
-      "transactionHash": "0xcb148282065336f68848ebd0ef2b5a2c197f4264d4629a526e45dc3be71a15d5"
     }
   },
   "schemaVersion": "3.4.16",
-  "updatedAt": "2025-04-15T09:33:13.558Z",
-  "networkType": "ethereum",
+  "updatedAt": "2025-04-14T20:58:50.879Z",
   "devdoc": {
     "kind": "dev",
     "methods": {},
