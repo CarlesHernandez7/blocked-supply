@@ -52,13 +52,13 @@ contract ShipmentManagement {
         string memory deliveryDate,
         uint256 units,
         uint256 weight
-    ) public {
+    ) public returns (uint256, address, string memory) {
         require(units > 0, "Units must be greater than 0.");
         require(weight > 0, "Weight must be greater than 0.");
         
-        uint256 shipmentId = nextShipmentId++;
-        shipments[shipmentId] = Shipment({
-            id: shipmentId,
+        uint256 newShipmentId = nextShipmentId++;
+        shipments[newShipmentId] = Shipment({
+            id: newShipmentId,
             name: productName,
             description: description,
             origin: origin,
@@ -69,6 +69,8 @@ contract ShipmentManagement {
             currentState: State.CREATED,
             currentOwner: msg.sender
         });
+
+        return (newShipmentId, msg.sender, deliveryDate);
     }
 
     function shipmentTransfer(
@@ -77,7 +79,7 @@ contract ShipmentManagement {
         State newState,
         string memory location,
         string memory transferNotes
-    ) public onlyOwner(shipmentId) {
+    ) public onlyOwner(shipmentId) returns (uint256, State) {
         Shipment storage shipment = shipments[shipmentId];
         
         shipment.currentOwner = newShipmentOwner;
@@ -93,6 +95,8 @@ contract ShipmentManagement {
             newShipmentOwner: newShipmentOwner,
             transferNotes: transferNotes
         }));
+
+        return (shipmentId, newState);
     }
 
     function getShipment(uint256 shipmentId) public view exists(shipmentId) 

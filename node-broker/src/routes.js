@@ -27,7 +27,6 @@ router.get('/transfers/next-id', async (req, res) => {
     }
 });
 
-
 // CREATE SHIPMENT
 router.post('/shipments', async (req, res) => {
     const {
@@ -62,12 +61,19 @@ router.post('/shipments', async (req, res) => {
             deliveryDate,
             units,
             weight
-        ).send({
-            from,
-            gas: 3000000,
+        ).send({ from, gas: 3000000 });
+
+        const nextId = await contract.methods.getNextShipmentId().call();
+        const createdId = Number(nextId) - 1;
+
+        const shipment = await contract.methods.getShipment(createdId).call();
+
+        res.json({
+            id: shipment[0].toString(),
+            currentOwner: shipment[9],
+            deliveryDate: shipment[5]
         });
 
-        res.json({ status: 'Shipment created' });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -128,7 +134,14 @@ router.post('/shipments/:shipmentId/transfer', async (req, res) => {
             gas: 3000000,
         });
 
-        res.json({ status: 'Shipment transferred' });
+        const shipment = await contract.methods.getShipment(shipmentId).call();
+
+        res.json({
+            shipmentId: shipment[0].toString(),
+            newOwner: shipment[9],
+            newState: shipment[8].toString(),
+        });
+
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -145,7 +158,7 @@ router.get('/shipments/:shipmentId/transfers', async (req, res) => {
             id: t.id.toString(),
             shipmentId: t.shipmentId.toString(),
             timestamp: t.timestamp.toString(),
-            newState: Number(t.newState),
+            newState: t.newState.toString(),
             location: t.location,
             newShipmentOwner: t.newShipmentOwner,
             transferNotes: t.transferNotes
