@@ -26,7 +26,7 @@ Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6Inp6eiIsInN1Y
 
 ###
 PUT http://localhost:8080/api/user/credentials
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objVAZ21haWwuY29tIiwiaWF0IjoxNzQ0NzIwNDgxLCJleHAiOjE3NDQ4MDY4ODF9.mwbuJ8_zVQSXYqhoXspyzWIX_vXAZxRQ8CGek0xXpy40My5bNLv7Z30vlyZE7nrw
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objVAZ21haWwuY29tIiwiaWF0IjoxNzQ0ODIxMDM0LCJleHAiOjE3NDQ5MDc0MzR9.DVaUL2IB5zwDQFNJH_b1nmaY0jUFfoJFrYbFsNULaw6z462TD6ZsTnlOLCgiSToV
 Content-Type: application/json
 
 {
@@ -43,7 +43,7 @@ Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG4zIiwic
 
 ###
 POST http://localhost:8080/api/shipment/create
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objVAZ21haWwuY29tIiwiaWF0IjoxNzQ0NzIwNDgxLCJleHAiOjE3NDQ4MDY4ODF9.mwbuJ8_zVQSXYqhoXspyzWIX_vXAZxRQ8CGek0xXpy40My5bNLv7Z30vlyZE7nrw
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objVAZ21haWwuY29tIiwiaWF0IjoxNzQ0ODIxMDM0LCJleHAiOjE3NDQ5MDc0MzR9.DVaUL2IB5zwDQFNJH_b1nmaY0jUFfoJFrYbFsNULaw6z462TD6ZsTnlOLCgiSToV
 Content-Type: application/json
 
 {
@@ -68,20 +68,20 @@ Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic
 
 ###
 POST http://localhost:8080/api/transfer/create
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objVAZ21haWwuY29tIiwiaWF0IjoxNzQ0NzIwNDgxLCJleHAiOjE3NDQ4MDY4ODF9.mwbuJ8_zVQSXYqhoXspyzWIX_vXAZxRQ8CGek0xXpy40My5bNLv7Z30vlyZE7nrw
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objVAZ21haWwuY29tIiwiaWF0IjoxNzQ0ODI2MDc1LCJleHAiOjE3NDQ5MTI0NzV9.krZvoh0YQPVwghRwVktOWIj1Yesby_EmZ1WRnxzpBxSNUJgE1QC4kDYfdmLYa8Hj
 Content-Type: application/json
 
 {
-  "shipmentId": 10,
+  "shipmentId": 1,
   "newShipmentOwner": "1",
-  "newState": 2,
+  "newState": 0,
   "location": "SAMBA3",
   "transferNotes": "Transferred to your address"
 }
 
 ###
-GET http://localhost:8080/api/transfer/8
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objVAZ21haWwuY29tIiwiaWF0IjoxNzQ0NzIwNDgxLCJleHAiOjE3NDQ4MDY4ODF9.mwbuJ8_zVQSXYqhoXspyzWIX_vXAZxRQ8CGek0xXpy40My5bNLv7Z30vlyZE7nrw
+GET http://localhost:8080/api/transfer/1
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objVAZ21haWwuY29tIiwiaWF0IjoxNzQ0ODIxMDM0LCJleHAiOjE3NDQ5MDc0MzR9.DVaUL2IB5zwDQFNJH_b1nmaY0jUFfoJFrYbFsNULaw6z462TD6ZsTnlOLCgiSToV
 
 ###
 GET http://localhost:8080/api/transfer/nextId
@@ -98,11 +98,11 @@ GET http://localhost:8080/api/records/stats
 
 ###
 GET http://localhost:8080/api/records/participant
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIyIiwibmFtZSI6IkpvaG4yIiwic3ViIjoiSm9objJAZ21haWwuY29tIiwiaWF0IjoxNzQyMzQ2MTI5LCJleHAiOjE3NDI0MzI1Mjl9.AyH3rAXvpRi268OWbT0xaVunsrGLRnwrjO3qg_2hTUxP6bXn1AGB7asV69_UUnNV
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objVAZ21haWwuY29tIiwiaWF0IjoxNzQ0ODIxMDM0LCJleHAiOjE3NDQ5MDc0MzR9.DVaUL2IB5zwDQFNJH_b1nmaY0jUFfoJFrYbFsNULaw6z462TD6ZsTnlOLCgiSToV
 
 ###
 GET http://localhost:8080/api/records/owner
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvYW4iLCJzdWIiOiJhYWFAYWFhIiwiaWF0IjoxNzQyMzg4OTk3LCJleHAiOjE3NDI0NzUzOTd9.mDHdpF-FmOyV7Vo_kgi7da9qr6iQBt5Q1ocAubmK1Tt5HqVgYD_ANX9GQwo3c5Lo
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objVAZ21haWwuY29tIiwiaWF0IjoxNzQ0ODIxMDM0LCJleHAiOjE3NDQ5MDc0MzR9.DVaUL2IB5zwDQFNJH_b1nmaY0jUFfoJFrYbFsNULaw6z462TD6ZsTnlOLCgiSToV
 
 //NOTIFICATIONS
 

@@ -12,10 +12,11 @@ import ProtectedRoute from "@/components/protectedroute";
 import api from "@/utils/baseApi";
 
 interface ShipmentForm {
-    name: string;
+    productName: string;
     description: string;
     origin: string;
     destination: string;
+    deliveryDate: string;
     units: string;
     weight: string;
 }
@@ -23,6 +24,7 @@ interface ShipmentForm {
 interface ShipmentRecord {
     shipmentId: number;
     createdAt: string;
+    deliveryDate: string;
     state: string;
 }
 
@@ -31,10 +33,11 @@ export default function ShipmentsPage() {
     const [error, setError] = useState<string | null>(null);
     const [showForm, setShowForm] = useState(false);
     const [shipmentForm, setShipmentForm] = useState<ShipmentForm>({
-        name: "",
+        productName: "",
         description: "",
         origin: "",
         destination: "",
+        deliveryDate: "",
         units: "",
         weight: ""
     });
@@ -176,6 +179,7 @@ export default function ShipmentsPage() {
                                                       className="block p-2 flex-grow">
                                                     <p><strong>ID:</strong> {shipment.shipmentId}</p>
                                                     <p><strong>Status:</strong> {shipment.state}</p>
+                                                    <p><strong>Delivery Date:</strong> {shipment.deliveryDate}</p>
                                                     <p><strong>Created
                                                         At:</strong> {new Date(shipment.createdAt).toLocaleString()}</p>
                                                 </Link>
@@ -217,16 +221,14 @@ export default function ShipmentsPage() {
                                 {error && <p className="text-red-500 pb-5">{error}</p>} {}
                                 <form onSubmit={handleSubmit} className="space-y-4">
                                     <div className="grid gap-2">
-                                        <Label htmlFor="name">Shipment Name</Label>
-                                        <Input id="name" value={shipmentForm.name} onChange={handleChange}/>
-                                        {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
+                                        <Label htmlFor="productName">Shipment Product Name</Label>
+                                        <Input id="productName" value={shipmentForm.productName} onChange={handleChange}/>
+                                        {errors.productName && <p className="text-red-500 text-sm">{errors.productName}</p>}
                                     </div>
                                     <div className="grid gap-2">
                                         <Label htmlFor="description">Description</Label>
-                                        <Input id="description" value={shipmentForm.description}
-                                               onChange={handleChange}/>
-                                        {errors.description &&
-                                            <p className="text-red-500 text-sm">{errors.description}</p>}
+                                        <Input id="description" value={shipmentForm.description} onChange={handleChange}/>
+                                        {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
                                     </div>
                                     <div className="grid gap-2">
                                         <Label htmlFor="origin">Origin</Label>
@@ -235,10 +237,13 @@ export default function ShipmentsPage() {
                                     </div>
                                     <div className="grid gap-2">
                                         <Label htmlFor="destination">Destination</Label>
-                                        <Input id="destination" value={shipmentForm.destination}
-                                               onChange={handleChange}/>
-                                        {errors.destination &&
-                                            <p className="text-red-500 text-sm">{errors.destination}</p>}
+                                        <Input id="destination" value={shipmentForm.destination} onChange={handleChange}/>
+                                        {errors.destination && <p className="text-red-500 text-sm">{errors.destination}</p>}
+                                    </div>
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="deliveryDate">Delivery Date</Label>
+                                        <Input id="deliveryDate" value={shipmentForm.deliveryDate} onChange={handleChange}/>
+                                        {errors.deliveryDate && <p className="text-red-500 text-sm">{errors.deliveryDate}</p>}
                                     </div>
                                     <div className="grid gap-2">
                                         <Label htmlFor="units">Units</Label>

@@ -40,11 +40,11 @@ router.post('/shipments', async (req, res) => {
         from
     } = req.body;
 
-    if (!from) {
+    if (from == null) {
         return res.status(400).json({ error: "'from' address is required" });
     }
 
-    if (!productName || !description || !origin || !destination || !deliveryDate || !units || !weight) {
+    if (productName == null || description == null || origin == null || destination == null || deliveryDate == null || units == null || weight == null) {
         return res.status(400).json({ error: 'Missing required fields' });
     }
 
@@ -114,11 +114,11 @@ router.post('/shipments/:shipmentId/transfer', async (req, res) => {
         from 
     } = req.body;
 
-    if (!from) {
+    if (from == null) {
         return res.status(400).json({ error: "'from' address is required" });
     }
 
-    if (!shipmentId || !newShipmentOwner || !newState || !location || !transferNotes) {
+    if (shipmentId == null || newShipmentOwner == null || newState == null || location == null || transferNotes == null) {
         return res.status(400).json({ error: 'Missing required fields' });
     }
 
