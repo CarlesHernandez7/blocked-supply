@@ -6,123 +6,119 @@ import chernandez.blockedsupplybackend.domain.User;
 import chernandez.blockedsupplybackend.domain.dto.ShipmentInput;
 import chernandez.blockedsupplybackend.domain.dto.ShipmentOutput;
 import chernandez.blockedsupplybackend.repositories.ShipmentRecordRepository;
-import org.jetbrains.annotations.NotNull;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.web3j.protocol.core.DefaultBlockParameterName;
-import org.web3j.protocol.core.methods.response.TransactionReceipt;
-import smartContracts.web3.ShipmentManagement;
-
-import java.math.BigInteger;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 public class ShipmentService {
 
+    private final RestTemplate restTemplate = new RestTemplate();
+    private final ObjectMapper objectMapper = new ObjectMapper();
     private final ShipmentRecordRepository shipmentRecordRepository;
-    private final BlockchainService blockchainService;
     private final AuthService authService;
+    @Value("${application.broker.address}")
+    private String brokerBaseUrl;
 
-    public ShipmentService(ShipmentRecordRepository shipmentRecordRepository, BlockchainService blockchainService, AuthService authService) {
+    public ShipmentService(ShipmentRecordRepository shipmentRecordRepository, AuthService authService) {
         this.shipmentRecordRepository = shipmentRecordRepository;
-        this.blockchainService = blockchainService;
         this.authService = authService;
     }
 
-    public ResponseEntity<?> createShipment(@NotNull ShipmentInput shipmentInput) {
-        ShipmentManagement contract;
-        try{
-            contract = blockchainService.setCredentialsToContractInstance();
-        } catch (Exception e){
-           return new ResponseEntity<>("User does not have set a blockchain address.", HttpStatus.BAD_REQUEST);
-        }
-
+    public ResponseEntity<?> createShipment(ShipmentInput shipmentInput) {
         User user = authService.getUserFromJWT();
 
-        TransactionReceipt receipt;
-        BigInteger units = BigInteger.valueOf(shipmentInput.getUnits());
-        BigInteger weight = BigInteger.valueOf(shipmentInput.getWeight());
-
-        AtomicLong shipmentId = new AtomicLong();
-        AtomicReference<String> currentOwner = new AtomicReference<>();
-
-        if (units.signum() < 0 || weight.signum() < 0) {
-            return new ResponseEntity<>("Units and weight must be non-negative.", HttpStatus.BAD_REQUEST);
+        if (shipmentInput == null || shipmentInput.getWeight() <= 0 || shipmentInput.getUnits() <= 0) {
+            return new ResponseEntity<>("Invalid shipment input", HttpStatus.BAD_REQUEST);
         }
+
+        if (user.getBlockchainAddress() == null) {
+            return new ResponseEntity<>("User does not have a blockchain address", HttpStatus.FORBIDDEN);
+        }
+
+        shipmentInput.setFrom(user.getBlockchainAddress());
 
         try {
-            receipt = contract.createShipment(
-                    shipmentInput.getName(),
-                    shipmentInput.getDescription(),
-                    shipmentInput.getOrigin(),
-                    shipmentInput.getDestination(),
-                    units,
-                    weight
-            ).send();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
 
-            contract.shipmentCreatedEventFlowable(DefaultBlockParameterName.LATEST, DefaultBlockParameterName.LATEST)
-                    .subscribe(event -> {
-                        shipmentId.set(event.id.longValue());
-                        currentOwner.set((event.currentOwner));
-            });
+            HttpEntity<ShipmentInput> request = new HttpEntity<>(shipmentInput, headers);
+
+            ResponseEntity<String> response = restTemplate.postForEntity(
+                    brokerBaseUrl + "/api/shipments", request, String.class
+            );
+
+            if (response.getStatusCode() == HttpStatus.OK) {
+                JsonNode responseBody = objectMapper.readTree(response.getBody());
+
+                int shipmentId = responseBody.get("id").asInt();
+                String currentOwner = responseBody.get("currentOwner").asText();
+                String deliveryDate = responseBody.get("deliveryDate").asText();
+
+                ShipmentRecord shipmentRecord = new ShipmentRecord(
+                        (long) shipmentId,
+                        currentOwner,
+                        deliveryDate,
+                        State.CREATED,
+                        user.getId()
+                );
+
+                shipmentRecordRepository.save(shipmentRecord);
+
+                return new ResponseEntity<>(shipmentRecord, HttpStatus.CREATED);
+            } else {
+                return new ResponseEntity<>("Broker responded with error: " + response.getBody(), response.getStatusCode());
+            }
 
         } catch (Exception e) {
-            return new ResponseEntity<>("Failed to create shipment: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Failed to call broker: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-        ShipmentRecord shipmentRecord = new ShipmentRecord(shipmentId.get(), currentOwner.get(), State.CREATED, user.getId());
-        shipmentRecordRepository.save(shipmentRecord);
-
-        return new ResponseEntity<>(receipt, HttpStatus.CREATED);
     }
 
     public ResponseEntity<?> getShipment(int shipmentId) {
-        ShipmentManagement contract;
-        try{
-            contract = blockchainService.setCredentialsToContractInstance();
-        } catch (Exception e){
-            return new ResponseEntity<>("User does not have set a blockchain address.", HttpStatus.BAD_REQUEST);
-        }
-
         try {
-            BigInteger id = BigInteger.valueOf(shipmentId);
+            String url = brokerBaseUrl + "/api/shipments/" + shipmentId;
+            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
 
-            contract.getShipment(id).send();
+            if (response.getStatusCode() != HttpStatus.OK) {
+                return new ResponseEntity<>("Broker error: " + response.getBody(), response.getStatusCode());
+            }
 
-            ShipmentOutput shipment = new ShipmentOutput();
+            JsonNode body = objectMapper.readTree(response.getBody());
 
-            contract.shipmentRetrievedEventFlowable(DefaultBlockParameterName.LATEST, DefaultBlockParameterName.LATEST)
-                    .subscribe(event -> {
-                        shipment.setId(event.id.intValue());
-                        shipment.setName(event.name);
-                        shipment.setDescription(event.description);
-                        shipment.setOrigin(event.origin);
-                        shipment.setDestination(event.destination);
-                        shipment.setUnits(event.units.intValue());
-                        shipment.setWeight(event.weight.intValue());
-                        shipment.setCurrentState(State.fromBigInt(event.currentState));
-                        shipment.setCurrentOwner(event.currentOwner);
-                    });
+            ShipmentOutput output = new ShipmentOutput(
+                    body.get("id").asInt(),
+                    body.get("name").asText(),
+                    body.get("description").asText(),
+                    body.get("origin").asText(),
+                    body.get("destination").asText(),
+                    body.get("deliveryDate").asText(),
+                    body.get("units").asInt(),
+                    body.get("weight").asInt(),
+                    chernandez.blockedsupplybackend.domain.State.values()[body.get("currentState").asInt()],
+                    body.get("currentOwner").asText()
+            );
 
-            return new ResponseEntity<>(shipment, HttpStatus.OK);
+            return new ResponseEntity<>(output, HttpStatus.OK);
 
         } catch (Exception e) {
-            if (e.getMessage().contains("Shipment ID must be greater than 0")) {
-                return new ResponseEntity<>("Invalid Shipment ID: Must be greater than 0.", HttpStatus.BAD_REQUEST);
-            } else if (e.getMessage().contains("Shipment does not exist")) {
-                return new ResponseEntity<>("Shipment not found.", HttpStatus.NOT_FOUND);
-            } else {
-                return new ResponseEntity<>("An error occurred while retrieving the shipment.", HttpStatus.INTERNAL_SERVER_ERROR);
-            }
+            return new ResponseEntity<>("Failed to retrieve shipment: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
 
-    public ResponseEntity<BigInteger> getNextShipmentId() throws Exception {
-        ShipmentManagement shipmentContract = blockchainService.setCredentialsToContractInstance();
-        return new ResponseEntity<>(shipmentContract.getNextShipmentId().send(), HttpStatus.OK);
+    public ResponseEntity<?> getNextShipmentId() {
+        try {
+            String url = brokerBaseUrl + "/api/shipments/next-id";
+            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+            JsonNode jsonResponse = objectMapper.readTree(response.getBody());
+            return new ResponseEntity<>(jsonResponse, response.getStatusCode());
+        } catch (Exception e) {
+            return new ResponseEntity<>("Failed to retrieve next shipment ID: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 }

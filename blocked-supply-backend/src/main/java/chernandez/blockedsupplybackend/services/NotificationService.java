@@ -39,7 +39,7 @@ public class NotificationService {
 
     public ResponseEntity<?> markAsRead(int notificationId) {
         User user = authService.getUserFromJWT();
-        Optional<Notification> notifOpt = notificationRepository.findById((long)notificationId);
+        Optional<Notification> notifOpt = notificationRepository.findById((long) notificationId);
 
         if (notifOpt.isPresent()) {
             Notification notif = notifOpt.get();

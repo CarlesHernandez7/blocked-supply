@@ -10,6 +10,7 @@ contract ShipmentManagement {
         string description;
         string origin;
         string destination;
+        string deliveryDate;
         uint256 units;
         uint256 weight;
         State currentState;
@@ -25,38 +26,6 @@ contract ShipmentManagement {
         address newShipmentOwner;
         string transferNotes;
     }
-
-    event ShipmentCreated(
-        uint256 indexed id,
-        address currentOwner
-    );
-
-    event TransferCreated(
-        uint256 shipmentId,
-        uint256 newState
-    );
-
-    event ShipmentRetrieved(
-        uint256 indexed id,
-        string name,
-        string description,
-        string origin,
-        string destination,
-        uint256 units,
-        uint256 weight,
-        uint256 currentState,
-        address currentOwner
-    );
-
-    event TransferRetrieved(
-        uint256 indexed id,
-        uint256 shipmentId,
-        uint256 timestamp,
-        uint256 newState,
-        string location,
-        address newShipmentOwner,
-        string transferNotes
-    );
 
     uint256 private nextShipmentId = 1;
     uint256 private nextTransferId = 1;
@@ -75,32 +44,33 @@ contract ShipmentManagement {
         _;
     }
 
-
     function createShipment(
         string memory productName,
         string memory description,
         string memory origin,
         string memory destination,
+        string memory deliveryDate,
         uint256 units,
         uint256 weight
-    ) public {
+    ) public returns (uint256, address, string memory) {
         require(units > 0, "Units must be greater than 0.");
         require(weight > 0, "Weight must be greater than 0.");
         
-        uint256 shipmentId = nextShipmentId++;
-        shipments[shipmentId] = Shipment({
-            id: shipmentId,
+        uint256 newShipmentId = nextShipmentId++;
+        shipments[newShipmentId] = Shipment({
+            id: newShipmentId,
             name: productName,
             description: description,
             origin: origin,
             destination: destination,
+            deliveryDate: deliveryDate,
             units: units,
             weight: weight,
             currentState: State.CREATED,
             currentOwner: msg.sender
         });
 
-        emit ShipmentCreated(shipmentId, msg.sender);
+        return (newShipmentId, msg.sender, deliveryDate);
     }
 
     function shipmentTransfer(
@@ -109,7 +79,7 @@ contract ShipmentManagement {
         State newState,
         string memory location,
         string memory transferNotes
-    ) public onlyOwner(shipmentId) {
+    ) public onlyOwner(shipmentId) returns (uint256, State) {
         Shipment storage shipment = shipments[shipmentId];
         
         shipment.currentOwner = newShipmentOwner;
@@ -126,19 +96,32 @@ contract ShipmentManagement {
             transferNotes: transferNotes
         }));
 
-        emit TransferCreated(shipmentId, uint256(newState));
+        return (shipmentId, newState);
     }
 
-    function getShipment(uint256 shipmentId) public exists(shipmentId){    
-        
+    function getShipment(uint256 shipmentId) public view exists(shipmentId) 
+        returns (
+            uint256 id, 
+            string memory name, 
+            string memory description, 
+            string memory origin, 
+            string memory destination, 
+            string memory deliveryDate, 
+            uint256 units, 
+            uint256 weight, 
+            uint256 currentState, 
+            address currentOwner
+        ) 
+    {    
         Shipment storage shipment = shipments[shipmentId];
 
-        emit ShipmentRetrieved(
+        return (
             shipment.id,
             shipment.name,
             shipment.description,
             shipment.origin,
             shipment.destination,
+            shipment.deliveryDate,
             shipment.units,
             shipment.weight,
             uint256(shipment.currentState),
@@ -146,22 +129,8 @@ contract ShipmentManagement {
         );
     }
 
-    function getTransferByIndex(uint256 shipmentId, uint256 index) public {
-        Transfer storage transfer = transfersByShipment[shipmentId][index];
-
-        emit TransferRetrieved(
-            transfer.id,
-            transfer.shipmentId,
-            transfer.timestamp,
-            uint256(transfer.newState),
-            transfer.location,
-            transfer.newShipmentOwner,
-            transfer.transferNotes
-        );
-    }
-
-    function getTransferCount(uint256 shipmentId) public exists(shipmentId) view returns (uint256) {
-        return transfersByShipment[shipmentId].length;
+    function getTransfers(uint256 shipmentId) public view exists(shipmentId) returns (Transfer[] memory) {
+        return transfersByShipment[shipmentId];
     }
 
     function getNextShipmentId() public view returns (uint256) {

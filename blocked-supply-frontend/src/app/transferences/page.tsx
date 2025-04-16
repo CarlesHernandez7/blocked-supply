@@ -10,6 +10,7 @@ import api from "@/utils/baseApi";
 interface ShipmentRecord {
     shipmentId: number;
     createdAt: string;
+    deliveryDate: string;
     state: string;
 }
 
@@ -78,6 +79,7 @@ export default function TransferencesPage() {
                                             <Link href={`/transferences/${shipment.shipmentId}`} className="block p-2">
                                                 <p><strong>ID:</strong> {shipment.shipmentId}</p>
                                                 <p><strong>Status:</strong> {shipment.state}</p>
+                                                <p><strong>Delivery Date:</strong> {shipment.deliveryDate}</p>
                                                 <p><strong>Created
                                                     At:</strong> {new Date(shipment.createdAt).toLocaleString()}</p>
                                             </Link>

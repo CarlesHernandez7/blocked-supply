@@ -15,6 +15,7 @@ interface Shipment {
     description: string;
     origin: string;
     destination: string;
+    deliveryDate: string;
     units: number;
     weight: number;
     currentState: string;
@@ -93,6 +94,7 @@ export default function ShipmentDetail() {
                     <p><strong>Description:</strong> {shipment.description}</p>
                     <p><strong>Origin:</strong> {shipment.origin}</p>
                     <p><strong>Destination:</strong> {shipment.destination}</p>
+                    <p><strong>Delivery Date:</strong> {shipment.deliveryDate}</p>
                     <p><strong>Units:</strong> {shipment.units}</p>
                     <p><strong>Weight:</strong> {shipment.weight} kg</p>
                     <p><strong>Current State:</strong> {shipment.currentState}</p>

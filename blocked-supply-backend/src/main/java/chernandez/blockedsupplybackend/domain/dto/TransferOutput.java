@@ -13,9 +13,6 @@ public class TransferOutput {
     private String newOwner;
     private String transferNotes;
 
-    public TransferOutput() {
-    }
-
     public TransferOutput(int id, int shipmentId, int timestamp, State newState, String location, String newOwner, String transferNotes) {
         this.id = id;
         this.shipmentId = shipmentId;
