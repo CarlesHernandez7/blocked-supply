@@ -28,6 +28,13 @@ export function NotificationInbox() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
+    const hasUnread = notifications.some((n) => !n.isRead);
+
+    useEffect(() => {
+        fetchNotifications();
+        const interval = setInterval(fetchNotifications, 60000);
+        return () => clearInterval(interval);
+    }, []);
 
     useEffect(() => {
         if (open) {
@@ -122,8 +129,11 @@ export function NotificationInbox() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button variant="ghost" size="icon" className="rounded-full">
+                <Button variant="ghost" size="icon" className="relative rounded-full">
                     <Bell className="h-5 w-5" />
+                    {hasUnread && (
+                        <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-background" />
+                    )}
                     <span className="sr-only">Notifications</span>
                 </Button>
             </DialogTrigger>

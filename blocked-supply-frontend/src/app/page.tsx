@@ -15,6 +15,7 @@ export default function HomePage() {
     const [total, setTotal] = useState(defaultString);
     const [active, setActive] = useState(defaultString);
     const [completed, setCompleted] = useState(defaultString);
+    const [successRate, setSuccessRate] = useState(defaultString);
 
     useEffect(() => {
         const fetchShipments = async () => {
@@ -32,6 +33,7 @@ export default function HomePage() {
                 setTotal(data.totalShipments ?? defaultString);
                 setActive(data.activeShipments ?? defaultString);
                 setCompleted(data.deliveredToday ?? defaultString);
+                setSuccessRate(data.successRate ?? defaultString);
             } catch (err) {
                 console.error(err);
                 setError("An error occurred while fetching stats data.");
@@ -85,7 +87,7 @@ export default function HomePage() {
                             <Activity className="h-4 w-4 text-muted-foreground"/>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">90%</div>
+                            <div className="text-2xl font-bold">{successRate}</div>
                             <p className="text-xs text-muted-foreground">On-time delivery rate</p>
                         </CardContent>
                     </Card>

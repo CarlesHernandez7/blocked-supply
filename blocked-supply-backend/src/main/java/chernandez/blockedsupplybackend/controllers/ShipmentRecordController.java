@@ -25,7 +25,7 @@ public class ShipmentRecordController {
     }
 
     @GetMapping("/stats")
-    public ResponseEntity<Map<String, Object>> getAllShipmentRecords() {
+    public ResponseEntity<Map<String, Object>> getShipmentStatistics() {
         return shipmentRecordService.getShipmentStatistics();
     }
 

@@ -18,7 +18,8 @@ public class ShipmentRecord {
     private long ownerId;
 
     private LocalDateTime createdAt;
-    private String deliveryDate;
+    private LocalDateTime deliveryDate;
+    private LocalDateTime deliveredAt;
 
     @Enumerated(EnumType.STRING)
     private State state;
@@ -31,11 +32,12 @@ public class ShipmentRecord {
     public ShipmentRecord() {
     }
 
-    public ShipmentRecord(Long shipmentId, String ownerAddress, String deliveryDate, State state, Long owner) {
+    public ShipmentRecord(Long shipmentId, String ownerAddress, LocalDateTime deliveryDate, State state, Long owner) {
         this.shipmentId = shipmentId;
         this.ownerAddress = ownerAddress;
         this.createdAt = LocalDateTime.now();
         this.deliveryDate = deliveryDate;
+        this.deliveredAt = null;
         this.state = state;
         addParticipant(owner);
     }
