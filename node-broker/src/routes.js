@@ -1,13 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { web3, contract } = require('./blockchain');
-
-let defaultAccount;
-
-web3.eth.getAccounts().then(accounts => {
-    defaultAccount = accounts[1];
-});
-
+const { contract } = require('./blockchain');
 
 //FETCH NEXT IDS
 router.get('/shipments/next-id', async (req, res) => {

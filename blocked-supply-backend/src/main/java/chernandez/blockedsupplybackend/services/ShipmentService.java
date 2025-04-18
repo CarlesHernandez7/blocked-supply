@@ -13,6 +13,10 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 @Service
 public class ShipmentService {
 
@@ -56,7 +60,9 @@ public class ShipmentService {
 
                 int shipmentId = responseBody.get("id").asInt();
                 String currentOwner = responseBody.get("currentOwner").asText();
-                String deliveryDate = responseBody.get("deliveryDate").asText();
+                String deliveryDateStr = responseBody.get("deliveryDate").asText();
+
+                LocalDateTime deliveryDate = parseDateToLocalDateTime(deliveryDateStr);
 
                 ShipmentRecord shipmentRecord = new ShipmentRecord(
                         (long) shipmentId,
@@ -119,6 +125,12 @@ public class ShipmentService {
         } catch (Exception e) {
             return new ResponseEntity<>("Failed to retrieve next shipment ID: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    private LocalDateTime parseDateToLocalDateTime(String dateStr) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate date = LocalDate.parse(dateStr, formatter);
+        return date.atTime(23, 59);
     }
 
 }

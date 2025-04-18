@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigInteger;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -92,7 +93,12 @@ public class TransferService {
                     return new ResponseEntity<>("Shipment record not found", HttpStatus.NOT_FOUND);
                 }
 
-                shipmentRecord.setState(State.fromInt(newState));
+                State newStateEnum = State.fromInt(newState);
+                shipmentRecord.setState(newStateEnum);
+                if (newStateEnum == State.DELIVERED) {
+                    shipmentRecord.setDeliveredAt(LocalDateTime.now());
+                }
+
                 shipmentRecord.setOwnerId(newOwner.getId());
                 shipmentRecord.setOwnerAddress(newOwner.getBlockchainAddress());
                 shipmentRecord.addParticipant(newOwner.getId());

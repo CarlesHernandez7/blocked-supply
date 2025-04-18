@@ -48,7 +48,7 @@ public class ShipmentRecordService {
         LocalDateTime endOfDay = today.atTime(23, 59, 59);
         List<ShipmentRecord> deliveredToday = shipmentRecordRepository.findByStateAndCreatedAtBetween(State.DELIVERED, startOfDay, endOfDay);
         response.put("deliveredToday", (long) deliveredToday.size());
-
+        response.put("successRate", calculateSuccess()+" %");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -68,5 +68,25 @@ public class ShipmentRecordService {
             return new ResponseEntity<>("No shipments found for user.", HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
+    private int calculateSuccess() {
+        List<ShipmentRecord> shipments = shipmentRecordRepository.findAll();
+        int totalDelivered = 0;
+        int deliveredOnTime = 0;
+
+        for (ShipmentRecord shipment : shipments) {
+            if (shipment.getState() == State.DELIVERED && shipment.getDeliveredAt() != null) {
+                totalDelivered++;
+
+                if (!shipment.getDeliveredAt().isAfter(shipment.getDeliveryDate())) {
+                    deliveredOnTime++;
+                }
+            }
+        }
+
+        if (totalDelivered == 0) return 0;
+
+        return (int) ((deliveredOnTime * 100.0) / totalDelivered);
     }
 }

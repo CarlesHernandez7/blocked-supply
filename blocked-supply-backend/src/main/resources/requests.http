@@ -51,7 +51,7 @@ Content-Type: application/json
   "description": "pfizer",
   "origin": "Sant Pol de Mar",
   "destination": "Brazil",
-  "deliveryDate": "27/03/2024",
+  "deliveryDate": "2025-05-05",
   "units": 2,
   "weight": 2
 }
