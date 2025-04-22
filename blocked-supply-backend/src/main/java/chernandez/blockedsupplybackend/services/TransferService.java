@@ -35,42 +35,30 @@ public class TransferService {
     @Value("${application.broker.address}")
     private String brokerBaseUrl;
 
-    public TransferService(ShipmentRecordRepository shipmentRecordRepository, UserRepository userRepository, NotificationRepository notificationRepository, AuthService authService, AuthService authService1) {
+    public TransferService(ShipmentRecordRepository shipmentRecordRepository, UserRepository userRepository, NotificationRepository notificationRepository, AuthService authService) {
         this.shipmentRecordRepository = shipmentRecordRepository;
         this.userRepository = userRepository;
         this.notificationRepository = notificationRepository;
-        this.authService = authService1;
+        this.authService = authService;
     }
 
     public ResponseEntity<?> transferShipment(TransferInput transferInput) {
-        User user = authService.getUserFromJWT();
-
-        if (transferInput == null) {
-            return new ResponseEntity<>("Invalid transfer input", HttpStatus.BAD_REQUEST);
+        ResponseEntity<?> validationResult = checkTransferInputs(transferInput);
+        if (validationResult != null) {
+            return validationResult;
         }
 
+        User user = authService.getUserFromJWT();
         if (user.getBlockchainAddress() == null) {
             return new ResponseEntity<>("User does not have a blockchain address", HttpStatus.FORBIDDEN);
         }
-
         transferInput.setFrom(user.getBlockchainAddress());
 
-        User newOwner;
-        try {
-            long newShipmentOwnerId = Long.parseLong(transferInput.getNewShipmentOwner());
-            newOwner = userRepository.findById(newShipmentOwnerId).orElse(null);
-
-            if (newOwner == null) {
-                return new ResponseEntity<>("New owner not found", HttpStatus.NOT_FOUND);
-            } else if (newOwner.getBlockchainAddress() == null) {
-                return new ResponseEntity<>("New owner does not have a blockchain address", HttpStatus.FORBIDDEN);
-            }
-
-            transferInput.setNewShipmentOwner(newOwner.getBlockchainAddress());
-
-        } catch (NumberFormatException e) {
-            return new ResponseEntity<>("Invalid new shipment owner", HttpStatus.BAD_REQUEST);
+        ResponseEntity<?> validationResponse = validateAndSetNewOwner(transferInput);
+        if (validationResponse.getStatusCode() != HttpStatus.OK) {
+            return validationResponse;
         }
+        User newOwner = (User) validationResponse.getBody();
 
         try {
             HttpHeaders headers = new HttpHeaders();
@@ -118,6 +106,11 @@ public class TransferService {
     }
 
     public ResponseEntity<?> getTransferHistory(int shipmentId) {
+        ShipmentRecord record = shipmentRecordRepository.findById((long) shipmentId).orElse(null);
+        if (record == null) {
+            return new ResponseEntity<>("Shipment not found", HttpStatus.NOT_FOUND);
+        }
+
         try {
             String url = brokerBaseUrl + "/api/shipments/" + shipmentId + "/transfers";
             ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
@@ -159,6 +152,63 @@ public class TransferService {
             return new ResponseEntity<>(jsonResponse, response.getStatusCode());
         } catch (Exception e) {
             return new ResponseEntity<>("Failed to retrieve next transfer ID: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private ResponseEntity<?> checkTransferInputs(TransferInput transferInput) {
+        if (transferInput == null) {
+            return new ResponseEntity<>("Invalid transfer input", HttpStatus.BAD_REQUEST);
+        }
+        ShipmentRecord record = shipmentRecordRepository.findById((long) transferInput.getShipmentId()).orElse(null);
+        if (record == null) {
+            return new ResponseEntity<>("Shipment not found", HttpStatus.NOT_FOUND);
+        }
+        if (transferInput.getShipmentId() <= 0) {
+            return new ResponseEntity<>("Invalid shipment ID", HttpStatus.BAD_REQUEST);
+        }
+        if (transferInput.getNewShipmentOwner() == null || transferInput.getNewShipmentOwner().trim().isEmpty()) {
+            return new ResponseEntity<>("New shipment owner cannot be empty", HttpStatus.BAD_REQUEST);
+        }
+        try {
+            Long.parseLong(transferInput.getNewShipmentOwner());
+        } catch (NumberFormatException e) {
+            return new ResponseEntity<>("New shipment owner must be a valid number", HttpStatus.BAD_REQUEST);
+        }
+        if (transferInput.getNewState() < 0 || transferInput.getNewState() > 3) {
+            return new ResponseEntity<>("Invalid new state", HttpStatus.BAD_REQUEST);
+        }
+        if (transferInput.getLocation() == null || transferInput.getLocation().trim().isEmpty()) {
+            return new ResponseEntity<>("Location cannot be empty", HttpStatus.BAD_REQUEST);
+        }
+        if (transferInput.getLocation().length() < 3 || transferInput.getLocation().length() > 100) {
+            return new ResponseEntity<>("Location must contain a minimum of 3 and a maximum of 100 characters", HttpStatus.BAD_REQUEST);
+        }
+        if (transferInput.getTransferNotes() == null || transferInput.getTransferNotes().trim().isEmpty()) {
+            return new ResponseEntity<>("Transfer notes cannot be empty", HttpStatus.BAD_REQUEST);
+        }
+        if (transferInput.getTransferNotes().length() > 100) {
+            return new ResponseEntity<>("Transfer notes must contain a maximum of 100 characters", HttpStatus.BAD_REQUEST);
+        }
+
+        return null;
+    }
+
+    private ResponseEntity<?> validateAndSetNewOwner(TransferInput transferInput) {
+        try {
+            long newShipmentOwnerId = Long.parseLong(transferInput.getNewShipmentOwner());
+            User newOwner = userRepository.findById(newShipmentOwnerId).orElse(null);
+
+            if (newOwner == null) {
+                return new ResponseEntity<>("New owner not found", HttpStatus.NOT_FOUND);
+            } else if (newOwner.getBlockchainAddress() == null) {
+                return new ResponseEntity<>("New owner does not have a blockchain address", HttpStatus.FORBIDDEN);
+            }
+
+            transferInput.setNewShipmentOwner(newOwner.getBlockchainAddress());
+            return new ResponseEntity<>(newOwner, HttpStatus.OK);
+
+        } catch (NumberFormatException e) {
+            return new ResponseEntity<>("Invalid new shipment owner", HttpStatus.BAD_REQUEST);
         }
     }
 

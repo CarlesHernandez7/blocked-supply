@@ -33,16 +33,15 @@ public class ShipmentService {
     }
 
     public ResponseEntity<?> createShipment(ShipmentInput shipmentInput) {
-        User user = authService.getUserFromJWT();
-
-        if (shipmentInput == null || shipmentInput.getWeight() <= 0 || shipmentInput.getUnits() <= 0) {
-            return new ResponseEntity<>("Invalid shipment input", HttpStatus.BAD_REQUEST);
+        ResponseEntity<?> validationResult = checkCreateInputs(shipmentInput);
+        if (validationResult != null) {
+            return validationResult;
         }
 
+        User user = authService.getUserFromJWT();
         if (user.getBlockchainAddress() == null) {
             return new ResponseEntity<>("User does not have a blockchain address", HttpStatus.FORBIDDEN);
         }
-
         shipmentInput.setFrom(user.getBlockchainAddress());
 
         try {
@@ -85,6 +84,11 @@ public class ShipmentService {
     }
 
     public ResponseEntity<?> getShipment(int shipmentId) {
+        ShipmentRecord record = shipmentRecordRepository.findById((long) shipmentId).orElse(null);
+        if (record == null) {
+            return new ResponseEntity<>("Shipment record not found", HttpStatus.NOT_FOUND);
+        }
+
         try {
             String url = brokerBaseUrl + "/api/shipments/" + shipmentId;
             ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
@@ -125,6 +129,61 @@ public class ShipmentService {
         } catch (Exception e) {
             return new ResponseEntity<>("Failed to retrieve next shipment ID: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    private ResponseEntity<?> checkCreateInputs(ShipmentInput shipmentInput) {
+        if (shipmentInput == null) {
+            return new ResponseEntity<>("Invalid shipment input", HttpStatus.BAD_REQUEST);
+        }
+
+        if (shipmentInput.getProductName() == null || shipmentInput.getProductName().trim().isEmpty()) {
+            return new ResponseEntity<>("Product name cannot be empty", HttpStatus.BAD_REQUEST);
+        }
+        if (shipmentInput.getProductName().matches(".*\\d+.*")) {
+            return new ResponseEntity<>("Product name cannot contain numbers", HttpStatus.BAD_REQUEST);
+        }
+        if (shipmentInput.getProductName().length() < 3 || shipmentInput.getProductName().length() > 100) {
+            return new ResponseEntity<>("Product name must contain a minimum of 3 and a maximum of 100 characters", HttpStatus.BAD_REQUEST);
+        }
+
+        if (shipmentInput.getDescription() == null || shipmentInput.getDescription().trim().isEmpty()) {
+            return new ResponseEntity<>("Description cannot be null", HttpStatus.BAD_REQUEST);
+        }
+        if (shipmentInput.getDescription().length() > 500) {
+            return new ResponseEntity<>("Description cannot exceed 500 characters long", HttpStatus.BAD_REQUEST);
+        }
+
+        if (shipmentInput.getOrigin() == null || shipmentInput.getOrigin().trim().isEmpty() ||
+                shipmentInput.getDestination() == null || shipmentInput.getDestination().trim().isEmpty()) {
+            return new ResponseEntity<>("Origin and destination cannot be empty", HttpStatus.BAD_REQUEST);
+        }
+        if (shipmentInput.getOrigin().equals(shipmentInput.getDestination())) {
+            return new ResponseEntity<>("Origin must be different to destination", HttpStatus.BAD_REQUEST);
+        }
+
+        if (shipmentInput.getDeliveryDate() == null || shipmentInput.getDeliveryDate().trim().isEmpty()) {
+            return new ResponseEntity<>("Delivery date cannot be empty", HttpStatus.BAD_REQUEST);
+        }
+        try {
+            LocalDateTime deliveryDate = parseDateToLocalDateTime(shipmentInput.getDeliveryDate());
+            if (deliveryDate.isBefore(LocalDateTime.now())) {
+                return new ResponseEntity<>("Delivery date must be future", HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>("Date format invalid, it must be as yyyy-MM-dd", HttpStatus.BAD_REQUEST);
+        }
+
+        if (shipmentInput.getUnits() <= 0) {
+            return new ResponseEntity<>("Units must be greater than 0", HttpStatus.BAD_REQUEST);
+        }
+        if (shipmentInput.getWeight() <= 0) {
+            return new ResponseEntity<>("Weight must be greater than 0", HttpStatus.BAD_REQUEST);
+        }
+        if (shipmentInput.getWeight() > 10000) {
+            return new ResponseEntity<>("The weight exceeds the maximum available", HttpStatus.BAD_REQUEST);
+        }
+
+        return null;
     }
 
     private LocalDateTime parseDateToLocalDateTime(String dateStr) {

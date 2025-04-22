@@ -18,20 +18,22 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
     const pathname = usePathname();
 
     useEffect(() => {
-        const checkAuth = () => {
+        if (typeof window !== 'undefined') {
             const storedToken = localStorage.getItem("authToken");
-            const publicPaths = ["/", "/auth"];
-
-            if (!storedToken && !publicPaths.includes(pathname)) {
-                router.push("/auth");
-            } else {
-                setToken(storedToken);
-            }
+            setToken(storedToken);
             setLoading(false);
-        };
+        }
+    }, []);
 
-        checkAuth();
-    }, [pathname, router]);
+    useEffect(() => {
+        if (loading || typeof window === 'undefined') return;
+
+        const publicPaths = ["/", "/auth"];
+
+        if (!token && !publicPaths.includes(pathname)) {
+            router.push("/auth");
+        }
+    }, [pathname, router, token, loading]);
 
     const login = (newToken: string) => {
         localStorage.setItem("authToken", newToken);

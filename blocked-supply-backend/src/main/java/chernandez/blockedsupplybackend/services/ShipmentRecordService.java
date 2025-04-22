@@ -48,7 +48,7 @@ public class ShipmentRecordService {
         LocalDateTime endOfDay = today.atTime(23, 59, 59);
         List<ShipmentRecord> deliveredToday = shipmentRecordRepository.findByStateAndCreatedAtBetween(State.DELIVERED, startOfDay, endOfDay);
         response.put("deliveredToday", (long) deliveredToday.size());
-        response.put("successRate", calculateSuccess()+" %");
+        response.put("successRate", calculateSuccess() + " %");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -56,16 +56,16 @@ public class ShipmentRecordService {
         User user = authService.getUserFromJWT();
         List<ShipmentRecord> list = shipmentRecordRepository.findByParticipantsContaining(user.getId());
         if (list.isEmpty()) {
-            return new ResponseEntity<>("No shipments found for user.", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("No shipments found for user.", HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
-    public ResponseEntity<?> getShipmentRecordsByowner() {
+    public ResponseEntity<?> getShipmentRecordsByOwner() {
         User user = authService.getUserFromJWT();
         List<ShipmentRecord> list = shipmentRecordRepository.findByOwnerId(user.getId());
         if (list.isEmpty()) {
-            return new ResponseEntity<>("No shipments found for user.", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("No shipments found for user.", HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(list, HttpStatus.OK);
     }

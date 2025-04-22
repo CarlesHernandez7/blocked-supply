@@ -18,9 +18,8 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/auth/register")
-    public ResponseEntity<TokenResponse> register(@RequestBody final RegisterRequest request) {
-        final TokenResponse token = authService.register(request);
-        return ResponseEntity.ok(token);
+    public ResponseEntity<?> register(@RequestBody final RegisterRequest request) {
+        return authService.register(request);
     }
 
     @PostMapping("/auth/login")

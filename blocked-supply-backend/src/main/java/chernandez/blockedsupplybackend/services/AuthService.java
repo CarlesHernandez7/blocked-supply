@@ -32,7 +32,12 @@ public class AuthService {
     @Value("${application.security.encryption.secret-key}")
     private String encryptionKey;
 
-    public TokenResponse register(RegisterRequest request) {
+    public ResponseEntity<?> register(RegisterRequest request) {
+        ResponseEntity<?> validationResult = checkRegisterInput(request);
+        if (validationResult != null) {
+            return validationResult;
+        }
+
         var user = User.builder()
                 .name(request.name())
                 .email(request.email())
@@ -42,7 +47,7 @@ public class AuthService {
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
         saveUserToken(savedUser, jwtToken);
-        return new TokenResponse(jwtToken, refreshToken);
+        return ResponseEntity.ok(new TokenResponse(jwtToken, refreshToken));
     }
 
     public TokenResponse login(LoginRequest request) {
@@ -133,5 +138,27 @@ public class AuthService {
         }
         UserDetails details = new UserDetails(user.getName(), user.getEmail(), user.getBlockchainAddress());
         return new ResponseEntity<>(details, HttpStatus.OK);
+    }
+
+    private ResponseEntity<?> checkRegisterInput(RegisterRequest request) {
+        if (request.email() == null || request.password() == null || request.name() == null) {
+            return ResponseEntity.badRequest().body("Email, password and name cannot be null");
+        }
+        if (userRepository.findByEmail(request.email()).isPresent()) {
+            return ResponseEntity.badRequest().body("Email already in use");
+        }
+        if (request.password().length() < 8) {
+            return ResponseEntity.badRequest().body("Password has to be at least 8 characters long");
+        }
+        if (!request.password().matches(".*[a-zA-Z].*") || !request.password().matches(".*[0-9].*")) {
+            return ResponseEntity.badRequest().body("Password has to contain at least one letter and one number");
+        }
+        if (request.name().length() < 3) {
+            return ResponseEntity.badRequest().body("Name has to be at least 3 characters long");
+        }
+        if (request.email().length() < 5 || !request.email().contains("@")) {
+            return ResponseEntity.badRequest().body("Email has to be at least 5 characters long and contain @");
+        }
+        return null;
     }
 }

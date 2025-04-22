@@ -36,7 +36,7 @@ public class ShipmentRecordController {
 
     @GetMapping("/owner")
     public ResponseEntity<?> getShipmentRecordsByowner() {
-        return shipmentRecordService.getShipmentRecordsByowner();
+        return shipmentRecordService.getShipmentRecordsByOwner();
     }
 
 
