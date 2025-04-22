@@ -7,7 +7,7 @@ Content-Type: application/json
 
 {
   "email": "John5@gmail.com",
-  "password": "123456",
+  "password": "A12345678",
   "name": "John4"
 }
 
@@ -26,7 +26,7 @@ Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6Inp6eiIsInN1Y
 
 ###
 PUT http://localhost:8080/api/user/credentials
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objVAZ21haWwuY29tIiwiaWF0IjoxNzQ0ODIxMDM0LCJleHAiOjE3NDQ5MDc0MzR9.DVaUL2IB5zwDQFNJH_b1nmaY0jUFfoJFrYbFsNULaw6z462TD6ZsTnlOLCgiSToV
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objVAZ21haWwuY29tIiwiaWF0IjoxNzQ1MzYwOTg0LCJleHAiOjE3NDU0NDczODR9.x3_pzQXrGQZKIJ84-1WvBFtvp0AXHM6MQrRTDcWJjq9mRye-owvgv2sSLK9YHiD6
 Content-Type: application/json
 
 {
@@ -36,18 +36,18 @@ Content-Type: application/json
 
 ###
 GET http://localhost:8080/api/user
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG4zIiwic3ViIjoiSm9objJAZ21haWwuY29tIiwiaWF0IjoxNzQyNzUyNzk4LCJleHAiOjE3NDI4MzkxOTh9.eYaN1uXR-XMTttxQpkQcxWUNckmAjmksHeDByAIcCwf6nkdL5xyhr3X_8wTy5OkM
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objVAZ21haWwuY29tIiwiaWF0IjoxNzQ1MzU4NzY1LCJleHAiOjE3NDU0NDUxNjV9.CWM7V6Ql60gQYtsbu3wpgxS3LH9xbh6jk3XKndp5HrriXWtN4BAYF8cax2h32DxW
 
 
 //SHIPMENTS
 
 ###
 POST http://localhost:8080/api/shipment/create
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objVAZ21haWwuY29tIiwiaWF0IjoxNzQ0ODIxMDM0LCJleHAiOjE3NDQ5MDc0MzR9.DVaUL2IB5zwDQFNJH_b1nmaY0jUFfoJFrYbFsNULaw6z462TD6ZsTnlOLCgiSToV
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objVAZ21haWwuY29tIiwiaWF0IjoxNzQ1MzU5MDEwLCJleHAiOjE3NDU0NDU0MTB9.1BS5Sfrrg_67_k_wrh49cVUqPtorRz9fPDG-nPm3CYhrJODx_MfqObabYwaRQ2fF
 Content-Type: application/json
 
 {
-  "productName": "Vaccine3",
+  "productName": "Vaccine",
   "description": "pfizer",
   "origin": "Sant Pol de Mar",
   "destination": "Brazil",
@@ -57,8 +57,8 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:8080/api/shipment/10
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objVAZ21haWwuY29tIiwiaWF0IjoxNzQ0NzIwNDgxLCJleHAiOjE3NDQ4MDY4ODF9.mwbuJ8_zVQSXYqhoXspyzWIX_vXAZxRQ8CGek0xXpy40My5bNLv7Z30vlyZE7nrw
+GET http://localhost:8080/api/shipment/1
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objVAZ21haWwuY29tIiwiaWF0IjoxNzQ1MzU4NzY1LCJleHAiOjE3NDU0NDUxNjV9.CWM7V6Ql60gQYtsbu3wpgxS3LH9xbh6jk3XKndp5HrriXWtN4BAYF8cax2h32DxW
 
 ###
 GET http://localhost:8080/api/shipment/nextId
@@ -68,20 +68,20 @@ Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic
 
 ###
 POST http://localhost:8080/api/transfer/create
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objVAZ21haWwuY29tIiwiaWF0IjoxNzQ0ODI2MDc1LCJleHAiOjE3NDQ5MTI0NzV9.krZvoh0YQPVwghRwVktOWIj1Yesby_EmZ1WRnxzpBxSNUJgE1QC4kDYfdmLYa8Hj
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objVAZ21haWwuY29tIiwiaWF0IjoxNzQ1MzU5MDEwLCJleHAiOjE3NDU0NDU0MTB9.1BS5Sfrrg_67_k_wrh49cVUqPtorRz9fPDG-nPm3CYhrJODx_MfqObabYwaRQ2fF
 Content-Type: application/json
 
 {
-  "shipmentId": 1,
+  "shipmentId": 2,
   "newShipmentOwner": "1",
-  "newState": 0,
+  "newState": 1,
   "location": "SAMBA3",
   "transferNotes": "Transferred to your address"
 }
 
 ###
-GET http://localhost:8080/api/transfer/1
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objVAZ21haWwuY29tIiwiaWF0IjoxNzQ0ODIxMDM0LCJleHAiOjE3NDQ5MDc0MzR9.DVaUL2IB5zwDQFNJH_b1nmaY0jUFfoJFrYbFsNULaw6z462TD6ZsTnlOLCgiSToV
+GET http://localhost:8080/api/transfer/2
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objVAZ21haWwuY29tIiwiaWF0IjoxNzQ1MzU5MDEwLCJleHAiOjE3NDU0NDU0MTB9.1BS5Sfrrg_67_k_wrh49cVUqPtorRz9fPDG-nPm3CYhrJODx_MfqObabYwaRQ2fF
 
 ###
 GET http://localhost:8080/api/transfer/nextId

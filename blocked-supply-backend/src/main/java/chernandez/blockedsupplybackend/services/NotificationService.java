@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,6 +27,10 @@ public class NotificationService {
         User user = authService.getUserFromJWT();
         List<Notification> notifications = notificationRepository.findByToUserIdAndIsReadFalseOrderByCreatedAtDesc(user.getId());
 
+        if (notifications.isEmpty()) {
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
+        }
+
         List<NotificationOutput> notificationOutputs = notifications.stream()
                 .map(notification -> new NotificationOutput(
                         notification.getId(),
@@ -34,7 +39,7 @@ public class NotificationService {
                         notification.getIsRead()
                 ))
                 .toList();
-        return ResponseEntity.ok(notificationOutputs);
+        return new ResponseEntity<>(notificationOutputs, HttpStatus.OK);
     }
 
     public ResponseEntity<?> markAsRead(int notificationId) {
@@ -44,7 +49,7 @@ public class NotificationService {
         if (notifOpt.isPresent()) {
             Notification notif = notifOpt.get();
             if (!notif.getToUserId().equals(user.getId())) {
-                return new ResponseEntity<>("The notification can only be marked as read by the user", HttpStatus.FORBIDDEN);
+                return new ResponseEntity<>("The notification can only be marked as read by the owner", HttpStatus.FORBIDDEN);
             }
             notif.setIsRead(true);
             notificationRepository.save(notif);

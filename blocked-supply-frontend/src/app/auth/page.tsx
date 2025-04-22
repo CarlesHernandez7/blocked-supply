@@ -79,6 +79,12 @@ export default function AuthPage() {
                 body: JSON.stringify(loginData)
             });
 
+            if (!response.ok) {
+                const errorMessage = await response.text();
+                setError(errorMessage || "Login failed. Please try again.");
+                return;
+            }
+
             const data: TokenResponse = await response.json();
 
             localStorage.setItem("authToken", data.access_token);
@@ -87,7 +93,7 @@ export default function AuthPage() {
             login(data.access_token);
         } catch (err) {
             console.error(err);
-            setError("Login failed. Please try again.");
+            setError("An unexpected error occurred. Please try again.");
         } finally {
             setLoginLoading(false);
         }
@@ -107,6 +113,12 @@ export default function AuthPage() {
                 body: JSON.stringify(registerData)
             });
 
+            if (!response.ok) {
+                const errorMessage = await response.text();
+                setError(errorMessage || "Registration failed. Please try again.");
+                return;
+            }
+
             const data: TokenResponse = await response.json();
 
             localStorage.setItem("authToken", data.access_token);
@@ -115,7 +127,7 @@ export default function AuthPage() {
             login(data.access_token);
         } catch (err) {
             console.error(err);
-            setError("Registration failed. Please try again.");
+            setError("An unexpected error occurred. Please try again.");
         } finally {
             setRegisterLoading(false);
         }
