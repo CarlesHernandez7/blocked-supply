@@ -13,26 +13,22 @@ import lombok.NoArgsConstructor;
 @Entity(name = "tokens")
 public class Token {
 
-    public enum TokenType {
-        BEARER
-    }
-
+    public boolean revoked;
+    public boolean expired;
     @Id
     @GeneratedValue
     private Long id;
-
     @Column(unique = true)
     private String token;
-
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     private TokenType tokenType = TokenType.BEARER;
-
-    public boolean revoked;
-
-    public boolean expired;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    public enum TokenType {
+        BEARER
+    }
 
 }

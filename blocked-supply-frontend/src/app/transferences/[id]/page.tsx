@@ -15,8 +15,8 @@ import api from "@/utils/baseApi";
 const stateMap: Record<string, number> = {
     "created": 0,
     "in-transit": 1,
-    "delivered": 2,
-    "stored": 3
+    "stored": 2,
+    "delivered": 3
 };
 
 interface TransferForm {
@@ -83,6 +83,7 @@ export default function TransferShipmentPage() {
         const token = localStorage.getItem("authToken");
 
         try {
+            console.log(transferData)
             const response = await fetch(`${api.baseURL}/api/transfer/create`, {
                 method: "POST",
                 headers: {
@@ -135,8 +136,8 @@ export default function TransferShipmentPage() {
                                     <SelectContent>
                                         <SelectItem value="created">Created</SelectItem>
                                         <SelectItem value="in-transit">In Transit</SelectItem>
-                                        <SelectItem value="delivered">Delivered</SelectItem>
                                         <SelectItem value="stored">Stored</SelectItem>
+                                        <SelectItem value="delivered">Delivered</SelectItem>
                                     </SelectContent>
                                 </Select>
                                 {errors.newState && <p className="text-red-500 text-sm">{errors.newState}</p>}

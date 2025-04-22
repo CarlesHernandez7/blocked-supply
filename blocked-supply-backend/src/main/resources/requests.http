@@ -1,10 +1,3 @@
-//BLOCKCHAIN
-
-###
-POST http://localhost:8080/blockchain
-
-###
-GET http://localhost:8080/blockchain/blockNumber
 
 //USERS
 
@@ -13,7 +6,7 @@ POST http://localhost:8080/auth/register
 Content-Type: application/json
 
 {
-  "email": "John4@gmail.com",
+  "email": "John5@gmail.com",
   "password": "123456",
   "name": "John4"
 }
@@ -23,7 +16,7 @@ POST http://localhost:8080/auth/login
 Content-Type: application/json
 
 {
-  "email": "John4@gmail.com",
+  "email": "John5@gmail.com",
   "password": "123456"
 }
 
@@ -33,12 +26,12 @@ Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6Inp6eiIsInN1Y
 
 ###
 PUT http://localhost:8080/api/user/credentials
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objRAZ21haWwuY29tIiwiaWF0IjoxNzQ0MzE4Mjc4LCJleHAiOjE3NDQ0MDQ2Nzh9.N5B5wPfbrf4L5Xm8WABPi-gLrraXiSqQBC__iq1Vah8lZP_lPEt2d_No0I-9GllB
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objVAZ21haWwuY29tIiwiaWF0IjoxNzQ0ODIxMDM0LCJleHAiOjE3NDQ5MDc0MzR9.DVaUL2IB5zwDQFNJH_b1nmaY0jUFfoJFrYbFsNULaw6z462TD6ZsTnlOLCgiSToV
 Content-Type: application/json
 
 {
-  "address": "0x1dF62f291b2E969fB0849d99D9Ce41e2F137006e",
-  "key": "0xb0057716d5917badaf911b193b12b910811c1497b5bada8d7711f758981c3773"
+  "address": "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1",
+  "key": "0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d"
 }
 
 ###
@@ -50,48 +43,49 @@ Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG4zIiwic
 
 ###
 POST http://localhost:8080/api/shipment/create
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objRAZ21haWwuY29tIiwiaWF0IjoxNzQ0MzE3NjcxLCJleHAiOjE3NDQ0MDQwNzF9.uWzXryU-O24xbbQTzccYE6HbiudizGy-rJ87FyQZGAqgMGciY8RViDBUH8Yb33UJ
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objVAZ21haWwuY29tIiwiaWF0IjoxNzQ0ODIxMDM0LCJleHAiOjE3NDQ5MDc0MzR9.DVaUL2IB5zwDQFNJH_b1nmaY0jUFfoJFrYbFsNULaw6z462TD6ZsTnlOLCgiSToV
 Content-Type: application/json
 
 {
-  "name": "Vaccine3",
+  "productName": "Vaccine3",
   "description": "pfizer",
   "origin": "Sant Pol de Mar",
   "destination": "Brazil",
+  "deliveryDate": "2025-05-05",
   "units": 2,
   "weight": 2
 }
 
 ###
-GET http://localhost:8080/api/shipment/1
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG4zIiwic3ViIjoiSm9objJAZ21haWwuY29tIiwiaWF0IjoxNzQyNzUzNjYyLCJleHAiOjE3NDI4NDAwNjJ9.9QYvLKhO9bdO1FkUD1sEkb7ke1SLmPvGvDBcIvGb9zIoKYIZMZuOqn9-6ma9TlsE
+GET http://localhost:8080/api/shipment/10
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objVAZ21haWwuY29tIiwiaWF0IjoxNzQ0NzIwNDgxLCJleHAiOjE3NDQ4MDY4ODF9.mwbuJ8_zVQSXYqhoXspyzWIX_vXAZxRQ8CGek0xXpy40My5bNLv7Z30vlyZE7nrw
 
 ###
 GET http://localhost:8080/api/shipment/nextId
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG4zIiwic3ViIjoiSm9objJAZ21haWwuY29tIiwiaWF0IjoxNzQyNzUyNzk4LCJleHAiOjE3NDI4MzkxOTh9.eYaN1uXR-XMTttxQpkQcxWUNckmAjmksHeDByAIcCwf6nkdL5xyhr3X_8wTy5OkM
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objVAZ21haWwuY29tIiwiaWF0IjoxNzQ0NzIwNDgxLCJleHAiOjE3NDQ4MDY4ODF9.mwbuJ8_zVQSXYqhoXspyzWIX_vXAZxRQ8CGek0xXpy40My5bNLv7Z30vlyZE7nrw
 
 //TRANSFERS
 
 ###
 POST http://localhost:8080/api/transfer/create
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG4zIiwic3ViIjoiSm9objNAZ21haWwuY29tIiwiaWF0IjoxNzQ0MzEzODcyLCJleHAiOjE3NDQ0MDAyNzJ9.tKEvqP52Dcqag59ZoqKqUi17a5hSgCLPj01R-0Go-2m09tU2nw0kIOkL37BOUQ9k
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objVAZ21haWwuY29tIiwiaWF0IjoxNzQ0ODI2MDc1LCJleHAiOjE3NDQ5MTI0NzV9.krZvoh0YQPVwghRwVktOWIj1Yesby_EmZ1WRnxzpBxSNUJgE1QC4kDYfdmLYa8Hj
 Content-Type: application/json
 
 {
   "shipmentId": 1,
-  "newShipmentOwner": 2,
-  "newState": 2,
+  "newShipmentOwner": "1",
+  "newState": 0,
   "location": "SAMBA3",
   "transferNotes": "Transferred to your address"
 }
 
 ###
 GET http://localhost:8080/api/transfer/1
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG4iLCJzdWIiOiJKb2huQGdtYWlsLmNvbSIsImlhdCI6MTc0MjM0NTc4NCwiZXhwIjoxNzQyNDMyMTg0fQ.Ks73u_riS9vHnPZQ7n32OsXJ8pvluBgF96cM-21EZsfUhon9WeEMoYnrcZbR2cWm
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objVAZ21haWwuY29tIiwiaWF0IjoxNzQ0ODIxMDM0LCJleHAiOjE3NDQ5MDc0MzR9.DVaUL2IB5zwDQFNJH_b1nmaY0jUFfoJFrYbFsNULaw6z462TD6ZsTnlOLCgiSToV
 
 ###
 GET http://localhost:8080/api/transfer/nextId
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG4iLCJzdWIiOiJKb2huQGdtYWlsLmNvbSIsImlhdCI6MTc0MjM0NDMwNCwiZXhwIjoxNzQyNDMwNzA0fQ.l4D04_y1rdjJN2F83k3smtw0B5YEITvjsVWSJwa4kMjRX9i7_UW9eRTB6991e2Kj
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objVAZ21haWwuY29tIiwiaWF0IjoxNzQ0NzIwNDgxLCJleHAiOjE3NDQ4MDY4ODF9.mwbuJ8_zVQSXYqhoXspyzWIX_vXAZxRQ8CGek0xXpy40My5bNLv7Z30vlyZE7nrw
 
 //RECCORDS
 
@@ -104,11 +98,11 @@ GET http://localhost:8080/api/records/stats
 
 ###
 GET http://localhost:8080/api/records/participant
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIyIiwibmFtZSI6IkpvaG4yIiwic3ViIjoiSm9objJAZ21haWwuY29tIiwiaWF0IjoxNzQyMzQ2MTI5LCJleHAiOjE3NDI0MzI1Mjl9.AyH3rAXvpRi268OWbT0xaVunsrGLRnwrjO3qg_2hTUxP6bXn1AGB7asV69_UUnNV
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objVAZ21haWwuY29tIiwiaWF0IjoxNzQ0ODIxMDM0LCJleHAiOjE3NDQ5MDc0MzR9.DVaUL2IB5zwDQFNJH_b1nmaY0jUFfoJFrYbFsNULaw6z462TD6ZsTnlOLCgiSToV
 
 ###
 GET http://localhost:8080/api/records/owner
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvYW4iLCJzdWIiOiJhYWFAYWFhIiwiaWF0IjoxNzQyMzg4OTk3LCJleHAiOjE3NDI0NzUzOTd9.mDHdpF-FmOyV7Vo_kgi7da9qr6iQBt5Q1ocAubmK1Tt5HqVgYD_ANX9GQwo3c5Lo
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objVAZ21haWwuY29tIiwiaWF0IjoxNzQ0ODIxMDM0LCJleHAiOjE3NDQ5MDc0MzR9.DVaUL2IB5zwDQFNJH_b1nmaY0jUFfoJFrYbFsNULaw6z462TD6ZsTnlOLCgiSToV
 
 //NOTIFICATIONS
 

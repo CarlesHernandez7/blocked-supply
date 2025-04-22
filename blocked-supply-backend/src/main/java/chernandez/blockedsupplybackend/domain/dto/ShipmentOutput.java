@@ -10,20 +10,19 @@ public class ShipmentOutput {
     private String description;
     private String origin;
     private String destination;
+    private String deliveryDate;
     private int units;
     private int weight;
     private State currentState;
     private String currentOwner;
 
-    public ShipmentOutput() {
-    }
-
-    public ShipmentOutput(int id, String name, String description, String origin, String destination, int units, int weight, State currentState, String currentOwner) {
+    public ShipmentOutput(int id, String name, String description, String origin, String destination, String deliveryDate, int units, int weight, State currentState, String currentOwner) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.origin = origin;
         this.destination = destination;
+        this.deliveryDate = deliveryDate;
         this.units = units;
         this.weight = weight;
         this.currentState = currentState;

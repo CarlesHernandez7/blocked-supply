@@ -25,6 +25,8 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/shipment_db
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=root
+      - JWT_SECRET_KEY=wCpIFxSR7oFmYZfFkB3G32BO9MLjixOowCpIFxSR7oFmYZfFkB3G32BO9MLjixOo
+      - ENCRYPTION_SECRET_KEY=/RcSQcuNESyEN0wBudXs1g==
     networks:
       - supply-chain-network
 
@@ -38,6 +40,20 @@ services:
       - "3000:3000"
     environment:
       - NEXT_PUBLIC_API_URL=http://backend:8080
+    networks:
+      - supply-chain-network
+  
+  broker:
+    build:
+      context: ./node-broker
+      dockerfile: Dockerfile
+    depends_on:
+      - backend
+    ports:
+      - "3001:3001"
+    environment:
+      - GANACHE_URL=http://host.docker.internal:8545
+      - CONTRACT_ADDRESS=0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab
     networks:
       - supply-chain-network
 

@@ -166,8 +166,7 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function",
-      "constant": true
+      "type": "function"
     },
     {
       "inputs": [
@@ -223,8 +222,7 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function",
-      "constant": true
+      "type": "function"
     },
     {
       "inputs": [],
@@ -237,8 +235,7 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function",
-      "constant": true
+      "type": "function"
     },
     {
       "inputs": [],
@@ -251,8 +248,7 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function",
-      "constant": true
+      "type": "function"
     }
   ],
   "metadata": "{\"compiler\":{\"version\":\"0.8.13+commit.abaa5c0e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"string\",\"name\":\"productName\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"description\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"origin\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"destination\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"deliveryDate\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"units\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"weight\",\"type\":\"uint256\"}],\"name\":\"createShipment\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getNextShipmentId\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getNextTransferId\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"shipmentId\",\"type\":\"uint256\"}],\"name\":\"getShipment\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"description\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"origin\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"destination\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"deliveryDate\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"units\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"weight\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"currentState\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"currentOwner\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"shipmentId\",\"type\":\"uint256\"}],\"name\":\"getTransfers\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"shipmentId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"timestamp\",\"type\":\"uint256\"},{\"internalType\":\"enum ShipmentManagement.State\",\"name\":\"newState\",\"type\":\"uint8\"},{\"internalType\":\"string\",\"name\":\"location\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"newShipmentOwner\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"transferNotes\",\"type\":\"string\"}],\"internalType\":\"struct ShipmentManagement.Transfer[]\",\"name\":\"\",\"type\":\"tuple[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"shipmentId\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"newShipmentOwner\",\"type\":\"address\"},{\"internalType\":\"enum ShipmentManagement.State\",\"name\":\"newState\",\"type\":\"uint8\"},{\"internalType\":\"string\",\"name\":\"location\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"transferNotes\",\"type\":\"string\"}],\"name\":\"shipmentTransfer\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"enum ShipmentManagement.State\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/ShipmentManagement.sol\":\"ShipmentManagement\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/ShipmentManagement.sol\":{\"keccak256\":\"0x2ba0c6a825510a5b458623d7bf6cfccaad81d89218f4cb550f20f6661b8fac76\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://1706230f15e2afccb5eb2511a52ead45b75e2b95f44b3d654009acf5bc4fca8f\",\"dweb:/ipfs/QmZj8sxrWEgkAgoHvg5tAiLz224Hecz9zNCt2mfjEber5m\"]}},\"version\":1}",
@@ -15298,35 +15294,10 @@
       "links": {},
       "address": "0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab",
       "transactionHash": "0xcb148282065336f68848ebd0ef2b5a2c197f4264d4629a526e45dc3be71a15d5"
-    },
-    "1744714292307": {
-      "events": {},
-      "links": {},
-      "address": "0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab",
-      "transactionHash": "0x54e9c510070bcad9b658e4bd2fdc75677da341b99a85246911dd45bea638b839"
-    },
-    "1744820934658": {
-      "events": {},
-      "links": {},
-      "address": "0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab",
-      "transactionHash": "0x54e9c510070bcad9b658e4bd2fdc75677da341b99a85246911dd45bea638b839"
-    },
-    "1744971381145": {
-      "events": {},
-      "links": {},
-      "address": "0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab",
-      "transactionHash": "0x54e9c510070bcad9b658e4bd2fdc75677da341b99a85246911dd45bea638b839"
-    },
-    "1744977122932": {
-      "events": {},
-      "links": {},
-      "address": "0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab",
-      "transactionHash": "0x54e9c510070bcad9b658e4bd2fdc75677da341b99a85246911dd45bea638b839"
     }
   },
   "schemaVersion": "3.4.16",
-  "updatedAt": "2025-04-18T11:52:28.082Z",
-  "networkType": "ethereum",
+  "updatedAt": "2025-04-15T10:12:08.419Z",
   "devdoc": {
     "kind": "dev",
     "methods": {},

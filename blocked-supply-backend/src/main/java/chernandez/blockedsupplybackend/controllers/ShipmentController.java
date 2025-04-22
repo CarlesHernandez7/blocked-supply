@@ -5,8 +5,6 @@ import chernandez.blockedsupplybackend.services.ShipmentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigInteger;
-
 @RestController
 @RequestMapping("/api/shipment")
 public class ShipmentController {
@@ -22,13 +20,13 @@ public class ShipmentController {
         return shipmentService.createShipment(shipmentInput);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getShipment(@PathVariable int id) {
-        return shipmentService.getShipment(id);
+    @GetMapping("/{shipmentId}")
+    public ResponseEntity<?> getShipment(@PathVariable int shipmentId) {
+        return shipmentService.getShipment(shipmentId);
     }
 
     @GetMapping("/nextId")
-    public ResponseEntity<BigInteger> getNextShipmentId() throws Exception {
+    public ResponseEntity<?> getNextShipmentId() {
         return shipmentService.getNextShipmentId();
     }
 }
