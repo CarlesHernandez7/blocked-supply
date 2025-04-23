@@ -122,13 +122,17 @@ public class TransferService {
                 List<TransferOutput> transfers = new ArrayList<>();
 
                 for (Map<String, Object> transfer : transferList) {
+                    String blockchainAddress = transfer.get("newShipmentOwner").toString();
+                    User user = userRepository.findByBlockchainAddress(blockchainAddress).orElse(null);
+                    String email = (user != null) ? user.getEmail() : "Unknown";
+
                     TransferOutput t = new TransferOutput(
                             Integer.parseInt(transfer.get("id").toString()),
                             Integer.parseInt(transfer.get("shipmentId").toString()),
                             Integer.parseInt(transfer.get("timestamp").toString()),
                             State.fromBigInt(new BigInteger(transfer.get("newState").toString())),
                             transfer.get("location").toString(),
-                            transfer.get("newShipmentOwner").toString(),
+                            email,
                             transfer.get("transferNotes").toString()
                     );
                     transfers.add(t);
@@ -169,11 +173,6 @@ public class TransferService {
         if (transferInput.getNewShipmentOwner() == null || transferInput.getNewShipmentOwner().trim().isEmpty()) {
             return new ResponseEntity<>("New shipment owner cannot be empty", HttpStatus.BAD_REQUEST);
         }
-        try {
-            Long.parseLong(transferInput.getNewShipmentOwner());
-        } catch (NumberFormatException e) {
-            return new ResponseEntity<>("New shipment owner must be a valid number", HttpStatus.BAD_REQUEST);
-        }
         if (transferInput.getNewState() < 0 || transferInput.getNewState() > 3) {
             return new ResponseEntity<>("Invalid new state", HttpStatus.BAD_REQUEST);
         }
@@ -182,9 +181,6 @@ public class TransferService {
         }
         if (transferInput.getLocation().length() < 3 || transferInput.getLocation().length() > 100) {
             return new ResponseEntity<>("Location must contain a minimum of 3 and a maximum of 100 characters", HttpStatus.BAD_REQUEST);
-        }
-        if (transferInput.getTransferNotes() == null || transferInput.getTransferNotes().trim().isEmpty()) {
-            return new ResponseEntity<>("Transfer notes cannot be empty", HttpStatus.BAD_REQUEST);
         }
         if (transferInput.getTransferNotes().length() > 100) {
             return new ResponseEntity<>("Transfer notes must contain a maximum of 100 characters", HttpStatus.BAD_REQUEST);
@@ -195,8 +191,8 @@ public class TransferService {
 
     private ResponseEntity<?> validateAndSetNewOwner(TransferInput transferInput) {
         try {
-            long newShipmentOwnerId = Long.parseLong(transferInput.getNewShipmentOwner());
-            User newOwner = userRepository.findById(newShipmentOwnerId).orElse(null);
+            String newOwnerMail = transferInput.getNewShipmentOwner();
+            User newOwner = userRepository.findByEmail(newOwnerMail).orElse(null);
 
             if (newOwner == null) {
                 return new ResponseEntity<>("New owner not found", HttpStatus.NOT_FOUND);

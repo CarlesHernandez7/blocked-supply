@@ -66,7 +66,7 @@ export default function TransferencesPage() {
                     <Card>
                         <CardHeader>
                             <CardTitle>Your Shipments</CardTitle>
-                            <CardDescription>List of shipments you are part of.</CardDescription>
+                            <CardDescription>List of shipments you own at the moment.</CardDescription>
                         </CardHeader>
                         <CardContent>
                             {error ? (
