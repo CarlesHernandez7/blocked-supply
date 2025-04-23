@@ -32,6 +32,7 @@ public class TransferService {
     private final UserRepository userRepository;
     private final NotificationRepository notificationRepository;
     private final AuthService authService;
+
     @Value("${application.broker.address}")
     private String brokerBaseUrl;
 
@@ -67,7 +68,6 @@ public class TransferService {
             HttpEntity<TransferInput> request = new HttpEntity<>(transferInput, headers);
 
             String url = brokerBaseUrl + "/api/shipments/" + transferInput.getShipmentId() + "/transfer";
-
             ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
 
             if (response.getStatusCode() == HttpStatus.OK) {
@@ -92,7 +92,10 @@ public class TransferService {
                 shipmentRecord.addParticipant(newOwner.getId());
                 shipmentRecordRepository.save(shipmentRecord);
 
-                sendNotification(newOwner.getId(), newState, transferInput.getTransferNotes());
+                //if the new owner is different from the current owner, send a notification
+                if (!user.getId().equals(newOwner.getId())) {
+                    sendNotification(user.getEmail(), newOwner.getId(), newState, transferInput.getTransferNotes());
+                }
 
                 return new ResponseEntity<>(responseBody, response.getStatusCode());
 
@@ -208,11 +211,11 @@ public class TransferService {
         }
     }
 
-    private void sendNotification(Long toUserId, int state, String notes) {
+    private void sendNotification(String from, Long toUserId, int state, String notes) {
         Notification notification = new Notification();
         notification.setToUserId(toUserId);
         String stateString = State.fromInt(state).toString();
-        notification.setMessage("A user transferred a shipment to you. State: " + stateString + ". Notes: " + notes);
+        notification.setMessage("A user with email " + from + " transferred a shipment to you. State: " + stateString + ". Notes: " + notes);
         notificationRepository.save(notification);
     }
 }
