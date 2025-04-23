@@ -62,6 +62,10 @@ export default function TransferShipmentPage() {
         const newErrors: TransferFormErrors = {};
 
         Object.entries(transferData).forEach(([key, value]) => {
+            if (key === "transferNotes") {
+                return;
+            }
+
             if (typeof value === "string" && !value.trim()) {
                 newErrors[key as keyof TransferFormErrors] = "This field is required";
             } else if (key === "newState" && (value === null || isNaN(value))) {
@@ -147,7 +151,7 @@ export default function TransferShipmentPage() {
                                 <Input
                                     value={transferData.newShipmentOwner}
                                     onChange={(e) => handleChange("newShipmentOwner", e.target.value)}
-                                    placeholder="Enter new owner"
+                                    placeholder="Enter the new owner mail"
                                     disabled={loading}
                                 />
                                 {errors.newShipmentOwner &&
