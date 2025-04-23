@@ -16,7 +16,7 @@ public class TransferController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> transferShipment(@RequestBody TransferInput transferInput) {
+    public ResponseEntity<?> transferShipment(@RequestBody TransferInput transferInput) throws Exception {
         return transferService.transferShipment(transferInput);
     }
 

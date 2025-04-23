@@ -25,16 +25,6 @@ POST http://localhost:8080/auth/logout
 Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6Inp6eiIsInN1YiI6ImFhYSIsImlhdCI6MTc0MjMwNjUyMSwiZXhwIjoxNzQyMzkyOTIxfQ.tuGps1EYXuc2nK1Nhzq3p67v7WSwIqkDIjaTx7Hu7Dr8SQxtod7WCnZOepyXTG1j
 
 ###
-PUT http://localhost:8080/api/user/credentials
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIyIiwibmFtZSI6IlNhbWJhIiwic3ViIjoiYUBhYWFhMSIsImlhdCI6MTc0NTQzNjAzMCwiZXhwIjoxNzQ1NTIyNDMwfQ.qo_0vaCQd4tTVUJdid_elJ9xI7ND1FSepLXrg1bonxhxusZTk5Xt45pT_Qa2Gzg8
-Content-Type: application/json
-
-{
-  "address": "0x1dF62f291b2E969fB0849d99D9Ce41e2F137006e",
-  "key": "0xb0057716d5917badaf911b193b12b910811c1497b5bada8d7711f758981c3773"
-}
-
-###
 GET http://localhost:8080/api/user
 Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objVAZ21haWwuY29tIiwiaWF0IjoxNzQ1MzU4NzY1LCJleHAiOjE3NDU0NDUxNjV9.CWM7V6Ql60gQYtsbu3wpgxS3LH9xbh6jk3XKndp5HrriXWtN4BAYF8cax2h32DxW
 
@@ -43,7 +33,7 @@ Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic
 
 ###
 POST http://localhost:8080/api/shipment/create
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objZAZ21haWwuY29tIiwiaWF0IjoxNzQ1NDI3MDU3LCJleHAiOjE3NDU1MTM0NTd9.FQ2kEdS3Nq5eKwDniUQtUkDKPE5l9d18yJlEfzacSyniZtIjX3RwRSNa2v_ZLBeZ
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objZAZ21haWwuY29tIiwiaWF0IjoxNzQ1NDQ3OTA0LCJleHAiOjE3NDU1MzQzMDR9.RfhIgSDqswhM3gpAGCWJJmrDarUoG67zbBJrjOyzlJ8STodRHwHhdbz1qEbGIwa8
 Content-Type: application/json
 
 {
@@ -57,8 +47,8 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:8080/api/shipment/1
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objVAZ21haWwuY29tIiwiaWF0IjoxNzQ1MzU4NzY1LCJleHAiOjE3NDU0NDUxNjV9.CWM7V6Ql60gQYtsbu3wpgxS3LH9xbh6jk3XKndp5HrriXWtN4BAYF8cax2h32DxW
+GET http://localhost:8080/api/shipment/11
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objZAZ21haWwuY29tIiwiaWF0IjoxNzQ1NDQ3OTA0LCJleHAiOjE3NDU1MzQzMDR9.RfhIgSDqswhM3gpAGCWJJmrDarUoG67zbBJrjOyzlJ8STodRHwHhdbz1qEbGIwa8
 
 ###
 GET http://localhost:8080/api/shipment/nextId
@@ -80,8 +70,8 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:8080/api/transfer/10
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objZAZ21haWwuY29tIiwiaWF0IjoxNzQ1NDI3MDU3LCJleHAiOjE3NDU1MTM0NTd9.FQ2kEdS3Nq5eKwDniUQtUkDKPE5l9d18yJlEfzacSyniZtIjX3RwRSNa2v_ZLBeZ
+GET http://localhost:8080/api/transfer/11
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objZAZ21haWwuY29tIiwiaWF0IjoxNzQ1NDQ3OTA0LCJleHAiOjE3NDU1MzQzMDR9.RfhIgSDqswhM3gpAGCWJJmrDarUoG67zbBJrjOyzlJ8STodRHwHhdbz1qEbGIwa8
 
 ###
 GET http://localhost:8080/api/transfer/nextId

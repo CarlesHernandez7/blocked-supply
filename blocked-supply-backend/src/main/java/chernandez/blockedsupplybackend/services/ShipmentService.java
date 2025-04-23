@@ -8,6 +8,7 @@ import chernandez.blockedsupplybackend.domain.dto.ShipmentOutput;
 import chernandez.blockedsupplybackend.domain.dto.TransferInput;
 import chernandez.blockedsupplybackend.repositories.ShipmentRecordRepository;
 import chernandez.blockedsupplybackend.repositories.UserRepository;
+import chernandez.blockedsupplybackend.utils.EncryptionUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,6 +32,8 @@ public class ShipmentService {
 
     @Value("${application.broker.address}")
     private String brokerBaseUrl;
+    @Value("${application.security.encryption.secret-key}")
+    private String encryptionKey;
 
     public ShipmentService(ShipmentRecordRepository shipmentRecordRepository, AuthService authService, UserRepository userRepository, TransferService transferService) {
         this.shipmentRecordRepository = shipmentRecordRepository;
@@ -39,7 +42,7 @@ public class ShipmentService {
         this.transferService = transferService;
     }
 
-    public ResponseEntity<?> createShipment(ShipmentInput shipmentInput) {
+    public ResponseEntity<?> createShipment(ShipmentInput shipmentInput) throws Exception {
         ResponseEntity<?> validationResult = checkCreateInputs(shipmentInput);
         if (validationResult != null) {
             return validationResult;
@@ -49,7 +52,7 @@ public class ShipmentService {
         if (user.getBlockchainAddress() == null) {
             return new ResponseEntity<>("User does not have a blockchain address", HttpStatus.FORBIDDEN);
         }
-        shipmentInput.setFrom(user.getBlockchainAddress());
+        shipmentInput.setFrom(EncryptionUtil.decrypt(encryptionKey, user.getBlockchainAddress()));
 
         try {
             HttpHeaders headers = new HttpHeaders();
@@ -79,7 +82,7 @@ public class ShipmentService {
                 );
 
                 shipmentRecordRepository.save(shipmentRecord);
-                createFirstTransaction(shipmentId, currentOwner, shipmentInput.getOrigin(), shipmentInput.getFrom());
+                createFirstTransaction(shipmentId, user.getId(), shipmentInput.getOrigin(), shipmentInput.getFrom());
 
                 return new ResponseEntity<>(shipmentRecord, HttpStatus.CREATED);
             } else {
@@ -121,7 +124,7 @@ public class ShipmentService {
             );
 
             String currentOwner = body.get("currentOwner").asText();
-            User newOwner = userRepository.findByBlockchainAddress(currentOwner).orElse(null);
+            User newOwner = userRepository.findByBlockchainAddress(EncryptionUtil.encrypt(encryptionKey, currentOwner)).orElse(null);
             if (newOwner == null) {
                 throw new RuntimeException("New owner not found");
             }
@@ -201,11 +204,11 @@ public class ShipmentService {
         return null;
     }
 
-    private void createFirstTransaction(int shipmentId, String currentOwner, String origin, String from) {
+    private void createFirstTransaction(int shipmentId, long currentOwnerId, String origin, String from) throws Exception {
         TransferInput transferInput = new TransferInput();
         transferInput.setShipmentId(shipmentId);
 
-        User newOwner = userRepository.findByBlockchainAddress(currentOwner).orElse(null);
+        User newOwner = userRepository.findById(currentOwnerId).orElse(null);
         if (newOwner == null) {
             throw new RuntimeException("New owner not found");
         }
@@ -215,7 +218,6 @@ public class ShipmentService {
         transferInput.setLocation(origin);
         transferInput.setTransferNotes("Shipment created");
         transferInput.setFrom(from);
-
         transferService.transferShipment(transferInput);
     }
 

@@ -9,6 +9,7 @@ import chernandez.blockedsupplybackend.domain.dto.TransferOutput;
 import chernandez.blockedsupplybackend.repositories.NotificationRepository;
 import chernandez.blockedsupplybackend.repositories.ShipmentRecordRepository;
 import chernandez.blockedsupplybackend.repositories.UserRepository;
+import chernandez.blockedsupplybackend.utils.EncryptionUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,6 +36,8 @@ public class TransferService {
 
     @Value("${application.broker.address}")
     private String brokerBaseUrl;
+    @Value("${application.security.encryption.secret-key}")
+    private String encryptionKey;
 
     public TransferService(ShipmentRecordRepository shipmentRecordRepository, UserRepository userRepository, NotificationRepository notificationRepository, AuthService authService) {
         this.shipmentRecordRepository = shipmentRecordRepository;
@@ -43,7 +46,7 @@ public class TransferService {
         this.authService = authService;
     }
 
-    public ResponseEntity<?> transferShipment(TransferInput transferInput) {
+    public ResponseEntity<?> transferShipment(TransferInput transferInput) throws Exception {
         ResponseEntity<?> validationResult = checkTransferInputs(transferInput);
         if (validationResult != null) {
             return validationResult;
@@ -53,12 +56,13 @@ public class TransferService {
         if (user.getBlockchainAddress() == null) {
             return new ResponseEntity<>("User does not have a blockchain address", HttpStatus.FORBIDDEN);
         }
-        transferInput.setFrom(user.getBlockchainAddress());
+        transferInput.setFrom(EncryptionUtil.decrypt(encryptionKey, user.getBlockchainAddress()));
 
         ResponseEntity<?> validationResponse = validateAndSetNewOwner(transferInput);
         if (validationResponse.getStatusCode() != HttpStatus.OK) {
             return validationResponse;
         }
+
         User newOwner = (User) validationResponse.getBody();
 
         try {
@@ -192,7 +196,7 @@ public class TransferService {
         return null;
     }
 
-    private ResponseEntity<?> validateAndSetNewOwner(TransferInput transferInput) {
+    private ResponseEntity<?> validateAndSetNewOwner(TransferInput transferInput) throws Exception{
         try {
             String newOwnerMail = transferInput.getNewShipmentOwner();
             User newOwner = userRepository.findByEmail(newOwnerMail).orElse(null);
@@ -203,7 +207,7 @@ public class TransferService {
                 return new ResponseEntity<>("New owner does not have a blockchain address", HttpStatus.FORBIDDEN);
             }
 
-            transferInput.setNewShipmentOwner(newOwner.getBlockchainAddress());
+            transferInput.setNewShipmentOwner(EncryptionUtil.decrypt(encryptionKey, newOwner.getBlockchainAddress()));
             return new ResponseEntity<>(newOwner, HttpStatus.OK);
 
         } catch (NumberFormatException e) {
