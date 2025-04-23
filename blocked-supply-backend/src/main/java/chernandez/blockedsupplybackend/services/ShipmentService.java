@@ -5,7 +5,9 @@ import chernandez.blockedsupplybackend.domain.State;
 import chernandez.blockedsupplybackend.domain.User;
 import chernandez.blockedsupplybackend.domain.dto.ShipmentInput;
 import chernandez.blockedsupplybackend.domain.dto.ShipmentOutput;
+import chernandez.blockedsupplybackend.domain.dto.TransferInput;
 import chernandez.blockedsupplybackend.repositories.ShipmentRecordRepository;
+import chernandez.blockedsupplybackend.repositories.UserRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,12 +26,17 @@ public class ShipmentService {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final ShipmentRecordRepository shipmentRecordRepository;
     private final AuthService authService;
+    private final UserRepository userRepository;
+    private final TransferService transferService;
+
     @Value("${application.broker.address}")
     private String brokerBaseUrl;
 
-    public ShipmentService(ShipmentRecordRepository shipmentRecordRepository, AuthService authService) {
+    public ShipmentService(ShipmentRecordRepository shipmentRecordRepository, AuthService authService, UserRepository userRepository, TransferService transferService) {
         this.shipmentRecordRepository = shipmentRecordRepository;
         this.authService = authService;
+        this.userRepository = userRepository;
+        this.transferService = transferService;
     }
 
     public ResponseEntity<?> createShipment(ShipmentInput shipmentInput) {
@@ -72,6 +79,7 @@ public class ShipmentService {
                 );
 
                 shipmentRecordRepository.save(shipmentRecord);
+                createFirstTransaction(shipmentId, currentOwner, shipmentInput.getOrigin(), shipmentInput.getFrom());
 
                 return new ResponseEntity<>(shipmentRecord, HttpStatus.CREATED);
             } else {
@@ -111,6 +119,13 @@ public class ShipmentService {
                     chernandez.blockedsupplybackend.domain.State.values()[body.get("currentState").asInt()],
                     body.get("currentOwner").asText()
             );
+
+            String currentOwner = body.get("currentOwner").asText();
+            User newOwner = userRepository.findByBlockchainAddress(currentOwner).orElse(null);
+            if (newOwner == null) {
+                throw new RuntimeException("New owner not found");
+            }
+            output.setCurrentOwner(newOwner.getEmail());
 
             return new ResponseEntity<>(output, HttpStatus.OK);
 
@@ -184,6 +199,24 @@ public class ShipmentService {
         }
 
         return null;
+    }
+
+    private void createFirstTransaction(int shipmentId, String currentOwner, String origin, String from) {
+        TransferInput transferInput = new TransferInput();
+        transferInput.setShipmentId(shipmentId);
+
+        User newOwner = userRepository.findByBlockchainAddress(currentOwner).orElse(null);
+        if (newOwner == null) {
+            throw new RuntimeException("New owner not found");
+        }
+        transferInput.setNewShipmentOwner(newOwner.getEmail());
+
+        transferInput.setNewState(0); //CREATED
+        transferInput.setLocation(origin);
+        transferInput.setTransferNotes("Shipment created");
+        transferInput.setFrom(from);
+
+        transferService.transferShipment(transferInput);
     }
 
     private LocalDateTime parseDateToLocalDateTime(String dateStr) {

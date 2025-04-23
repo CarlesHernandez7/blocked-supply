@@ -26,12 +26,12 @@ Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6Inp6eiIsInN1Y
 
 ###
 PUT http://localhost:8080/api/user/credentials
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIzIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objZAZ21haWwuY29tIiwiaWF0IjoxNzQ1NDIzOTA0LCJleHAiOjE3NDU1MTAzMDR9.DwaDO2EgPZnxvWPAFhStC1DKiAr3ua43QPioYblZ_gdAWdMGEf2rTtJOI6MzPOFW
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIyIiwibmFtZSI6IlNhbWJhIiwic3ViIjoiYUBhYWFhMSIsImlhdCI6MTc0NTQzNjAzMCwiZXhwIjoxNzQ1NTIyNDMwfQ.qo_0vaCQd4tTVUJdid_elJ9xI7ND1FSepLXrg1bonxhxusZTk5Xt45pT_Qa2Gzg8
 Content-Type: application/json
 
 {
-  "address": "0xFFcf8FDEE72ac11b5c542428B35EEF5769C409f0",
-  "key": "0x6cbed15c793ce57650b9877cf6fa156fbef513c4e6134f022a85b1ffdd59b2a1"
+  "address": "0x1dF62f291b2E969fB0849d99D9Ce41e2F137006e",
+  "key": "0xb0057716d5917badaf911b193b12b910811c1497b5bada8d7711f758981c3773"
 }
 
 ###
@@ -43,7 +43,7 @@ Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic
 
 ###
 POST http://localhost:8080/api/shipment/create
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objVAZ21haWwuY29tIiwiaWF0IjoxNzQ1MzU5MDEwLCJleHAiOjE3NDU0NDU0MTB9.1BS5Sfrrg_67_k_wrh49cVUqPtorRz9fPDG-nPm3CYhrJODx_MfqObabYwaRQ2fF
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objZAZ21haWwuY29tIiwiaWF0IjoxNzQ1NDI3MDU3LCJleHAiOjE3NDU1MTM0NTd9.FQ2kEdS3Nq5eKwDniUQtUkDKPE5l9d18yJlEfzacSyniZtIjX3RwRSNa2v_ZLBeZ
 Content-Type: application/json
 
 {
@@ -73,15 +73,15 @@ Content-Type: application/json
 
 {
   "shipmentId": 2,
-  "newShipmentOwner": "John5@gmail.com",
+  "newShipmentOwner": "John6@gmail.com",
   "newState": 1,
   "location": "SAMBA3",
   "transferNotes": "Transferred to your address"
 }
 
 ###
-GET http://localhost:8080/api/transfer/1
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIyIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objVAZ21haWwuY29tIiwiaWF0IjoxNzQ1NDIzNjgxLCJleHAiOjE3NDU1MTAwODF9.u3qO9qhYAU8X9tDB38FDbtqptED2OLbwV4RMf1yGJopuXAVnM9-urZQocOU1yDCC
+GET http://localhost:8080/api/transfer/10
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiIxIiwibmFtZSI6IkpvaG40Iiwic3ViIjoiSm9objZAZ21haWwuY29tIiwiaWF0IjoxNzQ1NDI3MDU3LCJleHAiOjE3NDU1MTM0NTd9.FQ2kEdS3Nq5eKwDniUQtUkDKPE5l9d18yJlEfzacSyniZtIjX3RwRSNa2v_ZLBeZ
 
 ###
 GET http://localhost:8080/api/transfer/nextId

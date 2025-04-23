@@ -59,10 +59,14 @@ export default function TraceabilityPage() {
                 return;
             }
 
-            const data: TransferOutput[] = await response.json();
+            let data: TransferOutput[] = await response.json();
             if (data.length === 0) {
                 setNoTransfers(true);
             } else {
+                data = data.map(transfer => ({
+                    ...transfer,
+                    transferNotes: transfer.transferNotes || "none"
+                }));
                 setTransfers(data);
             }
         } catch (err) {
