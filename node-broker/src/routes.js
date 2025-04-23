@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { contract } = require('./blockchain');
+const { web3, contract } = require('./blockchain');
 
 //FETCH NEXT IDS
 router.get('/shipments/next-id', async (req, res) => {
@@ -158,6 +158,16 @@ router.get('/shipments/:shipmentId/transfers', async (req, res) => {
         }));
 
         res.json(parsedTransfers);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// GET ALL GANACHE ACCOUNTS
+router.get('/accounts', async (req, res) => {
+    try {
+        const accounts = await web3.eth.getAccounts();
+        res.json({ accounts });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

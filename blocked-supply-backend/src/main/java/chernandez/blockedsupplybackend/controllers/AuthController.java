@@ -1,6 +1,5 @@
 package chernandez.blockedsupplybackend.controllers;
 
-import chernandez.blockedsupplybackend.domain.dto.auth.BlockchainCredentialsInput;
 import chernandez.blockedsupplybackend.domain.dto.auth.LoginRequest;
 import chernandez.blockedsupplybackend.domain.dto.auth.RegisterRequest;
 import chernandez.blockedsupplybackend.domain.dto.auth.TokenResponse;
@@ -18,7 +17,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/auth/register")
-    public ResponseEntity<?> register(@RequestBody final RegisterRequest request) {
+    public ResponseEntity<?> register(@RequestBody final RegisterRequest request) throws Exception {
         return authService.register(request);
     }
 
@@ -33,13 +32,8 @@ public class AuthController {
         return authService.refreshToken(authHeader);
     }
 
-    @PutMapping("/api/user/credentials")
-    public ResponseEntity<?> setBlockchainCredentials(@RequestBody BlockchainCredentialsInput credentialsInput) throws Exception {
-        return authService.setBlockchainCredentials(credentialsInput);
-    }
-
     @GetMapping("/api/user")
-    public ResponseEntity<?> getUser() {
+    public ResponseEntity<?> getUser() throws Exception {
         return authService.getUser();
     }
 }

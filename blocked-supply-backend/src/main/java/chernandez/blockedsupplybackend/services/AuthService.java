@@ -8,6 +8,8 @@ import chernandez.blockedsupplybackend.repositories.UserRepository;
 import chernandez.blockedsupplybackend.utils.EncryptionUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,8 +19,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -29,24 +33,33 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final RestTemplate restTemplate = new RestTemplate();
+
+    @Value("${application.broker.address}")
+    private String brokerBaseUrl;
     @Value("${application.security.encryption.secret-key}")
     private String encryptionKey;
 
-    public ResponseEntity<?> register(RegisterRequest request) {
+    public ResponseEntity<?> register(RegisterRequest request) throws Exception {
         ResponseEntity<?> validationResult = checkRegisterInput(request);
         if (validationResult != null) {
             return validationResult;
         }
 
+        String encryptedAddress = getAvailableBlockchainAddressEncrypted();
+
         var user = User.builder()
                 .name(request.name())
                 .email(request.email())
                 .password(passwordEncoder.encode(request.password()))
+                .blockchainAddress(encryptedAddress)
                 .build();
+
         var savedUser = userRepository.save(user);
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
         saveUserToken(savedUser, jwtToken);
+
         return ResponseEntity.ok(new TokenResponse(jwtToken, refreshToken));
     }
 
@@ -112,31 +125,12 @@ public class AuthService {
         }
     }
 
-    public ResponseEntity<?> setBlockchainCredentials(BlockchainCredentialsInput credentialsInput) throws Exception {
-        User user = getUserFromJWT();
-        if (credentialsInput == null || credentialsInput.address() == null || credentialsInput.key() == null) {
-            return new ResponseEntity<>("Blockchain credentials cannot be null", HttpStatus.BAD_REQUEST);
-        }
-        if (user.getBlockchainAddress() != null && user.getBlockchainKey() != null) {
-            return new ResponseEntity<>("User already has a blockchain credentials", HttpStatus.BAD_REQUEST);
-        }
-        if (!credentialsInput.address().startsWith("0x") || !credentialsInput.key().startsWith("0x")) {
-            return new ResponseEntity<>("Invalid blockchain credentials type", HttpStatus.BAD_REQUEST);
-        }
-
-        String encryptedKey = EncryptionUtil.encrypt(this.encryptionKey, credentialsInput.key());
-        user.setBlockchainKey(encryptedKey);
-        user.setBlockchainAddress(credentialsInput.address());
-        userRepository.save(user);
-        return new ResponseEntity<>("Credentials correctly set for user " + user.getId(), HttpStatus.OK);
-    }
-
-    public ResponseEntity<?> getUser() {
+    public ResponseEntity<?> getUser() throws Exception {
         User user = getUserFromJWT();
         if (user == null) {
             return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
         }
-        UserDetails details = new UserDetails(user.getName(), user.getEmail(), user.getBlockchainAddress());
+        UserDetails details = new UserDetails(user.getName(), user.getEmail(), EncryptionUtil.decrypt(encryptionKey, user.getBlockchainAddress()));
         return new ResponseEntity<>(details, HttpStatus.OK);
     }
 
@@ -160,5 +154,32 @@ public class AuthService {
             return ResponseEntity.badRequest().body("Email has to be at least 5 characters long and contain @");
         }
         return null;
+    }
+
+    private String getAvailableBlockchainAddressEncrypted() throws Exception {
+        ResponseEntity<Map<String, List<String>>> response = restTemplate.exchange(
+                brokerBaseUrl + "/api/accounts",
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<>() {}
+        );
+
+        List<String> accounts = response.getBody().get("accounts");
+
+        List<String> usedAddresses = userRepository.findAll()
+                .stream()
+                .map(user -> {
+                    try {
+                        return EncryptionUtil.decrypt(encryptionKey, user.getBlockchainAddress());
+                    } catch (Exception e) {
+                        throw new RuntimeException("Failed to decrypt blockchain address", e);
+                    }
+                })
+                .toList();
+
+        return EncryptionUtil.encrypt(encryptionKey, accounts.stream()
+                .filter(addr -> !usedAddresses.contains(addr))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("No available blockchain addresses.")));
     }
 }
