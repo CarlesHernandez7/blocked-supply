@@ -26,6 +26,7 @@ interface ShipmentForm {
 
 interface ShipmentRecord {
     shipmentId: number;
+    sku: string;
     createdAt: string;
     deliveryDate: string;
     state: string;
@@ -46,7 +47,7 @@ export default function ShipmentsPage() {
     });
     const [errors, setErrors] = useState<Partial<ShipmentForm>>({});
     const [loading, setLoading] = useState(false);
-    const [copiedId, setCopiedId] = useState<number | null>(null);
+    const [copiedId, setCopiedId] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchShipments = async () => {
@@ -146,9 +147,9 @@ export default function ShipmentsPage() {
         }
     };
 
-    const handleCopy = async (id: number) => {
+    const handleCopy = async (id: string) => {
         try {
-            await navigator.clipboard.writeText(id.toString());
+            await navigator.clipboard.writeText(id);
             setCopiedId(id);
             setTimeout(() => setCopiedId(null), 1500);
         } catch (err) {
@@ -166,7 +167,7 @@ export default function ShipmentsPage() {
                         <Card>
                             <CardHeader>
                                 <CardTitle>Your Shipments</CardTitle>
-                                <CardDescription>List of shipments you are part of.</CardDescription>
+                                <CardDescription>List of shipments you are participant.</CardDescription>
                             </CardHeader>
                             <CardContent>
                                 {error && <p className="text-red-500 pb-5">{error}</p>} {}
@@ -180,7 +181,7 @@ export default function ShipmentsPage() {
                                             >
                                                 <Link href={`/shipments/${shipment.shipmentId}`}
                                                       className="block p-2 flex-grow">
-                                                    <p><strong>ID:</strong> {shipment.shipmentId}</p>
+                                                    <p><strong>SKU:</strong> {shipment.sku}</p>
                                                     <p><strong>Status:</strong> {shipment.state}</p>
                                                     <p><strong>Delivery Date:</strong> {shipment.deliveryDate}</p>
                                                     <p><strong>Created
@@ -189,11 +190,11 @@ export default function ShipmentsPage() {
                                                 <Button
                                                     variant="outline"
                                                     size="sm"
-                                                    onClick={() => handleCopy(shipment.shipmentId)}
+                                                    onClick={() => handleCopy(shipment.sku)}
                                                     className="ml-2"
                                                 >
                                                     <ClipboardCopy className="w-4 h-4 mr-1"/>
-                                                    {copiedId === shipment.shipmentId ? "Copied!" : "Copy ID"}
+                                                    {copiedId === shipment.sku ? "Copied!" : "Copy SKU"}
                                                 </Button>
                                             </li>
                                         ))}

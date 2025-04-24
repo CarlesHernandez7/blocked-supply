@@ -9,6 +9,7 @@ import api from "@/utils/baseApi";
 
 interface ShipmentRecord {
     shipmentId: number;
+    sku: string;
     createdAt: string;
     deliveryDate: string;
     state: string;
@@ -77,7 +78,7 @@ export default function TransferencesPage() {
                                         <li key={shipment.shipmentId}
                                             className="border p-2 rounded transition-colors hover:bg-gray-200/50">
                                             <Link href={`/transferences/${shipment.shipmentId}`} className="block p-2">
-                                                <p><strong>ID:</strong> {shipment.shipmentId}</p>
+                                                <p><strong>SKU:</strong> {shipment.sku}</p>
                                                 <p><strong>Status:</strong> {shipment.state}</p>
                                                 <p><strong>Delivery Date:</strong> {shipment.deliveryDate}</p>
                                                 <p><strong>Created

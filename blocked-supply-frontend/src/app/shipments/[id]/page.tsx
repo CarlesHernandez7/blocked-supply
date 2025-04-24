@@ -11,6 +11,7 @@ import api from "@/utils/baseApi";
 
 interface Shipment {
     id: number;
+    sku: string;
     name: string;
     description: string;
     origin: string;
@@ -89,8 +90,8 @@ export default function ShipmentDetail() {
                     <CardTitle>Shipment Details</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <p><strong>ID:</strong> {shipment.id}</p>
                     <p><strong>Name:</strong> {shipment.name}</p>
+                    <p><strong>SKU:</strong> {shipment.sku}</p>
                     <p><strong>Description:</strong> {shipment.description}</p>
                     <p><strong>Origin:</strong> {shipment.origin}</p>
                     <p><strong>Destination:</strong> {shipment.destination}</p>

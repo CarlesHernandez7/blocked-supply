@@ -20,9 +20,9 @@ public class TransferController {
         return transferService.transferShipment(transferInput);
     }
 
-    @GetMapping("/{shipmentId}")
-    public ResponseEntity<?> getTransferHistory(@PathVariable int shipmentId) {
-        return transferService.getTransferHistory(shipmentId);
+    @GetMapping("/{sku}")
+    public ResponseEntity<?> getTransferHistory(@PathVariable String sku) {
+        return transferService.getTransferHistory(sku);
     }
 
     @GetMapping("/nextId")

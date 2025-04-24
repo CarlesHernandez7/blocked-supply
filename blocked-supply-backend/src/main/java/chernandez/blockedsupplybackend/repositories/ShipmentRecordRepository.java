@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface ShipmentRecordRepository extends JpaRepository<ShipmentRecord, Long> {
 
@@ -16,4 +17,6 @@ public interface ShipmentRecordRepository extends JpaRepository<ShipmentRecord, 
     List<ShipmentRecord> findByParticipantsContaining(Long userId);
 
     List<ShipmentRecord> findByOwnerId(Long ownerId);
+
+    Optional<ShipmentRecord> findBySku(String sku);
 }
