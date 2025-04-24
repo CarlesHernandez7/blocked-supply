@@ -201,7 +201,7 @@ public class TransferService {
         return null;
     }
 
-    private ResponseEntity<?> validateAndSetNewOwner(TransferInput transferInput) throws Exception{
+    private ResponseEntity<?> validateAndSetNewOwner(TransferInput transferInput) throws Exception {
         try {
             String newOwnerMail = transferInput.getNewShipmentOwner();
             User newOwner = userRepository.findByEmail(newOwnerMail).orElse(null);

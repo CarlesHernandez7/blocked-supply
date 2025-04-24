@@ -2,7 +2,10 @@ package chernandez.blockedsupplybackend.services;
 
 import chernandez.blockedsupplybackend.domain.Token;
 import chernandez.blockedsupplybackend.domain.User;
-import chernandez.blockedsupplybackend.domain.dto.auth.*;
+import chernandez.blockedsupplybackend.domain.dto.auth.LoginRequest;
+import chernandez.blockedsupplybackend.domain.dto.auth.RegisterRequest;
+import chernandez.blockedsupplybackend.domain.dto.auth.TokenResponse;
+import chernandez.blockedsupplybackend.domain.dto.auth.UserDetails;
 import chernandez.blockedsupplybackend.repositories.TokenRepository;
 import chernandez.blockedsupplybackend.repositories.UserRepository;
 import chernandez.blockedsupplybackend.utils.EncryptionUtil;
@@ -161,7 +164,8 @@ public class AuthService {
                 brokerBaseUrl + "/api/accounts",
                 HttpMethod.GET,
                 null,
-                new ParameterizedTypeReference<>() {}
+                new ParameterizedTypeReference<>() {
+                }
         );
 
         List<String> accounts = response.getBody().get("accounts");
