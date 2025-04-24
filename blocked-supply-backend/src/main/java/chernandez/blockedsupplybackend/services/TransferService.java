@@ -112,14 +112,19 @@ public class TransferService {
         }
     }
 
-    public ResponseEntity<?> getTransferHistory(int shipmentId) {
-        ShipmentRecord record = shipmentRecordRepository.findById((long) shipmentId).orElse(null);
+    public ResponseEntity<?> getTransferHistory(String sku) {
+        ShipmentRecord record = shipmentRecordRepository.findBySku(sku).orElse(null);
         if (record == null) {
             return new ResponseEntity<>("Shipment not found", HttpStatus.NOT_FOUND);
         }
 
+        User user = authService.getUserFromJWT();
+        if (!record.getParticipants().contains(user.getId())) {
+            return new ResponseEntity<>("User is not a participant of this shipment", HttpStatus.FORBIDDEN);
+        }
+
         try {
-            String url = brokerBaseUrl + "/api/shipments/" + shipmentId + "/transfers";
+            String url = brokerBaseUrl + "/api/shipments/" + record.getShipmentId() + "/transfers";
             ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
 
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
@@ -129,9 +134,9 @@ public class TransferService {
                 List<TransferOutput> transfers = new ArrayList<>();
 
                 for (Map<String, Object> transfer : transferList) {
-                    String blockchainAddress = transfer.get("newShipmentOwner").toString();
-                    User user = userRepository.findByBlockchainAddress(blockchainAddress).orElse(null);
-                    String email = (user != null) ? user.getEmail() : "Unknown";
+                    String blockchainAddress = EncryptionUtil.encrypt(encryptionKey, transfer.get("newShipmentOwner").toString());
+                    User newShipmentOwner = userRepository.findByBlockchainAddress(blockchainAddress).orElse(null);
+                    String email = (newShipmentOwner != null) ? newShipmentOwner.getEmail() : "Unknown";
 
                     TransferOutput t = new TransferOutput(
                             Integer.parseInt(transfer.get("id").toString()),

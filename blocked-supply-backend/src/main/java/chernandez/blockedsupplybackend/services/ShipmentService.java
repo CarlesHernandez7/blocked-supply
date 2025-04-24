@@ -82,6 +82,7 @@ public class ShipmentService {
                 );
 
                 shipmentRecordRepository.save(shipmentRecord);
+
                 createFirstTransaction(shipmentId, user.getId(), shipmentInput.getOrigin(), shipmentInput.getFrom());
 
                 return new ResponseEntity<>(shipmentRecord, HttpStatus.CREATED);
@@ -112,6 +113,7 @@ public class ShipmentService {
 
             ShipmentOutput output = new ShipmentOutput(
                     body.get("id").asInt(),
+                    record.getSku(),
                     body.get("name").asText(),
                     body.get("description").asText(),
                     body.get("origin").asText(),

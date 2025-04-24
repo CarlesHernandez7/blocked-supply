@@ -6,6 +6,7 @@ import lombok.Data;
 @Data
 public class ShipmentOutput {
     private int id;
+    private String sku;
     private String name;
     private String description;
     private String origin;
@@ -16,8 +17,9 @@ public class ShipmentOutput {
     private State currentState;
     private String currentOwner;
 
-    public ShipmentOutput(int id, String name, String description, String origin, String destination, String deliveryDate, int units, int weight, State currentState, String currentOwner) {
+    public ShipmentOutput(int id, String sku, String name, String description, String origin, String destination, String deliveryDate, int units, int weight, State currentState, String currentOwner) {
         this.id = id;
+        this.sku = sku;
         this.name = name;
         this.description = description;
         this.origin = origin;
