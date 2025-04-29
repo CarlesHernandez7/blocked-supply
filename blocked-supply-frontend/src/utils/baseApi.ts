@@ -1,5 +1,5 @@
 const api = {
-    baseURL: "http://localhost:8080"
+    baseURL: "http://192.168.1.40:8080"
 };
 
 export default api;
