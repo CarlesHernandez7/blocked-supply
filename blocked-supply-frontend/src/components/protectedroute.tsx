@@ -1,16 +1,12 @@
-"use client"
+"use client";
 
-import {ReactNode, useEffect} from "react";
+import {useEffect} from "react";
 import {useRouter} from "next/navigation";
 import {useAuth} from "@/context/AuthContext";
 
-interface ProtectedRouteProps {
-    children: ReactNode;
-}
-
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({children}) => {
-    const {token} = useAuth();
+export default function ProtectedRoute({children}: {children: React.ReactNode}) {
     const router = useRouter();
+    const {token} = useAuth();
 
     useEffect(() => {
         if (!token) {
@@ -18,7 +14,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({children}) => {
         }
     }, [token, router]);
 
-    return token ? <>{children}</> : null;
-};
+    if (!token) return null;
 
-export default ProtectedRoute;
+    return <>{children}</>;
+}

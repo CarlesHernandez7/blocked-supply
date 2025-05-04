@@ -1,5 +1,5 @@
 import {createContext, useContext, useEffect, useState} from "react";
-import {usePathname, useRouter} from "next/navigation";
+import {useRouter} from "next/navigation";
 import Loading from "@/components/loading";
 import api from "@/utils/baseApi";
 
@@ -15,23 +15,14 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
     const [token, setToken] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const router = useRouter();
-    const pathname = usePathname();
 
     useEffect(() => {
-        const checkAuth = () => {
+        if (typeof window !== 'undefined') {
             const storedToken = localStorage.getItem("authToken");
-            const publicPaths = ["/", "/auth"];
-
-            if (!storedToken && !publicPaths.includes(pathname)) {
-                router.push("/auth");
-            } else {
-                setToken(storedToken);
-            }
+            setToken(storedToken);
             setLoading(false);
-        };
-
-        checkAuth();
-    }, [pathname, router]);
+        }
+    }, []);
 
     const login = (newToken: string) => {
         localStorage.setItem("authToken", newToken);

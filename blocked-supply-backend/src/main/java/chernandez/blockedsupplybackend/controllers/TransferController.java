@@ -16,13 +16,13 @@ public class TransferController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> transferShipment(@RequestBody TransferInput transferInput) {
+    public ResponseEntity<?> transferShipment(@RequestBody TransferInput transferInput) throws Exception {
         return transferService.transferShipment(transferInput);
     }
 
-    @GetMapping("/{shipmentId}")
-    public ResponseEntity<?> getTransferHistory(@PathVariable int shipmentId) {
-        return transferService.getTransferHistory(shipmentId);
+    @GetMapping("/{sku}")
+    public ResponseEntity<?> getTransferHistory(@PathVariable String sku) {
+        return transferService.getTransferHistory(sku);
     }
 
     @GetMapping("/nextId")

@@ -1,8 +1,10 @@
 package chernandez.blockedsupplybackend.domain.dto;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class TransferInput {
     private int shipmentId;
     private String newShipmentOwner;

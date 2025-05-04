@@ -11,7 +11,7 @@ import {ClipboardCopy} from "lucide-react";
 import ProtectedRoute from "@/components/protectedroute";
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
-import { format } from 'date-fns'
+import {format} from 'date-fns'
 import api from "@/utils/baseApi";
 
 interface ShipmentForm {
@@ -26,6 +26,7 @@ interface ShipmentForm {
 
 interface ShipmentRecord {
     shipmentId: number;
+    sku: string;
     createdAt: string;
     deliveryDate: string;
     state: string;
@@ -46,7 +47,7 @@ export default function ShipmentsPage() {
     });
     const [errors, setErrors] = useState<Partial<ShipmentForm>>({});
     const [loading, setLoading] = useState(false);
-    const [copiedId, setCopiedId] = useState<number | null>(null);
+    const [copiedId, setCopiedId] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchShipments = async () => {
@@ -146,9 +147,9 @@ export default function ShipmentsPage() {
         }
     };
 
-    const handleCopy = async (id: number) => {
+    const handleCopy = async (id: string) => {
         try {
-            await navigator.clipboard.writeText(id.toString());
+            await navigator.clipboard.writeText(id);
             setCopiedId(id);
             setTimeout(() => setCopiedId(null), 1500);
         } catch (err) {
@@ -166,7 +167,7 @@ export default function ShipmentsPage() {
                         <Card>
                             <CardHeader>
                                 <CardTitle>Your Shipments</CardTitle>
-                                <CardDescription>List of shipments you are part of.</CardDescription>
+                                <CardDescription>List of shipments you are participant.</CardDescription>
                             </CardHeader>
                             <CardContent>
                                 {error && <p className="text-red-500 pb-5">{error}</p>} {}
@@ -180,7 +181,7 @@ export default function ShipmentsPage() {
                                             >
                                                 <Link href={`/shipments/${shipment.shipmentId}`}
                                                       className="block p-2 flex-grow">
-                                                    <p><strong>ID:</strong> {shipment.shipmentId}</p>
+                                                    <p><strong>SKU:</strong> {shipment.sku}</p>
                                                     <p><strong>Status:</strong> {shipment.state}</p>
                                                     <p><strong>Delivery Date:</strong> {shipment.deliveryDate}</p>
                                                     <p><strong>Created
@@ -189,11 +190,11 @@ export default function ShipmentsPage() {
                                                 <Button
                                                     variant="outline"
                                                     size="sm"
-                                                    onClick={() => handleCopy(shipment.shipmentId)}
+                                                    onClick={() => handleCopy(shipment.sku)}
                                                     className="ml-2"
                                                 >
                                                     <ClipboardCopy className="w-4 h-4 mr-1"/>
-                                                    {copiedId === shipment.shipmentId ? "Copied!" : "Copy ID"}
+                                                    {copiedId === shipment.sku ? "Copied!" : "Copy SKU"}
                                                 </Button>
                                             </li>
                                         ))}
@@ -225,23 +226,30 @@ export default function ShipmentsPage() {
                                 <form onSubmit={handleSubmit} className="space-y-4">
                                     <div className="grid gap-2">
                                         <Label htmlFor="productName">Shipment Product Name</Label>
-                                        <Input id="productName" value={shipmentForm.productName} onChange={handleChange} placeholder="Enter the product name"/>
-                                        {errors.productName && <p className="text-red-500 text-sm">{errors.productName}</p>}
+                                        <Input id="productName" value={shipmentForm.productName} onChange={handleChange}
+                                               placeholder="Enter the product name"/>
+                                        {errors.productName &&
+                                            <p className="text-red-500 text-sm">{errors.productName}</p>}
                                     </div>
                                     <div className="grid gap-2">
                                         <Label htmlFor="description">Description</Label>
-                                        <Input id="description" value={shipmentForm.description} onChange={handleChange} placeholder="Enter the shipment description"/>
-                                        {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
+                                        <Input id="description" value={shipmentForm.description} onChange={handleChange}
+                                               placeholder="Enter the shipment description"/>
+                                        {errors.description &&
+                                            <p className="text-red-500 text-sm">{errors.description}</p>}
                                     </div>
                                     <div className="grid gap-2">
                                         <Label htmlFor="origin">Origin</Label>
-                                        <Input id="origin" value={shipmentForm.origin} onChange={handleChange} placeholder="Enter the origin location"/>
+                                        <Input id="origin" value={shipmentForm.origin} onChange={handleChange}
+                                               placeholder="Enter the origin location"/>
                                         {errors.origin && <p className="text-red-500 text-sm">{errors.origin}</p>}
                                     </div>
                                     <div className="grid gap-2">
                                         <Label htmlFor="destination">Destination</Label>
-                                        <Input id="destination" value={shipmentForm.destination} onChange={handleChange} placeholder="Enter the destination location"/>
-                                        {errors.destination && <p className="text-red-500 text-sm">{errors.destination}</p>}
+                                        <Input id="destination" value={shipmentForm.destination} onChange={handleChange}
+                                               placeholder="Enter the destination location"/>
+                                        {errors.destination &&
+                                            <p className="text-red-500 text-sm">{errors.destination}</p>}
                                     </div>
                                     <div className="grid gap-2">
                                         <Label htmlFor="deliveryDate">Delivery Date</Label>
@@ -251,12 +259,12 @@ export default function ShipmentsPage() {
                                             onChange={(date: Date | null) => {
                                                 if (date) {
                                                     const formatted = format(date, "yyyy-MM-dd");
-                                                    setShipmentForm(prev => ({ ...prev, deliveryDate: formatted }));
+                                                    setShipmentForm(prev => ({...prev, deliveryDate: formatted}));
                                                 }
                                             }}
                                             dateFormat="yyyy-MM-dd"
                                             placeholderText="Select delivery date"
-                                            customInput={<Input />}
+                                            customInput={<Input/>}
                                             className="w-full"
                                             minDate={new Date(Date.now() + 24 * 60 * 60 * 1000)}
                                         />
@@ -266,12 +274,14 @@ export default function ShipmentsPage() {
                                     </div>
                                     <div className="grid gap-2">
                                         <Label htmlFor="units">Units</Label>
-                                        <Input id="units" value={shipmentForm.units} onChange={handleChange} placeholder="Enter the number of units"/>
+                                        <Input id="units" value={shipmentForm.units} onChange={handleChange}
+                                               placeholder="Enter the number of units"/>
                                         {errors.units && <p className="text-red-500 text-sm">{errors.units}</p>}
                                     </div>
                                     <div className="grid gap-2">
                                         <Label htmlFor="weight">Weight</Label>
-                                        <Input id="weight" value={shipmentForm.weight} onChange={handleChange} placeholder="Enter the amount of weight in kg"/>
+                                        <Input id="weight" value={shipmentForm.weight} onChange={handleChange}
+                                               placeholder="Enter the amount of weight in kg"/>
                                         {errors.weight && <p className="text-red-500 text-sm">{errors.weight}</p>}
                                     </div>
                                     <div className="flex justify-between">

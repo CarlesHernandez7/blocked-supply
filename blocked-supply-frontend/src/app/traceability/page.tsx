@@ -23,7 +23,7 @@ interface TransferOutput {
 }
 
 export default function TraceabilityPage() {
-    const [shipmentId, setShipmentId] = useState("");
+    const [shipmentSku, setShipmentSku] = useState("");
     const [transfers, setTransfers] = useState<TransferOutput[] | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [noTransfers, setNoTransfers] = useState<boolean>(false);
@@ -35,9 +35,9 @@ export default function TraceabilityPage() {
         setNoTransfers(false);
         setLoading(true);
 
-        const idNumber = Number(shipmentId);
-        if (isNaN(idNumber) || idNumber <= 0) {
-            setError("Invalid Shipment ID: Must be greater than 0.");
+        const sku = String(shipmentSku);
+        if (sku === "" || sku === " " || sku.length < 3) {
+            setError("Invalid SKU");
             setLoading(false);
             return;
         }
@@ -45,7 +45,7 @@ export default function TraceabilityPage() {
         const token = localStorage.getItem("authToken");
 
         try {
-            const response = await fetch(`${api.baseURL}/api/transfer/${idNumber}`, {
+            const response = await fetch(`${api.baseURL}/api/transfer/${sku}`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -59,10 +59,14 @@ export default function TraceabilityPage() {
                 return;
             }
 
-            const data: TransferOutput[] = await response.json();
+            let data: TransferOutput[] = await response.json();
             if (data.length === 0) {
                 setNoTransfers(true);
             } else {
+                data = data.map(transfer => ({
+                    ...transfer,
+                    transferNotes: transfer.transferNotes || "none"
+                }));
                 setTransfers(data);
             }
         } catch (err) {
@@ -89,9 +93,9 @@ export default function TraceabilityPage() {
                         <CardContent>
                             <div className="flex space-x-2">
                                 <Input
-                                    placeholder="Search by Product ID"
-                                    value={shipmentId}
-                                    onChange={(e) => setShipmentId(e.target.value)}
+                                    placeholder="Search by Product SKU"
+                                    value={shipmentSku}
+                                    onChange={(e) => setShipmentSku(e.target.value)}
                                 />
                                 <Button onClick={handleSearch}>
                                     <Search className="h-4 w-4 mr-2"/>

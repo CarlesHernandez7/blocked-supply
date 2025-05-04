@@ -6,6 +6,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @Entity
@@ -14,6 +15,10 @@ public class ShipmentRecord {
 
     @Id
     private Long shipmentId;
+
+    @Column(unique = true)
+    private String sku;
+
     private String ownerAddress;
     private long ownerId;
 
@@ -39,7 +44,12 @@ public class ShipmentRecord {
         this.deliveryDate = deliveryDate;
         this.deliveredAt = null;
         this.state = state;
+        generateSku();
         addParticipant(owner);
+    }
+
+    private void generateSku() {
+        this.sku = "SKU-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
     }
 
     public void addParticipant(Long participantId) {

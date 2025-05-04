@@ -2,7 +2,7 @@
 
 import {useState} from "react"
 import Link from "next/link"
-import {Eye, EyeOff, LogIn, UserPlus} from "lucide-react"
+import {Eye, EyeOff, Home, LogIn, UserPlus} from "lucide-react"
 import api from "@/utils/baseApi";
 
 import {Button} from "@/components/ui/button"
@@ -79,6 +79,12 @@ export default function AuthPage() {
                 body: JSON.stringify(loginData)
             });
 
+            if (!response.ok) {
+                const errorMessage = await response.text();
+                setError(errorMessage || "Login failed. Please try again.");
+                return;
+            }
+
             const data: TokenResponse = await response.json();
 
             localStorage.setItem("authToken", data.access_token);
@@ -87,7 +93,7 @@ export default function AuthPage() {
             login(data.access_token);
         } catch (err) {
             console.error(err);
-            setError("Login failed. Please try again.");
+            setError("An unexpected error occurred. Please try again.");
         } finally {
             setLoginLoading(false);
         }
@@ -107,6 +113,12 @@ export default function AuthPage() {
                 body: JSON.stringify(registerData)
             });
 
+            if (!response.ok) {
+                const errorMessage = await response.text();
+                setError(errorMessage || "Registration failed. Please try again.");
+                return;
+            }
+
             const data: TokenResponse = await response.json();
 
             localStorage.setItem("authToken", data.access_token);
@@ -115,7 +127,7 @@ export default function AuthPage() {
             login(data.access_token);
         } catch (err) {
             console.error(err);
-            setError("Registration failed. Please try again.");
+            setError("An unexpected error occurred. Please try again.");
         } finally {
             setRegisterLoading(false);
         }
@@ -236,16 +248,18 @@ export default function AuthPage() {
                     </Tabs>
                 </CardContent>
 
-                <CardFooter className="text-center">
-                    <div className="text-sm">
+                <CardFooter className="flex flex-col space-y-4 items-center">
+                    <div className="text-sm text-center">
                         By continuing, you agree to our Terms of Service and Privacy Policy.
                     </div>
-                    <Link href="/" className="text-primary underline">
-                        Return to Home
-                    </Link>
+                    <Button variant="outline" asChild>
+                        <Link href="/" className="flex items-center gap-2">
+                            <Home className="h-4 w-4" />
+                            Return to Home
+                        </Link>
+                    </Button>
                 </CardFooter>
             </Card>
         </div>
     );
 }
-
