@@ -11,7 +11,7 @@ import {ClipboardCopy} from "lucide-react";
 import ProtectedRoute from "@/components/protectedroute";
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
-import { format } from 'date-fns'
+import {format} from 'date-fns'
 import api from "@/utils/baseApi";
 
 interface ShipmentForm {
@@ -226,23 +226,30 @@ export default function ShipmentsPage() {
                                 <form onSubmit={handleSubmit} className="space-y-4">
                                     <div className="grid gap-2">
                                         <Label htmlFor="productName">Shipment Product Name</Label>
-                                        <Input id="productName" value={shipmentForm.productName} onChange={handleChange} placeholder="Enter the product name"/>
-                                        {errors.productName && <p className="text-red-500 text-sm">{errors.productName}</p>}
+                                        <Input id="productName" value={shipmentForm.productName} onChange={handleChange}
+                                               placeholder="Enter the product name"/>
+                                        {errors.productName &&
+                                            <p className="text-red-500 text-sm">{errors.productName}</p>}
                                     </div>
                                     <div className="grid gap-2">
                                         <Label htmlFor="description">Description</Label>
-                                        <Input id="description" value={shipmentForm.description} onChange={handleChange} placeholder="Enter the shipment description"/>
-                                        {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
+                                        <Input id="description" value={shipmentForm.description} onChange={handleChange}
+                                               placeholder="Enter the shipment description"/>
+                                        {errors.description &&
+                                            <p className="text-red-500 text-sm">{errors.description}</p>}
                                     </div>
                                     <div className="grid gap-2">
                                         <Label htmlFor="origin">Origin</Label>
-                                        <Input id="origin" value={shipmentForm.origin} onChange={handleChange} placeholder="Enter the origin location"/>
+                                        <Input id="origin" value={shipmentForm.origin} onChange={handleChange}
+                                               placeholder="Enter the origin location"/>
                                         {errors.origin && <p className="text-red-500 text-sm">{errors.origin}</p>}
                                     </div>
                                     <div className="grid gap-2">
                                         <Label htmlFor="destination">Destination</Label>
-                                        <Input id="destination" value={shipmentForm.destination} onChange={handleChange} placeholder="Enter the destination location"/>
-                                        {errors.destination && <p className="text-red-500 text-sm">{errors.destination}</p>}
+                                        <Input id="destination" value={shipmentForm.destination} onChange={handleChange}
+                                               placeholder="Enter the destination location"/>
+                                        {errors.destination &&
+                                            <p className="text-red-500 text-sm">{errors.destination}</p>}
                                     </div>
                                     <div className="grid gap-2">
                                         <Label htmlFor="deliveryDate">Delivery Date</Label>
@@ -252,12 +259,12 @@ export default function ShipmentsPage() {
                                             onChange={(date: Date | null) => {
                                                 if (date) {
                                                     const formatted = format(date, "yyyy-MM-dd");
-                                                    setShipmentForm(prev => ({ ...prev, deliveryDate: formatted }));
+                                                    setShipmentForm(prev => ({...prev, deliveryDate: formatted}));
                                                 }
                                             }}
                                             dateFormat="yyyy-MM-dd"
                                             placeholderText="Select delivery date"
-                                            customInput={<Input />}
+                                            customInput={<Input/>}
                                             className="w-full"
                                             minDate={new Date(Date.now() + 24 * 60 * 60 * 1000)}
                                         />
@@ -267,12 +274,14 @@ export default function ShipmentsPage() {
                                     </div>
                                     <div className="grid gap-2">
                                         <Label htmlFor="units">Units</Label>
-                                        <Input id="units" value={shipmentForm.units} onChange={handleChange} placeholder="Enter the number of units"/>
+                                        <Input id="units" value={shipmentForm.units} onChange={handleChange}
+                                               placeholder="Enter the number of units"/>
                                         {errors.units && <p className="text-red-500 text-sm">{errors.units}</p>}
                                     </div>
                                     <div className="grid gap-2">
                                         <Label htmlFor="weight">Weight</Label>
-                                        <Input id="weight" value={shipmentForm.weight} onChange={handleChange} placeholder="Enter the amount of weight in kg"/>
+                                        <Input id="weight" value={shipmentForm.weight} onChange={handleChange}
+                                               placeholder="Enter the amount of weight in kg"/>
                                         {errors.weight && <p className="text-red-500 text-sm">{errors.weight}</p>}
                                     </div>
                                     <div className="flex justify-between">

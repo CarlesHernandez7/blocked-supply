@@ -54,8 +54,7 @@ export function UserInfoModal() {
 
             if (!response.ok) {
                 router.push("/auth");
-            }
-            else{
+            } else {
                 const data = await response.json();
                 setUserData(data);
             }
@@ -83,7 +82,7 @@ export function UserInfoModal() {
                 </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-xl">
-            <DialogHeader>
+                <DialogHeader>
                     <DialogTitle>User Information</DialogTitle>
                     <DialogDescription>View and manage your account information</DialogDescription>
                 </DialogHeader>

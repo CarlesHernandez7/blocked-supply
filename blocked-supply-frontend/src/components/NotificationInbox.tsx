@@ -114,7 +114,7 @@ export function NotificationInbox() {
 
             if (response.ok) {
                 setNotifications((prev) =>
-                    prev.map((n) => ({ ...n, isRead: true }))
+                    prev.map((n) => ({...n, isRead: true}))
                 );
                 await new Promise(resolve => setTimeout(resolve, 1000));
                 await fetchNotifications();
@@ -130,9 +130,10 @@ export function NotificationInbox() {
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 <Button variant="ghost" size="icon" className="relative rounded-full">
-                    <Bell className="h-5 w-5" />
+                    <Bell className="h-5 w-5"/>
                     {hasUnread && (
-                        <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-background" />
+                        <span
+                            className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-background"/>
                     )}
                     <span className="sr-only">Notifications</span>
                 </Button>
