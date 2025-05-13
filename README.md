@@ -1,26 +1,29 @@
 
-# 🔗 Blocked Supply: Blockchain-Based Supply Chain System
+# 🔗 Blocked Supply: Blockchain-Based Supply Chain System <br> (🐳 Dockerized Version)
 
 This project implements a blockchain-based supply chain management system composed of a **frontend**, **backend**, and **blockchain smart contracts**. It allows tracking and managing supply chain operations securely via smart contracts.
+
+This version of the project leverages **Docker** and **Docker Compose** to containerize and orchestrate all components of the blockchain-based supply chain system. It includes containers for the frontend, backend, blockchain broker, and MySQL database.
 
 ---
 
 ## 📦 Project Components
 
-- **Frontend**: Next.js application for the user interface
-- **Backend**: Spring Boot application for business logic and REST APIs
-- **Blockchain**: Smart contracts deployed on Ganache (local Ethereum blockchain)
-- **Node Broker**: Middleware to bridge backend and blockchain
+- **Frontend**: Next.js application container
+- **Backend**: Spring Boot service container
+- **Blockchain Broker**: Node.js service container
+- **Database**: MySQL container
+- **Blockchain**: Requires local Ganache (outside Docker)
 
 ---
 
 ## ✅ Prerequisites
 
-Before running the project, ensure the following are installed:
+Make sure the following are installed on your system:
 
-- **Node.js** ≥ 18.x  
-- **Java JDK** ≥ 17  
-- **MySQL** ≥ 8.x  
+- **Docker** ≥ 20.x  
+- **Docker Compose** ≥ 1.29  
+- **Node.js** ≥ 18.x (for blockchain setup)  
 - **Truffle**  
   ```bash
   npm install -g truffle
@@ -30,120 +33,44 @@ Before running the project, ensure the following are installed:
   npm install -g ganache-cli
   ```
 
+> ℹ️ **Ganache is run locally outside Docker** so `host.docker.internal` can reference it from inside containers.
+
 ---
 
 ## 🚀 Running the Project
 
-### 1️⃣ Blockchain Setup
+### 1️⃣ Start Ganache (Local Blockchain)
+
+Open a terminal and start Ganache:
 
 ```bash
-# Start Ganache
 ganache-cli --host 0.0.0.0 --port 8545
 ```
 
+---
+
+### 2️⃣ Deploy Smart Contracts
+
+In another terminal:
+
 ```bash
-# Deploy Smart Contracts
 cd blocked-supply-truffle
 truffle migrate
 ```
 
+> 📌 Note the contract address output from the migration – it's already added in `docker-compose.yml` under `CONTRACT_ADDRESS` in the `broker` service. Update it if needed.
+
 ---
 
-### 2️⃣ Node Broker Setup
+### 3️⃣ Start All Services with Docker Compose
+
+From the project root directory:
 
 ```bash
-cd node-broker
-npm install
+docker-compose up --build
 ```
 
-Create a `.env` file with the following:
-
-```env
-BLOCKCHAIN_NODE_URL=http://localhost:8545
-CONTRACT_ADDRESS=<address-from-truffle-migration>
-PORT=3001
-```
-
-```bash
-# Start the broker
-node src/index.js
-```
-
----
-
-### 3️⃣ Backend Setup
-
-#### 🛠️ MySQL Configuration
-
-1. Create a database:
-   - Name: `shipment_db`
-
-2. Note your MySQL username and password.
-
----
-
-#### 🔐 Generate Keys
-
-- `JWT_SECRET_KEY`: 64+ character plain text string
-- `ENCRYPTION_SECRET_KEY`: Format: Base64-encoded string. Length after decoding: Exactly 16 bytes (128 bits)
-
----
-
-#### ⚙️ Configure Spring Boot
-
-Copy `application-example.properties` to `application.properties` in the backend’s `resources` directory.
-
-Update values with MySQL credentials and Generated Keys:
-```properties
-spring.application.name=blocked-supply-backend
-server.port=8080
-
-spring.datasource.url=jdbc:mysql://localhost:3306/shipment_db
-spring.datasource.username=<your_mysql_username>
-spring.datasource.password=<your_mysql_password>
-spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
-
-spring.jpa.database-platform=org.hibernate.dialect.MySQL8Dialect
-spring.jpa.hibernate.ddl-auto=create
-spring.jpa.show-sql=true
-spring.jpa.properties.hibernate.format_sql=true
-
-application.security.jwt.secret-key=${JWT_SECRET_KEY}
-application.security.jwt.expiration=86400000
-application.security.jwt.refresh-token.expiration=604800000
-application.security.encryption.secret-key=${ENCRYPTION_SECRET_KEY}
-
-application.broker.address=http://localhost:3001
-```
-
----
-
-#### ▶️ Run the Backend
-
-```bash
-cd blocked-supply-backend
-./mvnw spring-boot:run
-```
-
----
-
-### 4️⃣ Frontend Setup
-
-```bash
-cd blocked-supply-frontend
-npm install
-```
-
-Create `.env.local` file:
-
-```env
-NEXT_PUBLIC_API_BASE_URL=http://localhost:8080
-```
-
-```bash
-npm run build
-npm run start
-```
+> 🐢 First-time builds may take a few minutes.
 
 ---
 
@@ -158,39 +85,45 @@ npm run start
 
 ---
 
-## 🔒 Security Notes
+## 🔐 Security Notes
 
-- Never commit `.env` files or keys to version control
-- Use strong credentials for your database and keys
-- Use environment variables or secret managers in production
+- Secrets such as `JWT_SECRET_KEY` and `ENCRYPTION_SECRET_KEY` are hardcoded in `docker-compose.yml` for simplicity in development. **Do not use these in production.**
+- Use `.env` files or Docker secrets for secure production deployments.
 
 ---
 
 ## 🛠️ Troubleshooting
 
-### ❌ Ganache Connection Issues
+### ❌ Blockchain Connection Issues
 
 - Ensure Ganache is running on `localhost:8545`
-- Check that `BLOCKCHAIN_NODE_URL` in `.env` is correct
+- Check `BLOCKCHAIN_NODE_URL` in the `broker` service uses `host.docker.internal`
 
-### ❌ Backend Fails to Start
+### ❌ Backend Container Won't Start
 
-- Verify MySQL is running and credentials are correct
-- Ensure `JWT_SECRET_KEY` and `ENCRYPTION_SECRET_KEY` are defined
-- Check broker address in `application.properties`
+- Make sure `mysql` container is healthy and ready
+- Check port `3307` on your host isn't blocked or in use
 
-### ❌ Frontend Build Issues
+### ❌ Frontend Not Reaching Backend
+
+- Ensure `NEXT_PUBLIC_API_URL=http://backend:8080` is set in frontend container
+- Containers communicate over the Docker network via service names (e.g., `backend`, `broker`)
+
+---
+
+## 📦 Stopping and Cleaning Up
 
 ```bash
-rm -rf node_modules package-lock.json
-npm install
+docker-compose down -v
 ```
-- Ensure `.env.local` is properly configured
+
+> 🧹 This stops containers and removes named volumes (like MySQL data).
 
 ---
 
 ## 💬 Support
 
-For issues or questions, feel free to [open an issue](https://github.com/your-repo-url/issues) in this repository.
+For help or bug reports, [open an issue](https://github.com/your-repo-url/issues).
 
 ---
+
