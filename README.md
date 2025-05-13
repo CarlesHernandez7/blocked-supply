@@ -5,6 +5,8 @@ This project implements a blockchain-based supply chain management system compos
 
 ---
 
+👉 Here you'll find detailed instructions for installing Node.js, Java, MySQL, and running each service individually. If you prefer a Docker-based setup, check out the [docker branch](https://github.com/CarlesHernandez7/blocked-supply/tree/docker).
+
 ## 📦 Project Components
 
 - **Frontend**: Next.js application for the user interface
