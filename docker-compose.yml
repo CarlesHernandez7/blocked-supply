@@ -21,7 +21,6 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/shipment_db
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=root
@@ -53,7 +52,7 @@ services:
       - "3001:3001"
     environment:
       - BLOCKCHAIN_NODE_URL=http://host.docker.internal:8545
-      - CONTRACT_ADDRESS=0xff83dffb98a2ee9575867a52823541b23e5caedf
+      - CONTRACT_ADDRESS=0xf5a2Cf53EbF2D04ddb5f6EDC245a6084e3EC3eD1
     networks:
       - supply-chain-network
 
